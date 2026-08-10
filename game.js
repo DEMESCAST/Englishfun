@@ -733,11 +733,11 @@ function startMemoryWithCategory(category) {
     const allWords = vocabulary[category].words;
     const selectedWords = shuffle([...allWords]).slice(0, 8);
     
-    // Criar pares (emoji + palavra)
+    // Criar pares (cada palavra aparece 2 vezes)
     memoryCards = [];
     selectedWords.forEach(word => {
-        memoryCards.push({ id: word.english, type: 'emoji', content: word.emoji, word: word });
-        memoryCards.push({ id: word.english, type: 'word', content: word.english, word: word });
+        memoryCards.push({ id: word.english, word: word });
+        memoryCards.push({ id: word.english, word: word });
     });
     
     memoryCards = shuffle(memoryCards);
@@ -762,8 +762,8 @@ function renderMemoryGrid() {
             <div class="memory-card-inner">
                 <div class="memory-card-front">❓</div>
                 <div class="memory-card-back">
-                    <span class="card-emoji">${card.type === 'emoji' ? card.content : ''}</span>
-                    <span class="card-word">${card.type === 'word' ? card.content : ''}</span>
+                    <span class="card-emoji">${card.word.emoji}</span>
+                    <span class="card-word">${card.word.english}</span>
                 </div>
             </div>
         </div>
