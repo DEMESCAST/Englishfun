@@ -11,12 +11,9 @@ let correctAnswers = 0;
 let wrongAnswersList = [];
 let totalQuestions = 15;
 let difficulty = 'medium';
-let timeLeft = 10;
-let timerInterval = null;
 let audioEnabled = true;
 let audioCtx = null;
 let achievements = [];
-let savedProgress = {};
 let wordStats = {};
 
 // Configurações de dificuldade
@@ -36,12 +33,8 @@ const achievementList = [
     { id: 'score_100', name: '100 Pontos!', icon: '🏆', condition: (s) => s.score >= 100 },
     { id: 'score_150', name: '150 Pontos!', icon: '👑', condition: (s) => s.score >= 150 },
     { id: 'perfect', name: 'Perfeito! 15/15!', icon: '💯', condition: (s) => s.correctAnswers >= 15 },
-    { id: 'speed_demon', name: 'Demônio da Velocidade!', icon: '⏱️', condition: (s) => s.fastAnswers >= 5 },
     { id: 'no_mistakes', name: 'Sem Erros!', icon: '✨', condition: (s) => s.correctAnswers >= 10 && s.wrongAnswers === 0 }
 ];
-
-let fastAnswers = 0;
-let wrongAnswers = 0;
 
 // Inicializar áudio
 function initAudio() {
@@ -190,13 +183,12 @@ function showLearnMode() {
     document.getElementById('learn-portuguese').textContent = word.portuguese;
     
     if (isSentence) {
-        document.getElementById('learn-sentence').textContent = `"${word.sentence}"`;
-        document.getElementById('learn-sentence').style.fontSize = '18px';
-        document.getElementById('learn-sentence').style.background = '#e8f5e9';
+        document.getElementById('learn-sentence').style.display = 'none';
     } else {
         document.getElementById('learn-sentence').textContent = `"${word.sentence}"`;
         document.getElementById('learn-sentence').style.fontSize = '16px';
         document.getElementById('learn-sentence').style.background = '#f5f5f5';
+        document.getElementById('learn-sentence').style.display = 'block';
     }
     
     // Mostrar tradução da frase
@@ -253,6 +245,7 @@ function startQuiz() {
     
     if (dictationMode) {
         document.getElementById('dictation-card').style.display = 'block';
+        document.getElementById('dictation-input').removeEventListener('keypress', handleDictationKeyPress);
         document.getElementById('dictation-input').addEventListener('keypress', handleDictationKeyPress);
         showDictationQuestion();
     } else {
@@ -411,7 +404,7 @@ function showFeedback(text, color) {
 }
 
 function checkAchievements() {
-    const state = { score, correctAnswers, maxCombo, fastAnswers, wrongAnswers };
+    const state = { score, correctAnswers, maxCombo, wrongAnswers: wrongAnswersList.length };
     
     achievementList.forEach(ach => {
         if (!achievements.includes(ach.id) && ach.condition(state)) {
@@ -488,9 +481,11 @@ function playAgain() {
 function goToMenu() {
     playSound('click');
     stopTimer();
+    if (memoryTimerInterval) clearInterval(memoryTimerInterval);
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'none';
     document.getElementById('answer-modal').style.display = 'none';
+    document.getElementById('memory-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
 }
 
