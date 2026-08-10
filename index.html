@@ -64,14 +64,13 @@
         #difficulty-section {
             margin-bottom: 35px;
         }
-        #difficulty-section h3, #mode-section h3 {
+        #difficulty-section h3 {
             font-size: 18px;
             margin-bottom: 15px;
             color: #fff;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
-        #mode-section { margin-bottom: 35px; }
         .difficulty-buttons {
             display: flex;
             gap: 15px;
@@ -764,46 +763,38 @@
                 </div>
             </div>
             
-            <div id="mode-section">
-                <h3>🎮 Modo de Jogo</h3>
-                <div class="difficulty-buttons">
-                    <button class="diff-btn selected" id="mode-quiz-btn" onclick="setGameMode('quiz')">📝 Quiz</button>
-                    <button class="diff-btn" id="mode-dictation-btn" onclick="setGameMode('dictation')">🎧 Ditado</button>
-                </div>
-            </div>
-            
             <div class="category-grid">
-                <button class="category-btn cat-animals" onclick="startGame('animals', selectedGameMode)">
+                <button class="category-btn cat-animals" onclick="startGame('animals')">
                     <span>🐾</span> Animais
                 </button>
-                <button class="category-btn cat-food" onclick="startGame('food', selectedGameMode)">
+                <button class="category-btn cat-food" onclick="startGame('food')">
                     <span>🍎</span> Comidas
                 </button>
-                <button class="category-btn cat-colors" onclick="startGame('colors', selectedGameMode)">
+                <button class="category-btn cat-colors" onclick="startGame('colors')">
                     <span>🎨</span> Cores
                 </button>
-                <button class="category-btn cat-numbers" onclick="startGame('numbers', selectedGameMode)">
+                <button class="category-btn cat-numbers" onclick="startGame('numbers')">
                     <span>🔢</span> Números
                 </button>
-                <button class="category-btn cat-body" onclick="startGame('body', selectedGameMode)">
+                <button class="category-btn cat-body" onclick="startGame('body')">
                     <span>🦴</span> Corpo
                 </button>
-                <button class="category-btn cat-objects" onclick="startGame('objects', selectedGameMode)">
+                <button class="category-btn cat-objects" onclick="startGame('objects')">
                     <span>⚽</span> Objetos
                 </button>
-                <button class="category-btn cat-family" onclick="startGame('family', selectedGameMode)">
+                <button class="category-btn cat-family" onclick="startGame('family')">
                     <span>👨‍👩‍👧</span> Família
                 </button>
-                <button class="category-btn cat-clothes" onclick="startGame('clothes', selectedGameMode)">
+                <button class="category-btn cat-clothes" onclick="startGame('clothes')">
                     <span>👕</span> Roupas
                 </button>
-                <button class="category-btn cat-weather" onclick="startGame('weather', selectedGameMode)">
+                <button class="category-btn cat-weather" onclick="startGame('weather')">
                     <span>☀️</span> Clima
                 </button>
-                <button class="category-btn cat-actions" onclick="startGame('actions', selectedGameMode)">
+                <button class="category-btn cat-actions" onclick="startGame('actions')">
                     <span>🏃</span> Ações
                 </button>
-                <button class="category-btn cat-sentences" onclick="startGame('sentences', selectedGameMode)">
+                <button class="category-btn cat-sentences" onclick="startGame('sentences')">
                     <span>💬</span> Frases
                 </button>
             </div>

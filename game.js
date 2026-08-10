@@ -135,20 +135,11 @@ function setDifficulty(level) {
     });
 }
 
-let selectedGameMode = 'quiz';
-
-function setGameMode(mode) {
-    selectedGameMode = mode;
-    document.getElementById('mode-quiz-btn').classList.toggle('selected', mode === 'quiz');
-    document.getElementById('mode-dictation-btn').classList.toggle('selected', mode === 'dictation');
-}
-
-function startGame(category, mode = 'quiz') {
+function startGame(category) {
     initAudio();
     playSound('click');
     
     currentCategory = category;
-    dictationMode = (mode === 'dictation');
     score = 0;
     combo = 0;
     maxCombo = 0;
@@ -168,10 +159,6 @@ function startGame(category, mode = 'quiz') {
     document.getElementById('combo').textContent = '0';
     document.getElementById('current-num').textContent = '1';
     document.getElementById('total-num').textContent = totalQuestions;
-    
-    // Atualizar título baseado no modo
-    const modeText = dictationMode ? ' - Ditado' : '';
-    document.getElementById('category-title').textContent = vocabulary[category].title + modeText;
     
     showLearnMode();
 }
