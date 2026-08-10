@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Fun - Aprenda Inglês brincando!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            user-select: none;
+        }
+        #game-container {
+            width: 100vw;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Tela Inicial */
+        #start-screen {
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 10;
+        }
+        #start-screen h1 {
+            font-size: 64px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff, 0 0 60px #00d4ff;
+            animation: glow 2s ease-in-out infinite alternate;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff, 0 0 60px #00d4ff; }
+            to { text-shadow: 0 0 30px #ff00ff, 0 0 50px #ff00ff, 0 0 70px #ff00ff; }
+        }
+        #start-screen h2 {
+            font-size: 24px;
+            margin-bottom: 35px;
+            color: #00ff88;
+            text-shadow: 0 0 10px #00ff88;
+            font-weight: 600;
+        }
+        
+        /* Seleção de Dificuldade */
+        #difficulty-section {
+            margin-bottom: 35px;
+        }
+        #difficulty-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .difficulty-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .diff-btn {
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: bold;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        .diff-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        .diff-btn:hover::before { left: 100%; }
+        .diff-btn:hover { 
+            transform: scale(1.08); 
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,0.5);
+        }
+        .diff-btn.selected {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #1a1a2e;
+            border-color: #00ff88;
+            box-shadow: 0 0 25px rgba(0,255,136,0.6);
+        }
+        
+        /* Grid de Categorias */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .category-btn {
+            padding: 22px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .category-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+        .category-btn:hover::after { left: 100%; }
+        .category-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+        .category-btn:active { transform: translateY(-3px) scale(1.02); }
+        .category-btn span { font-size: 32px; }
+        .cat-animals { background: linear-gradient(135deg, #00b09b, #96c93d); color: white; }
+        .cat-food { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
+        .cat-colors { background: linear-gradient(135deg, #8e2de2, #4a00e0); color: white; }
+        .cat-numbers { background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; }
+        .cat-body { background: linear-gradient(135deg, #e44d26, #f16529); color: white; }
+        .cat-objects { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white; }
+        .cat-family { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .cat-clothes { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .cat-weather { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #333; }
+        .cat-actions { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #333; }
+        .cat-sentences { background: linear-gradient(135deg, #fa709a, #fee140); color: #333; }
+        .hidden-emoji { display: none !important; }
+        
+        /* Background Animations */
+        .floating-blocks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .block {
+            position: absolute;
+            bottom: -100px;
+            left: var(--x);
+            width: var(--size);
+            height: var(--size);
+            border-radius: 8px;
+            opacity: 0.6;
+            animation: floatUp 8s linear infinite;
+            animation-delay: var(--delay);
+            box-shadow: 0 0 15px currentColor;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+        
+        /* Logo Container */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .logo-emoji {
+            font-size: 70px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        /* Tela do Jogo */
+        #game-screen {
+            display: none;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 15px;
+        }
+        #game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #game-header h2 { font-size: 24px; }
+        .header-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .score-box, .combo-box, .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .combo-box { background: rgba(255,100,100,0.4); }
+        .timer-box { background: rgba(100,200,100,0.4); display: none; }
+        .timer-box.warning { background: rgba(255,150,0,0.6); animation: timerPulse 0.5s infinite; }
+        .timer-box.danger { background: rgba(255,50,50,0.6); animation: timerPulse 0.3s infinite; }
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        #back-btn {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        #back-btn:hover { background: rgba(255,255,255,0.4); }
+        
+        /* Contador e Barra */
+        #word-counter {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        #progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38ef7d, #11998e);
+            border-radius: 8px;
+            transition: width 0.5s;
+        }
+        
+        /* Cards */
+        .game-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            animation: slideUp 0.4s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Modo Aprender */
+        #learn-card { display: block; }
+        .learn-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .learn-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        .learn-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.5); }
+        .learn-btn.small {
+            padding: 10px 15px;
+            font-size: 20px;
+            border-radius: 50%;
+            min-width: 50px;
+        }
+        #learn-emoji {
+            font-size: 100px;
+            margin-bottom: 15px;
+        }
+        #learn-emoji.animate {
+            animation: emojiJump 0.6s ease-out;
+        }
+        @keyframes emojiJump {
+            0% { transform: scale(1) translateY(0); }
+            30% { transform: scale(1.3) translateY(-20px); }
+            50% { transform: scale(1.2) translateY(-10px); }
+            70% { transform: scale(1.1) translateY(-5px); }
+            100% { transform: scale(1) translateY(0); }
+        }
+        #learn-english {
+            font-size: 42px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        #learn-phonetic {
+            font-size: 18px;
+            color: #888;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        #learn-portuguese {
+            font-size: 28px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        #learn-sentence {
+            font-size: 16px;
+            color: #666;
+            font-style: italic;
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Modo Quiz */
+        #quiz-card { display: none; }
+        #quiz-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        #quiz-emoji.animate {
+            animation: emojiJump 0.6s ease-out;
+        }
+        #quiz-instruction {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        #quiz-word {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        #quiz-hint {
+            font-size: 14px;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        /* Opções */
+        #options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .option-btn {
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.8; }
+        .option-btn.correct {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border-color: #11998e;
+            animation: correctPop 0.4s;
+        }
+        .option-btn.wrong {
+            background: linear-gradient(135deg, #eb3349, #f45c43);
+            color: white;
+            border-color: #eb3349;
+            animation: shake 0.4s;
+        }
+        @keyframes correctPop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        
+        /* Feedback */
+        #feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 100;
+            pointer-events: none;
+        }
+        #feedback.show {
+            animation: feedbackPop 0.8s ease-out forwards;
+        }
+        @keyframes feedbackPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            30% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+        
+        /* Conquistas */
+        #achievements {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 200;
+            pointer-events: none;
+        }
+        .achievement {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            animation: achieveSlide 3s ease-out forwards;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        @keyframes achieveSlide {
+            0% { transform: translateY(-100px); opacity: 0; }
+            10% { transform: translateY(0); opacity: 1; }
+            80% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+        
+        /* Modal */
+        #answer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+        }
+        #modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            animation: modalPop 0.3s ease-out;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        #modal-emoji { font-size: 70px; margin-bottom: 15px; }
+        #modal-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #333; }
+        #modal-word { font-size: 32px; color: #667eea; font-weight: bold; margin-bottom: 5px; }
+        #modal-translation { font-size: 22px; color: #666; margin-bottom: 8px; }
+        #modal-sentence { font-size: 14px; color: #888; font-style: italic; margin-bottom: 20px; }
+        #modal-continue {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #modal-continue:hover { transform: scale(1.05); }
+        
+        /* Tela de Resultado */
+        #result-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 600px;
+        }
+        #result-emoji {
+            font-size: 100px;
+            margin-bottom: 15px;
+            animation: bounce 1s infinite;
+        }
+        #result-screen h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        #result-score {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        #result-stats {
+            font-size: 16px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        #result-message {
+            font-size: 20px;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        .result-btn {
+            padding: 14px 35px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 8px;
+            transition: all 0.3s;
+        }
+        .result-btn:hover { transform: scale(1.05); }
+        #play-again-btn { background: #38ef7d; color: #333; }
+        #menu-btn { background: rgba(255,255,255,0.3); color: white; }
+        
+        /* Lista de erros */
+        #wrong-answers {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        #wrong-answers h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .wrong-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(255,100,100,0.2);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .wrong-emoji { font-size: 24px; }
+        .wrong-info { display: flex; flex-direction: column; }
+        .wrong-english { font-weight: bold; color: #ff6b6b; }
+        .wrong-portuguese { font-size: 12px; opacity: 0.9; }
+        
+        /* Botão Áudio */
+        #audio-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 200;
+        }
+        #audio-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+        
+        /* Responsivo */
+        @media (max-width: 600px) {
+            #start-screen h1 { font-size: 36px; }
+            #start-screen h2 { font-size: 16px; }
+            .logo-emoji { font-size: 50px; }
+            .category-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .category-btn { padding: 15px; font-size: 13px; }
+            .category-btn span { font-size: 24px; }
+            .difficulty-buttons { flex-wrap: wrap; }
+            .diff-btn { padding: 12px 20px; font-size: 13px; }
+            .game-card { padding: 20px; }
+            #learn-emoji { font-size: 70px; }
+            #learn-english { font-size: 32px; }
+            #learn-portuguese { font-size: 22px; }
+            #quiz-emoji { font-size: 60px; }
+            #quiz-word { font-size: 20px; }
+            .option-btn { padding: 14px; font-size: 16px; }
+            #options-grid { gap: 8px; }
+            .header-info { gap: 8px; }
+            .score-box, .combo-box, .timer-box { padding: 6px 12px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <button id="audio-btn" onclick="toggleAudio()">🔊</button>
+    
+    <!-- Background Animations -->
+    <div class="floating-blocks">
+        <div class="block" style="--delay: 0s; --x: 10%; --size: 40px; background: #00d4ff;"></div>
+        <div class="block" style="--delay: 2s; --x: 20%; --size: 30px; background: #ff00ff;"></div>
+        <div class="block" style="--delay: 4s; --x: 35%; --size: 50px; background: #00ff88;"></div>
+        <div class="block" style="--delay: 1s; --x: 50%; --size: 35px; background: #ffcc00;"></div>
+        <div class="block" style="--delay: 3s; --x: 65%; --size: 45px; background: #ff4444;"></div>
+        <div class="block" style="--delay: 5s; --x: 80%; --size: 25px; background: #44ff44;"></div>
+        <div class="block" style="--delay: 2.5s; --x: 90%; --size: 55px; background: #4444ff;"></div>
+    </div>
+    
+    <div id="game-container">
+        <!-- Tela Inicial -->
+        <div id="start-screen">
+            <div class="logo-container">
+                <span class="logo-emoji">🎮</span>
+                <h1>ENGLISH FUN</h1>
+            </div>
+            <h2>⚡ Aprenda Inglês brincando! ⚡</h2>
+            
+            <div id="difficulty-section">
+                <h3>🎯 Escolha seu nível</h3>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn" data-level="easy" onclick="setDifficulty('easy')">😊 FÁCIL</button>
+                    <button class="diff-btn selected" data-level="medium" onclick="setDifficulty('medium')">😎 MÉDIO</button>
+                    <button class="diff-btn" data-level="hard" onclick="setDifficulty('hard')">🤯 DIFÍCIL</button>
+                </div>
+            </div>
+            
+            <div class="category-grid">
+                <button class="category-btn cat-animals" onclick="startGame('animals')">
+                    <span>🐾</span> Animais
+                </button>
+                <button class="category-btn cat-food" onclick="startGame('food')">
+                    <span>🍎</span> Comidas
+                </button>
+                <button class="category-btn cat-colors" onclick="startGame('colors')">
+                    <span>🎨</span> Cores
+                </button>
+                <button class="category-btn cat-numbers" onclick="startGame('numbers')">
+                    <span>🔢</span> Números
+                </button>
+                <button class="category-btn cat-body" onclick="startGame('body')">
+                    <span>🦴</span> Corpo
+                </button>
+                <button class="category-btn cat-objects" onclick="startGame('objects')">
+                    <span>⚽</span> Objetos
+                </button>
+                <button class="category-btn cat-family" onclick="startGame('family')">
+                    <span>👨‍👩‍👧</span> Família
+                </button>
+                <button class="category-btn cat-clothes" onclick="startGame('clothes')">
+                    <span>👕</span> Roupas
+                </button>
+                <button class="category-btn cat-weather" onclick="startGame('weather')">
+                    <span>☀️</span> Clima
+                </button>
+                <button class="category-btn cat-actions" onclick="startGame('actions')">
+                    <span>🏃</span> Ações
+                </button>
+                <button class="category-btn cat-sentences" onclick="startGame('sentences')">
+                    <span>💬</span> Frases
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tela do Jogo -->
+        <div id="game-screen">
+            <div id="game-header">
+                <button id="back-btn" onclick="goToMenu()">← Voltar</button>
+                <h2 id="category-title"></h2>
+                <div class="header-info">
+                    <div class="timer-box" id="timer-box">⏱️ <span id="timer">10</span></div>
+                    <div class="combo-box">🔥 <span id="combo">0</span>x</div>
+                    <div class="score-box">⭐ <span id="score">0</span></div>
+                </div>
+            </div>
+            
+            <div id="word-counter">Palavra <span id="current-num">1</span> de <span id="total-num">15</span></div>
+            <div id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            
+            <!-- Modo Aprender -->
+            <div id="learn-card" class="game-card">
+                <div id="learn-emoji"></div>
+                <div id="learn-english"></div>
+                <div id="learn-phonetic"></div>
+                <div id="learn-portuguese"></div>
+                <div id="learn-sentence"></div>
+                <div class="learn-controls">
+                    <button class="learn-btn small" id="back-learn-btn" onclick="previousLearnWord()">←</button>
+                    <button class="learn-btn small" onclick="speakWord()">🔊</button>
+                    <button class="learn-btn small" onclick="nextLearnWord()">→</button>
+                </div>
+            </div>
+            
+            <!-- Modo Quiz -->
+            <div id="quiz-card" class="game-card">
+                <div id="quiz-emoji" class="hidden-emoji"></div>
+                <div id="quiz-instruction">Selecione a tradução correta:</div>
+                <div id="quiz-word"></div>
+                <div id="quiz-hint"></div>
+                <div id="options-grid"></div>
+            </div>
+        </div>
+        
+        <!-- Tela de Resultado -->
+        <div id="result-screen">
+            <div id="result-emoji"></div>
+            <h2>Parabéns!</h2>
+            <div id="result-score"></div>
+            <div id="result-stats"></div>
+            <div id="result-message"></div>
+            <div id="wrong-answers" style="display: none;">
+                <h3>📚 Reveja seus erros:</h3>
+                <div id="wrong-list"></div>
+            </div>
+            <button class="result-btn" id="play-again-btn" onclick="playAgain()">Jogar Novamente</button>
+            <button class="result-btn" id="menu-btn" onclick="goToMenu()">Menu</button>
+        </div>
+        
+        <!-- Feedback -->
+        <div id="feedback"></div>
+        
+        <!-- Conquistas -->
+        <div id="achievements"></div>
+        
+        <!-- Modal -->
+        <div id="answer-modal">
+            <div id="modal-content">
+                <div id="modal-emoji"></div>
+                <div id="modal-title"></div>
+                <div id="modal-word"></div>
+                <div id="modal-translation"></div>
+                <div id="modal-sentence"></div>
+                <button id="modal-continue" onclick="closeModal()">Continuar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="vocab.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
