@@ -193,11 +193,11 @@ function showLearnMode() {
     
     // Mostrar tradução da frase
     const sentenceTranslationEl = document.getElementById('learn-sentence-translation');
-    if (word.sentenceTranslation) {
+    if (isSentence || !word.sentenceTranslation) {
+        sentenceTranslationEl.style.display = 'none';
+    } else {
         sentenceTranslationEl.textContent = word.sentenceTranslation;
         sentenceTranslationEl.style.display = 'block';
-    } else {
-        sentenceTranslationEl.style.display = 'none';
     }
     
     // Mostrar/esconder botão voltar
