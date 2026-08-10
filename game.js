@@ -17,6 +17,7 @@ let audioEnabled = true;
 let audioCtx = null;
 let achievements = [];
 let wordStats = {};
+let isReviewSession = false;
 
 // Categorias disponíveis
 const categoryData = {
@@ -164,6 +165,7 @@ function startGame(category) {
     playSound('click');
     
     currentCategory = category;
+    isReviewSession = false;
     score = 0;
     combo = 0;
     maxCombo = 0;
@@ -498,12 +500,15 @@ function playAgain() {
     playSound('click');
     document.getElementById('result-screen').style.display = 'none';
     
+    if (isReviewSession) {
+        startReviewMode();
+        return;
+    }
+    
     if (currentMode === 'quiz') {
         startModeWithCategory(currentCategory);
     } else if (currentMode === 'dictation') {
         startModeWithCategory(currentCategory);
-    } else if (currentMode === 'review') {
-        startReviewMode();
     } else {
         startGame(currentCategory);
     }
@@ -515,6 +520,7 @@ function goToMenu() {
     if (memoryTimerInterval) clearInterval(memoryTimerInterval);
     dictationMode = false;
     currentMode = null;
+    isReviewSession = false;
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'none';
     document.getElementById('answer-modal').style.display = 'none';
@@ -570,6 +576,7 @@ function goToModeSelect() {
 function startModeWithCategory(category) {
     playSound('click');
     currentCategory = category;
+    isReviewSession = false;
     document.getElementById('category-screen').style.display = 'none';
     
     const allWords = vocabulary[category].words;
@@ -641,6 +648,7 @@ function startQuizFromLearn() {
 function startReviewMode() {
     loadWordStats();
     currentMode = 'review';
+    isReviewSession = true;
     
     const allWords = [];
     for (const [catKey, catData] of Object.entries(vocabulary)) {
