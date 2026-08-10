@@ -2,7 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="description" content="Aprenda Inglês brincando! Jogo educativo para crianças.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="English Fun">
+    <link rel="manifest" href="manifest.json">
     <title>English Fun - Aprenda Inglês brincando!</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -58,13 +64,14 @@
         #difficulty-section {
             margin-bottom: 35px;
         }
-        #difficulty-section h3 {
+        #difficulty-section h3, #mode-section h3 {
             font-size: 18px;
             margin-bottom: 15px;
             color: #fff;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
+        #mode-section { margin-bottom: 35px; }
         .difficulty-buttons {
             display: flex;
             gap: 15px;
@@ -629,6 +636,79 @@
         }
         #audio-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
         
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        /* Animações Melhoradas */
+        @keyframes correctPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(56,239,125,0); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(56,239,125,0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(56,239,125,0); }
+        }
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        @keyframes comboFire {
+            0% { text-shadow: 0 0 5px #ff6b6b; }
+            50% { text-shadow: 0 0 20px #ff6b6b, 0 0 30px #ff9f43; }
+            100% { text-shadow: 0 0 5px #ff6b6b; }
+        }
+        @keyframes starBurst {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1.5) rotate(180deg); opacity: 0; }
+        }
+        .correct-animation { animation: correctPulse 0.5s ease-out; }
+        .wrong-animation { animation: wrongShake 0.5s ease-out; }
+        .combo-fire { animation: comboFire 0.5s ease-in-out infinite; }
+        
+        /* Modo Ditado */
+        #dictation-card { text-align: center; }
+        #dictation-emoji { font-size: 80px; margin-bottom: 15px; }
+        #dictation-instruction { font-size: 16px; color: #666; margin-bottom: 10px; }
+        #dictation-word { font-size: 28px; color: #333; margin-bottom: 10px; }
+        #dictation-hint { font-size: 14px; color: #888; margin-bottom: 20px; }
+        .dictation-input-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        #dictation-input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 22px;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        #dictation-input:focus { border-color: #667eea; }
+        #dictation-input.correct { border-color: #38ef7d; background: #e8ffe8; }
+        #dictation-input.wrong { border-color: #f45c43; background: #ffe8e8; }
+        .dictation-submit {
+            padding: 15px 25px;
+            font-size: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .dictation-submit:hover { transform: scale(1.05); }
+        
         /* Responsivo */
         @media (max-width: 600px) {
             #start-screen h1 { font-size: 36px; }
@@ -684,38 +764,46 @@
                 </div>
             </div>
             
+            <div id="mode-section">
+                <h3>🎮 Modo de Jogo</h3>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn selected" id="mode-quiz-btn" onclick="setGameMode('quiz')">📝 Quiz</button>
+                    <button class="diff-btn" id="mode-dictation-btn" onclick="setGameMode('dictation')">🎧 Ditado</button>
+                </div>
+            </div>
+            
             <div class="category-grid">
-                <button class="category-btn cat-animals" onclick="startGame('animals')">
+                <button class="category-btn cat-animals" onclick="startGame('animals', selectedGameMode)">
                     <span>🐾</span> Animais
                 </button>
-                <button class="category-btn cat-food" onclick="startGame('food')">
+                <button class="category-btn cat-food" onclick="startGame('food', selectedGameMode)">
                     <span>🍎</span> Comidas
                 </button>
-                <button class="category-btn cat-colors" onclick="startGame('colors')">
+                <button class="category-btn cat-colors" onclick="startGame('colors', selectedGameMode)">
                     <span>🎨</span> Cores
                 </button>
-                <button class="category-btn cat-numbers" onclick="startGame('numbers')">
+                <button class="category-btn cat-numbers" onclick="startGame('numbers', selectedGameMode)">
                     <span>🔢</span> Números
                 </button>
-                <button class="category-btn cat-body" onclick="startGame('body')">
+                <button class="category-btn cat-body" onclick="startGame('body', selectedGameMode)">
                     <span>🦴</span> Corpo
                 </button>
-                <button class="category-btn cat-objects" onclick="startGame('objects')">
+                <button class="category-btn cat-objects" onclick="startGame('objects', selectedGameMode)">
                     <span>⚽</span> Objetos
                 </button>
-                <button class="category-btn cat-family" onclick="startGame('family')">
+                <button class="category-btn cat-family" onclick="startGame('family', selectedGameMode)">
                     <span>👨‍👩‍👧</span> Família
                 </button>
-                <button class="category-btn cat-clothes" onclick="startGame('clothes')">
+                <button class="category-btn cat-clothes" onclick="startGame('clothes', selectedGameMode)">
                     <span>👕</span> Roupas
                 </button>
-                <button class="category-btn cat-weather" onclick="startGame('weather')">
+                <button class="category-btn cat-weather" onclick="startGame('weather', selectedGameMode)">
                     <span>☀️</span> Clima
                 </button>
-                <button class="category-btn cat-actions" onclick="startGame('actions')">
+                <button class="category-btn cat-actions" onclick="startGame('actions', selectedGameMode)">
                     <span>🏃</span> Ações
                 </button>
-                <button class="category-btn cat-sentences" onclick="startGame('sentences')">
+                <button class="category-btn cat-sentences" onclick="startGame('sentences', selectedGameMode)">
                     <span>💬</span> Frases
                 </button>
             </div>
@@ -760,6 +848,19 @@
                 <div id="quiz-hint"></div>
                 <div id="options-grid"></div>
             </div>
+            
+            <!-- Modo Ditado -->
+            <div id="dictation-card" class="game-card" style="display: none;">
+                <div id="dictation-emoji"></div>
+                <div id="dictation-instruction">Ouça e escreva a palavra:</div>
+                <div id="dictation-word"></div>
+                <div id="dictation-hint"></div>
+                <div class="dictation-input-container">
+                    <input type="text" id="dictation-input" placeholder="Digite a palavra..." autocomplete="off" spellcheck="false">
+                    <button class="dictation-submit" onclick="checkDictation()">✓</button>
+                </div>
+                <button class="learn-btn" onclick="speakWord()" style="margin-top: 15px;">🔊 Ouvir novamente</button>
+            </div>
         </div>
         
         <!-- Tela de Resultado -->
@@ -796,7 +897,19 @@
         </div>
     </div>
     
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+    
     <script src="vocab.js"></script>
     <script src="game.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registrado:', reg.scope))
+                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+            });
+        }
+    </script>
 </body>
 </html>

@@ -17,6 +17,7 @@ let audioEnabled = true;
 let audioCtx = null;
 let achievements = [];
 let savedProgress = {};
+let wordStats = {};
 
 // Configurações de dificuldade
 const difficultyConfig = {
@@ -129,16 +130,25 @@ function shuffle(array) {
 
 function setDifficulty(level) {
     difficulty = level;
-    document.querySelectorAll('.diff-btn').forEach(btn => {
+    document.querySelectorAll('#difficulty-section .diff-btn').forEach(btn => {
         btn.classList.toggle('selected', btn.dataset.level === level);
     });
 }
 
-function startGame(category) {
+let selectedGameMode = 'quiz';
+
+function setGameMode(mode) {
+    selectedGameMode = mode;
+    document.getElementById('mode-quiz-btn').classList.toggle('selected', mode === 'quiz');
+    document.getElementById('mode-dictation-btn').classList.toggle('selected', mode === 'dictation');
+}
+
+function startGame(category, mode = 'quiz') {
     initAudio();
     playSound('click');
     
     currentCategory = category;
+    dictationMode = (mode === 'dictation');
     score = 0;
     combo = 0;
     maxCombo = 0;
@@ -148,7 +158,7 @@ function startGame(category) {
     currentQuizIndex = 0;
     
     const allWords = vocabulary[category].words;
-    learnWords = shuffle(allWords).slice(0, totalQuestions);
+    learnWords = getWordsForReview(allWords, totalQuestions);
     quizWords = shuffle([...learnWords]);
     
     document.getElementById('start-screen').style.display = 'none';
@@ -158,6 +168,10 @@ function startGame(category) {
     document.getElementById('combo').textContent = '0';
     document.getElementById('current-num').textContent = '1';
     document.getElementById('total-num').textContent = totalQuestions;
+    
+    // Atualizar título baseado no modo
+    const modeText = dictationMode ? ' - Ditado' : '';
+    document.getElementById('category-title').textContent = vocabulary[category].title + modeText;
     
     showLearnMode();
 }
@@ -224,8 +238,17 @@ function nextLearnWord() {
 
 function startQuiz() {
     document.getElementById('learn-card').style.display = 'none';
-    document.getElementById('quiz-card').style.display = 'block';
-    showQuizQuestion();
+    document.getElementById('quiz-card').style.display = 'none';
+    document.getElementById('dictation-card').style.display = 'none';
+    
+    if (dictationMode) {
+        document.getElementById('dictation-card').style.display = 'block';
+        document.getElementById('dictation-input').addEventListener('keypress', handleDictationKeyPress);
+        showDictationQuestion();
+    } else {
+        document.getElementById('quiz-card').style.display = 'block';
+        showQuizQuestion();
+    }
 }
 
 function showQuizQuestion() {
@@ -305,21 +328,31 @@ function checkAnswer(selected, correct) {
         showFeedback(`✓ +${points} pontos!`, '#38ef7d');
         
         buttons.forEach(btn => {
-            if (btn.textContent === correct) btn.classList.add('correct');
+            if (btn.textContent === correct) {
+                btn.classList.add('correct', 'correct-animation');
+            }
         });
         
+        if (combo >= 3) {
+            celebrateCombo();
+        } else {
+            celebrateCorrect();
+        }
+        
         checkAchievements();
+        updateWordStat(word, true);
         currentQuizIndex++;
         setTimeout(showQuizQuestion, 1000);
     } else {
         wrongAnswersList.push(word);
         combo = 0;
+        updateWordStat(word, false);
         updateComboDisplay();
         playSound('wrong');
         showFeedback('✗ Errado!', '#f45c43');
         
         buttons.forEach(btn => {
-            if (btn.textContent === selected) btn.classList.add('wrong');
+            if (btn.textContent === selected) btn.classList.add('wrong', 'wrong-animation');
             if (btn.textContent === correct) btn.classList.add('correct');
         });
         
@@ -402,9 +435,11 @@ function showResult() {
     if (pct >= 90) {
         document.getElementById('result-emoji').textContent = '🏆';
         document.getElementById('result-message').textContent = 'Incrível! Você é um mestre!';
+        celebratePerfect();
     } else if (pct >= 70) {
         document.getElementById('result-emoji').textContent = '⭐';
         document.getElementById('result-message').textContent = 'Muito bem! Continue assim!';
+        createConfetti(80);
     } else if (pct >= 50) {
         document.getElementById('result-emoji').textContent = '👍';
         document.getElementById('result-message').textContent = 'Bom trabalho! Pratique mais!';
@@ -455,19 +490,318 @@ function saveProgress() {
         if (!data.categories) data.categories = {};
         
         const cat = currentCategory;
-        if (!data.categories[cat]) data.categories[cat] = { plays: 0, bestScore: 0, totalCorrect: 0 };
+        if (!data.categories[cat]) {
+            data.categories[cat] = { 
+                plays: 0, 
+                bestScore: 0, 
+                totalCorrect: 0, 
+                totalWrong: 0,
+                bestCombo: 0,
+                perfectGames: 0,
+                lastPlayed: 0
+            };
+        }
         
-        data.categories[cat].plays++;
-        data.categories[cat].totalCorrect += correctAnswers;
-        if (score > data.categories[cat].bestScore) data.categories[cat].bestScore = score;
+        const correctCount = totalQuestions - wrongAnswersList.length;
+        const catData = data.categories[cat];
+        
+        catData.plays++;
+        catData.totalCorrect += correctCount;
+        catData.totalWrong += wrongAnswersList.length;
+        if (score > catData.bestScore) catData.bestScore = score;
+        if (maxCombo > catData.bestCombo) catData.bestCombo = maxCombo;
+        if (wrongAnswersList.length === 0) catData.perfectGames++;
+        catData.lastPlayed = Date.now();
         
         data.totalPlays = (data.totalPlays || 0) + 1;
+        data.totalCorrectAll = (data.totalCorrectAll || 0) + correctCount;
+        data.totalWrongAll = (data.totalWrongAll || 0) + wrongAnswersList.length;
         data.achievements = [...new Set([...(data.achievements || []), ...achievements])];
+        
+        // Calcular streak de dias
+        const today = new Date().toDateString();
+        const lastDate = data.lastPlayDate;
+        if (lastDate !== today) {
+            const last = new Date(lastDate);
+            const now = new Date();
+            const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) {
+                data.dailyStreak = (data.dailyStreak || 0) + 1;
+            } else if (diffDays > 1) {
+                data.dailyStreak = 1;
+            }
+            data.lastPlayDate = today;
+        }
         
         localStorage.setItem('englishFunProgress', JSON.stringify(data));
     } catch(e) {}
 }
 
+// ==================== SPACED REPETITION ====================
+function loadWordStats() {
+    try {
+        wordStats = JSON.parse(localStorage.getItem('englishFunWordStats') || '{}');
+    } catch(e) {
+        wordStats = {};
+    }
+}
+
+function saveWordStats() {
+    try {
+        localStorage.setItem('englishFunWordStats', JSON.stringify(wordStats));
+    } catch(e) {}
+}
+
+function updateWordStat(word, isCorrect) {
+    const key = `${currentCategory}_${word.english}`;
+    if (!wordStats[key]) {
+        wordStats[key] = { correct: 0, wrong: 0, lastSeen: 0, streak: 0 };
+    }
+    
+    const stat = wordStats[key];
+    stat.lastSeen = Date.now();
+    
+    if (isCorrect) {
+        stat.correct++;
+        stat.streak++;
+    } else {
+        stat.wrong++;
+        stat.streak = 0;
+    }
+    
+    saveWordStats();
+}
+
+function getWordPriority(word) {
+    const key = `${currentCategory}_${word.english}`;
+    const stat = wordStats[key];
+    
+    if (!stat) return 10;
+    
+    // Palavras erradas recentemente ganham prioridade
+    const recencyBonus = stat.wrong > stat.correct ? 20 : 0;
+    const streakPenalty = stat.streak > 3 ? -5 : 0;
+    
+    return stat.wrong * 5 + recencyBonus + streakPenalty;
+}
+
+function getWordsForReview(words, count) {
+    loadWordStats();
+    
+    // Calcular prioridade para cada palavra
+    const wordsWithPriority = words.map(w => ({
+        word: w,
+        priority: getWordPriority(w)
+    }));
+    
+    // Ordenar por prioridade (maior primeiro) e embaralhar palavras com mesma prioridade
+    wordsWithPriority.sort((a, b) => {
+        const diff = b.priority - a.priority;
+        if (diff !== 0) return diff;
+        return Math.random() - 0.5;
+    });
+    
+    // Pegar as top 'count' palavras
+    return wordsWithPriority.slice(0, count).map(w => w.word);
+}
+
+// ==================== DICTATION MODE ====================
+let dictationMode = false;
+let currentDictationWord = null;
+
+function startDictationMode() {
+    dictationMode = true;
+    document.getElementById('learn-card').style.display = 'none';
+    document.getElementById('quiz-card').style.display = 'none';
+    document.getElementById('dictation-card').style.display = 'block';
+    showDictationQuestion();
+}
+
+function showDictationQuestion() {
+    if (currentQuizIndex >= quizWords.length) {
+        showResult();
+        return;
+    }
+    
+    const word = quizWords[currentQuizIndex];
+    currentDictationWord = word;
+    
+    document.getElementById('dictation-emoji').textContent = word.emoji;
+    document.getElementById('dictation-hint').textContent = `Dica: ${word.portuguese}`;
+    document.getElementById('current-num').textContent = currentQuizIndex + 1;
+    document.getElementById('progress-fill').style.width = `${(currentQuizIndex / totalQuestions) * 100}%`;
+    
+    const input = document.getElementById('dictation-input');
+    input.value = '';
+    input.className = '';
+    input.disabled = false;
+    input.focus();
+    
+    setTimeout(() => speakWord(), 400);
+}
+
+function checkDictation() {
+    const input = document.getElementById('dictation-input');
+    const userAnswer = input.value.trim().toLowerCase();
+    const correctAnswer = currentDictationWord.english.toLowerCase();
+    
+    input.disabled = true;
+    
+    if (userAnswer === correctAnswer) {
+        input.classList.add('correct');
+        correctAnswers++;
+        combo++;
+        if (combo > maxCombo) maxCombo = combo;
+        
+        let points = difficultyConfig[difficulty].points;
+        if (combo >= 3) points += combo * 2;
+        score += points;
+        document.getElementById('score').textContent = score;
+        
+        playSound(combo >= 3 ? 'combo' : 'correct');
+        showFeedback(`✓ Correto! +${points} pontos!`, '#38ef7d');
+        updateComboDisplay();
+        updateWordStat(currentDictationWord, true);
+        celebrateCorrect();
+        checkAchievements();
+    } else {
+        input.classList.add('wrong');
+        wrongAnswersList.push(currentDictationWord);
+        combo = 0;
+        updateComboDisplay();
+        updateWordStat(currentDictationWord, false);
+        playSound('wrong');
+        showFeedback(`✗ Errado! Resposta: ${currentDictationWord.english}`, '#f45c43');
+        setTimeout(() => showModal(currentDictationWord, true), 1500);
+    }
+    
+    currentQuizIndex++;
+    setTimeout(showDictationQuestion, 2000);
+}
+
+function handleDictationKeyPress(e) {
+    if (e.key === 'Enter' && !document.getElementById('dictation-input').disabled) {
+        checkDictation();
+    }
+}
+
+// ==================== CONFETTI ====================
+const confettiCanvas = document.getElementById('confetti-canvas');
+const confettiCtx = confettiCanvas.getContext('2d');
+let confettiParticles = [];
+let confettiAnimationId = null;
+
+function resizeConfettiCanvas() {
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeConfettiCanvas);
+resizeConfettiCanvas();
+
+class ConfettiParticle {
+    constructor() {
+        this.x = Math.random() * confettiCanvas.width;
+        this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+        this.size = Math.random() * 8 + 4;
+        this.speedY = Math.random() * 3 + 2;
+        this.speedX = Math.random() * 2 - 1;
+        this.rotation = Math.random() * 360;
+        this.rotationSpeed = Math.random() * 10 - 5;
+        this.color = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#01a3a4', '#f368e0'][Math.floor(Math.random() * 8)];
+        this.shape = Math.floor(Math.random() * 3);
+    }
+    
+    update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.rotation += this.rotationSpeed;
+        this.speedY += 0.05;
+    }
+    
+    draw() {
+        confettiCtx.save();
+        confettiCtx.translate(this.x, this.y);
+        confettiCtx.rotate(this.rotation * Math.PI / 180);
+        confettiCtx.fillStyle = this.color;
+        
+        if (this.shape === 0) {
+            confettiCtx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size / 2);
+        } else if (this.shape === 1) {
+            confettiCtx.beginPath();
+            confettiCtx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+            confettiCtx.fill();
+        } else {
+            confettiCtx.beginPath();
+            confettiCtx.moveTo(0, -this.size / 2);
+            confettiCtx.lineTo(this.size / 2, this.size / 2);
+            confettiCtx.lineTo(-this.size / 2, this.size / 2);
+            confettiCtx.closePath();
+            confettiCtx.fill();
+        }
+        
+        confettiCtx.restore();
+    }
+}
+
+function createConfetti(count = 100) {
+    for (let i = 0; i < count; i++) {
+        confettiParticles.push(new ConfettiParticle());
+    }
+    if (!confettiAnimationId) animateConfetti();
+}
+
+function animateConfetti() {
+    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    
+    confettiParticles = confettiParticles.filter(p => p.y < confettiCanvas.height + 50);
+    
+    confettiParticles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    
+    if (confettiParticles.length > 0) {
+        confettiAnimationId = requestAnimationFrame(animateConfetti);
+    } else {
+        confettiAnimationId = null;
+    }
+}
+
+function celebrateCorrect() {
+    createConfetti(50);
+}
+
+function celebratePerfect() {
+    createConfetti(200);
+}
+
+function celebrateCombo() {
+    createConfetti(30);
+}
+
+// ==================== STAR BURST EFFECT ====================
+function createStarBurst(x, y) {
+    const colors = ['#feca57', '#ff6b6b', '#48dbfb', '#ff9ff3'];
+    for (let i = 0; i < 8; i++) {
+        const star = document.createElement('div');
+        star.style.cssText = `
+            position: fixed;
+            left: ${x}px;
+            top: ${y}px;
+            width: 10px;
+            height: 10px;
+            background: ${colors[i % colors.length]};
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1001;
+            animation: starBurst 0.6s ease-out forwards;
+        `;
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 600);
+    }
+}
+
+// ==================== DOMContentLoaded ====================
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('start-screen').style.display = 'block';
 });
