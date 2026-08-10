@@ -53,10 +53,24 @@ function speakWord() {
     if (!audioEnabled) return;
     const word = learnWords[currentLearnIndex];
     if (!word) return;
-    const utterance = new SpeechSynthesisUtterance(word.english);
-    utterance.lang = 'en-US';
-    utterance.rate = currentCategory === 'sentences' ? 0.7 : 0.8;
-    speechSynthesis.speak(utterance);
+    
+    const rate = currentCategory === 'sentences' ? 0.7 : 0.8;
+    
+    // Falar a palavra primeiro
+    const utteranceWord = new SpeechSynthesisUtterance(word.english);
+    utteranceWord.lang = 'en-US';
+    utteranceWord.rate = rate;
+    speechSynthesis.speak(utteranceWord);
+    
+    // Depois falar a frase (com delay)
+    if (word.sentence && word.sentence !== word.english) {
+        setTimeout(() => {
+            const utteranceSentence = new SpeechSynthesisUtterance(word.sentence);
+            utteranceSentence.lang = 'en-US';
+            utteranceSentence.rate = 0.75;
+            speechSynthesis.speak(utteranceSentence);
+        }, 1200);
+    }
 }
 
 // Tocar som
