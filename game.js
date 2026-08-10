@@ -44,7 +44,7 @@ function initAudio() {
 // Falar palavra
 function speakWord() {
     if (!audioEnabled) return;
-    const word = learnWords[currentLearnIndex];
+    const word = dictationMode && currentDictationWord ? currentDictationWord : learnWords[currentLearnIndex];
     if (!word) return;
     
     const rate = currentCategory === 'sentences' ? 0.7 : 0.8;
@@ -209,7 +209,7 @@ function showLearnMode() {
     }
     
     document.getElementById('current-num').textContent = currentLearnIndex + 1;
-    document.getElementById('progress-fill').style.width = `${(currentLearnIndex / totalQuestions) * 100}%`;
+    document.getElementById('progress-fill').style.width = `${((currentLearnIndex + 1) / totalQuestions) * 100}%`;
     
     const emoji = document.getElementById('learn-emoji');
     emoji.classList.remove('animate');
@@ -275,7 +275,7 @@ function showQuizQuestion() {
     }
     
     document.getElementById('current-num').textContent = currentQuizIndex + 1;
-    document.getElementById('progress-fill').style.width = `${(currentQuizIndex / totalQuestions) * 100}%`;
+    document.getElementById('progress-fill').style.width = `${((currentQuizIndex + 1) / totalQuestions) * 100}%`;
     
     // Gerar opções
     const correctAnswer = word.portuguese;
@@ -392,7 +392,11 @@ function closeModal() {
     playSound('click');
     document.getElementById('answer-modal').style.display = 'none';
     currentQuizIndex++;
-    showQuizQuestion();
+    if (dictationMode) {
+        showDictationQuestion();
+    } else {
+        showQuizQuestion();
+    }
 }
 
 function showFeedback(text, color) {
@@ -482,6 +486,7 @@ function goToMenu() {
     playSound('click');
     stopTimer();
     if (memoryTimerInterval) clearInterval(memoryTimerInterval);
+    dictationMode = false;
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'none';
     document.getElementById('answer-modal').style.display = 'none';
@@ -634,7 +639,7 @@ function showDictationQuestion() {
     document.getElementById('dictation-emoji').textContent = word.emoji;
     document.getElementById('dictation-hint').textContent = `Dica: ${word.portuguese}`;
     document.getElementById('current-num').textContent = currentQuizIndex + 1;
-    document.getElementById('progress-fill').style.width = `${(currentQuizIndex / totalQuestions) * 100}%`;
+    document.getElementById('progress-fill').style.width = `${((currentQuizIndex + 1) / totalQuestions) * 100}%`;
     
     const input = document.getElementById('dictation-input');
     input.value = '';
@@ -669,6 +674,8 @@ function checkDictation() {
         updateWordStat(currentDictationWord, true);
         celebrateCorrect();
         checkAchievements();
+        currentQuizIndex++;
+        setTimeout(showDictationQuestion, 2000);
     } else {
         input.classList.add('wrong');
         wrongAnswersList.push(currentDictationWord);
@@ -679,9 +686,6 @@ function checkDictation() {
         showFeedback(`✗ Errado! Resposta: ${currentDictationWord.english}`, '#f45c43');
         setTimeout(() => showModal(currentDictationWord, true), 1500);
     }
-    
-    currentQuizIndex++;
-    setTimeout(showDictationQuestion, 2000);
 }
 
 function handleDictationKeyPress(e) {
