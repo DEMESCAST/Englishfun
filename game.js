@@ -642,6 +642,7 @@ function startQuizFromLearn() {
     currentQuizIndex = 0;
     dictationMode = false;
     currentMode = 'quiz';
+    isReviewSession = false;
     showQuizMode();
 }
 
@@ -1037,17 +1038,23 @@ function resetMemoryGame() {
 }
 
 // ==================== CONFETTI ====================
-const confettiCanvas = document.getElementById('confetti-canvas');
-const confettiCtx = confettiCanvas.getContext('2d');
+let confettiCanvas = null;
+let confettiCtx = null;
 let confettiParticles = [];
 let confettiAnimationId = null;
 
-function resizeConfettiCanvas() {
-    confettiCanvas.width = window.innerWidth;
-    confettiCanvas.height = window.innerHeight;
+function initConfetti() {
+    confettiCanvas = document.getElementById('confetti-canvas');
+    if (confettiCanvas) {
+        confettiCtx = confettiCanvas.getContext('2d');
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+        window.addEventListener('resize', () => {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        });
+    }
 }
-window.addEventListener('resize', resizeConfettiCanvas);
-resizeConfettiCanvas();
 
 class ConfettiParticle {
     constructor() {
@@ -1070,6 +1077,7 @@ class ConfettiParticle {
     }
     
     draw() {
+        if (!confettiCtx) return;
         confettiCtx.save();
         confettiCtx.translate(this.x, this.y);
         confettiCtx.rotate(this.rotation * Math.PI / 180);
@@ -1095,6 +1103,7 @@ class ConfettiParticle {
 }
 
 function createConfetti(count = 100) {
+    if (!confettiCanvas || !confettiCtx) return;
     for (let i = 0; i < count; i++) {
         confettiParticles.push(new ConfettiParticle());
     }
@@ -1102,6 +1111,7 @@ function createConfetti(count = 100) {
 }
 
 function animateConfetti() {
+    if (!confettiCanvas || !confettiCtx) return;
     confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
     
     confettiParticles = confettiParticles.filter(p => p.y < confettiCanvas.height + 50);
@@ -1155,4 +1165,5 @@ function createStarBurst(x, y) {
 // ==================== DOMContentLoaded ====================
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('start-screen').style.display = 'block';
+    initConfetti();
 });
