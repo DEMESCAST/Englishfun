@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#00d4ff">
     <meta name="description" content="Aprenda Inglês brincando! Jogo educativo para crianças.">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -60,59 +60,105 @@
             font-weight: 600;
         }
         
-        /* Seleção de Dificuldade */
-        #difficulty-section {
+        /* Modos de Jogo */
+        #mode-section {
             margin-bottom: 35px;
         }
-        #difficulty-section h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
+        #mode-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
             color: #fff;
             text-transform: uppercase;
             letter-spacing: 2px;
+            font-weight: 700;
         }
-        .difficulty-buttons {
+        .mode-grid {
             display: flex;
+            flex-direction: column;
             gap: 15px;
-            justify-content: center;
+            max-width: 500px;
+            margin: 0 auto;
         }
-        .diff-btn {
-            padding: 14px 28px;
-            font-size: 15px;
+        .mode-btn {
+            padding: 20px 30px;
+            font-size: 20px;
             font-weight: bold;
-            border: 3px solid transparent;
-            border-radius: 12px;
+            border: none;
+            border-radius: 16px;
             cursor: pointer;
             transition: all 0.3s;
-            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
             color: white;
             text-transform: uppercase;
             letter-spacing: 1px;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
-        .diff-btn::before {
+        .mode-btn::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
+            transform: rotate(45deg);
             transition: 0.5s;
         }
-        .diff-btn:hover::before { left: 100%; }
-        .diff-btn:hover { 
-            transform: scale(1.08); 
-            border-color: #00d4ff;
-            box-shadow: 0 0 20px rgba(0,212,255,0.5);
+        .mode-btn:hover::after { left: 100%; }
+        .mode-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
         }
-        .diff-btn.selected {
-            background: linear-gradient(135deg, #00d4ff, #00ff88);
-            color: #1a1a2e;
-            border-color: #00ff88;
-            box-shadow: 0 0 25px rgba(0,255,136,0.6);
+        .mode-btn:active { transform: translateY(-2px) scale(1.01); }
+        .mode-btn span { font-size: 36px; }
+        .mode-learn { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .mode-quiz { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .mode-dictation { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #1a1a2e; }
+        .mode-memory { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #1a1a2e; }
+        .mode-review { background: linear-gradient(135deg, #fa709a, #fee140); color: #1a1a2e; }
+
+        /* Tela de Seleção de Categoria */
+        #category-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 10;
         }
+        #category-screen h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #00d4ff;
+            text-shadow: 0 0 15px rgba(0,212,255,0.5);
+        }
+        #category-screen h3 {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.7);
+        }
+        .back-mode-btn {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-mode-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.05); }
         
         /* Grid de Categorias */
         .category-grid {
@@ -839,11 +885,11 @@
             #start-screen h1 { font-size: 36px; }
             #start-screen h2 { font-size: 16px; }
             .logo-emoji { font-size: 50px; }
+            .mode-btn { padding: 16px 20px; font-size: 16px; }
+            .mode-btn span { font-size: 28px; }
             .category-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .category-btn { padding: 15px; font-size: 13px; }
             .category-btn span { font-size: 24px; }
-            .difficulty-buttons { flex-wrap: wrap; }
-            .diff-btn { padding: 12px 20px; font-size: 13px; }
             .game-card { padding: 20px; }
             #learn-emoji { font-size: 70px; }
             #learn-english { font-size: 32px; }
@@ -854,6 +900,7 @@
             #options-grid { gap: 8px; }
             .header-info { gap: 8px; }
             .score-box, .combo-box, .timer-box { padding: 6px 12px; font-size: 12px; }
+            #category-screen h2 { font-size: 22px; }
         }
     </style>
 </head>
@@ -878,58 +925,36 @@
                 <span class="logo-emoji">🎮</span>
                 <h1>ENGLISH FUN</h1>
             </div>
-            <h2>⚡ Aprenda Inglês brincando! ⚡</h2>
+            <h2>APRENDA INGLÊS BRINCANDO!</h2>
             
-            <div id="difficulty-section">
-                <h3>🎯 Escolha seu nível</h3>
-                <div class="difficulty-buttons">
-                    <button class="diff-btn" data-level="easy" onclick="setDifficulty('easy')">😊 FÁCIL</button>
-                    <button class="diff-btn selected" data-level="medium" onclick="setDifficulty('medium')">😎 MÉDIO</button>
-                    <button class="diff-btn" data-level="hard" onclick="setDifficulty('hard')">🤯 DIFÍCIL</button>
+            <div id="mode-section">
+                <h3>COMO VOCÊ QUER JOGAR?</h3>
+                <div class="mode-grid">
+                    <button class="mode-btn mode-learn" onclick="selectMode('learn')" aria-label="Modo Aprender">
+                        <span>📚</span> APRENDER
+                    </button>
+                    <button class="mode-btn mode-quiz" onclick="selectMode('quiz')" aria-label="Modo Quiz">
+                        <span>🎯</span> QUIZ
+                    </button>
+                    <button class="mode-btn mode-dictation" onclick="selectMode('dictation')" aria-label="Modo Ouvir e Escrever">
+                        <span>🔊</span> OUVIR E ESCREVER
+                    </button>
+                    <button class="mode-btn mode-memory" onclick="startMemoryGame()" aria-label="Jogo da Memória">
+                        <span>🧠</span> MEMÓRIA
+                    </button>
+                    <button class="mode-btn mode-review" onclick="selectMode('review')" aria-label="Revisar meus erros">
+                        <span>⭐</span> REVISAR MEUS ERROS
+                    </button>
                 </div>
             </div>
-            
-            <div class="category-grid">
-                <button class="category-btn cat-animals" onclick="startGame('animals')">
-                    <span>🐾</span> Animais
-                </button>
-                <button class="category-btn cat-food" onclick="startGame('food')">
-                    <span>🍎</span> Comidas
-                </button>
-                <button class="category-btn cat-colors" onclick="startGame('colors')">
-                    <span>🎨</span> Cores
-                </button>
-                <button class="category-btn cat-numbers" onclick="startGame('numbers')">
-                    <span>🔢</span> Números
-                </button>
-                <button class="category-btn cat-body" onclick="startGame('body')">
-                    <span>🦴</span> Corpo
-                </button>
-                <button class="category-btn cat-objects" onclick="startGame('objects')">
-                    <span>⚽</span> Objetos
-                </button>
-                <button class="category-btn cat-family" onclick="startGame('family')">
-                    <span>👨‍👩‍👧</span> Família
-                </button>
-                <button class="category-btn cat-clothes" onclick="startGame('clothes')">
-                    <span>👕</span> Roupas
-                </button>
-                <button class="category-btn cat-weather" onclick="startGame('weather')">
-                    <span>☀️</span> Clima
-                </button>
-                <button class="category-btn cat-actions" onclick="startGame('actions')">
-                    <span>🏃</span> Ações
-                </button>
-                <button class="category-btn cat-sentences" onclick="startGame('sentences')">
-                    <span>💬</span> Frases
-                </button>
-            </div>
-            
-            <div class="memory-game-section">
-                <button class="memory-btn" onclick="startMemoryGame()">
-                    <span>🧠</span> JOGO DA MEMÓRIA
-                </button>
-            </div>
+        </div>
+
+        <!-- Tela de Seleção de Categoria -->
+        <div id="category-screen">
+            <button class="back-mode-btn" onclick="goToModeSelect()" aria-label="Voltar aos modos de jogo">← Voltar</button>
+            <h2 id="category-title-mode"></h2>
+            <h3>Escolha uma categoria:</h3>
+            <div class="category-grid" id="category-grid-mode"></div>
         </div>
         
         <!-- Tela do Jogo -->

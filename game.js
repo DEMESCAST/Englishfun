@@ -1,5 +1,6 @@
 // Estado do jogo
 let currentCategory = null;
+let currentMode = null;
 let learnWords = [];
 let quizWords = [];
 let currentLearnIndex = 0;
@@ -15,6 +16,21 @@ let audioEnabled = true;
 let audioCtx = null;
 let achievements = [];
 let wordStats = {};
+
+// Categorias disponíveis
+const categoryData = {
+    animals:   { emoji: '🐾', name: 'Animais' },
+    food:      { emoji: '🍎', name: 'Comidas' },
+    colors:    { emoji: '🎨', name: 'Cores' },
+    numbers:   { emoji: '🔢', name: 'Números' },
+    body:      { emoji: '🦴', name: 'Corpo' },
+    objects:   { emoji: '⚽', name: 'Objetos' },
+    family:    { emoji: '👨‍👩‍👧', name: 'Família' },
+    clothes:   { emoji: '👕', name: 'Roupas' },
+    weather:   { emoji: '☀️', name: 'Clima' },
+    actions:   { emoji: '🏃', name: 'Ações' },
+    sentences: { emoji: '💬', name: 'Frases' }
+};
 
 // Configurações de dificuldade
 const difficultyConfig = {
@@ -487,11 +503,123 @@ function goToMenu() {
     stopTimer();
     if (memoryTimerInterval) clearInterval(memoryTimerInterval);
     dictationMode = false;
+    currentMode = null;
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'none';
     document.getElementById('answer-modal').style.display = 'none';
     document.getElementById('memory-screen').style.display = 'none';
+    document.getElementById('category-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
+}
+
+// ==================== SELEÇÃO DE MODO E CATEGORIA ====================
+function selectMode(mode) {
+    playSound('click');
+    initAudio();
+    currentMode = mode;
+    
+    document.getElementById('start-screen').style.display = 'none';
+    
+    const titles = {
+        learn: '📚 Aprender',
+        quiz: '🎯 Quiz',
+        dictation: '🔊 Ouvir e Escrever',
+        review: '⭐ Revisar Meus Erros'
+    };
+    
+    if (mode === 'review') {
+        startReviewMode();
+        return;
+    }
+    
+    document.getElementById('category-title-mode').textContent = titles[mode];
+    
+    const grid = document.getElementById('category-grid-mode');
+    grid.innerHTML = '';
+    
+    for (const [key, cat] of Object.entries(categoryData)) {
+        const btn = document.createElement('button');
+        btn.className = `category-btn cat-${key}`;
+        btn.setAttribute('aria-label', `Categoria ${cat.name}`);
+        btn.innerHTML = `<span>${cat.emoji}</span> ${cat.name}`;
+        btn.onclick = () => startModeWithCategory(key);
+        grid.appendChild(btn);
+    }
+    
+    document.getElementById('category-screen').style.display = 'block';
+}
+
+function goToModeSelect() {
+    playSound('click');
+    document.getElementById('category-screen').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
+}
+
+function startModeWithCategory(category) {
+    playSound('click');
+    currentCategory = category;
+    document.getElementById('category-screen').style.display = 'none';
+    
+    switch (currentMode) {
+        case 'learn':
+            startGame(category);
+            break;
+        case 'quiz':
+            dictationMode = false;
+            startGame(category);
+            break;
+        case 'dictation':
+            dictationMode = true;
+            startGame(category);
+            break;
+    }
+}
+
+function startReviewMode() {
+    loadWordStats();
+    
+    const allWords = [];
+    for (const [catKey, catData] of Object.entries(vocabulary)) {
+        catData.words.forEach(word => {
+            const key = `${catKey}_${word.english}`;
+            const stat = wordStats[key];
+            if (stat && stat.wrong > 0) {
+                allWords.push({ ...word, category: catKey, wrongCount: stat.wrong, correctCount: stat.correct });
+            }
+        });
+    }
+    
+    if (allWords.length === 0) {
+        alert('Nenhum erro registrado ainda! Jogue primeiro para poder revisar.');
+        document.getElementById('start-screen').style.display = 'block';
+        return;
+    }
+    
+    allWords.sort((a, b) => b.wrongCount - a.wrongCount);
+    const reviewWords = allWords.slice(0, Math.min(15, allWords.length));
+    
+    currentCategory = reviewWords[0].category;
+    learnWords = reviewWords;
+    quizWords = shuffle([...learnWords]);
+    
+    score = 0;
+    combo = 0;
+    maxCombo = 0;
+    correctAnswers = 0;
+    wrongAnswersList = [];
+    currentLearnIndex = 0;
+    currentQuizIndex = 0;
+    totalQuestions = reviewWords.length;
+    
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    document.getElementById('category-title').textContent = '⭐ Revisão de Erros';
+    document.getElementById('score').textContent = '0';
+    document.getElementById('combo').textContent = '0';
+    document.getElementById('current-num').textContent = '1';
+    document.getElementById('total-num').textContent = totalQuestions;
+    
+    showLearnMode();
 }
 
 function saveProgress() {
