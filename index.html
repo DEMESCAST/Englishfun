@@ -963,7 +963,7 @@
                 <button id="back-btn" onclick="goToMenu()">← Voltar</button>
                 <h2 id="category-title"></h2>
                 <div class="header-info">
-                    <div class="timer-box" id="timer-box">⏱️ <span id="timer">10</span></div>
+                    <div class="timer-box" id="timer-box" style="display: none;">⏱️ <span id="timer">10</span></div>
                     <div class="combo-box">🔥 <span id="combo">0</span>x</div>
                     <div class="score-box">⭐ <span id="score">0</span></div>
                 </div>
@@ -986,6 +986,21 @@
                     <button class="learn-btn small" id="back-learn-btn" onclick="previousLearnWord()">←</button>
                     <button class="learn-btn small" onclick="speakWord()">🔊</button>
                     <button class="learn-btn small" onclick="nextLearnWord()">→</button>
+                </div>
+            </div>
+            
+            <!-- Tela de Conclusão do Aprender -->
+            <div id="learn-complete-card" class="game-card" style="display: none; text-align: center; padding: 30px;">
+                <div style="font-size: 80px; margin-bottom: 15px;">🎉</div>
+                <h2 style="color: #333; margin-bottom: 10px;">VOCÊ TERMINOU ESTA CATEGORIA!</h2>
+                <p style="color: #666; margin-bottom: 25px;">Parabéns por estudar todas as palavras!</p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="learn-btn" onclick="startQuizFromLearn()" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                        🎯 FAZER QUIZ
+                    </button>
+                    <button class="learn-btn" onclick="goToMenu()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        🏠 VOLTAR AO MENU
+                    </button>
                 </div>
             </div>
             

@@ -10,7 +10,8 @@ let combo = 0;
 let maxCombo = 0;
 let correctAnswers = 0;
 let wrongAnswersList = [];
-let totalQuestions = 15;
+const DEFAULT_TOTAL_QUESTIONS = 15;
+let totalQuestions = DEFAULT_TOTAL_QUESTIONS;
 let difficulty = 'medium';
 let audioEnabled = true;
 let audioCtx = null;
@@ -172,6 +173,7 @@ function startGame(category) {
     currentQuizIndex = 0;
     
     const allWords = vocabulary[category].words;
+    totalQuestions = Math.min(DEFAULT_TOTAL_QUESTIONS, allWords.length);
     learnWords = getWordsForReview(allWords, totalQuestions);
     quizWords = shuffle([...learnWords]);
     
@@ -500,6 +502,8 @@ function playAgain() {
         startModeWithCategory(currentCategory);
     } else if (currentMode === 'dictation') {
         startModeWithCategory(currentCategory);
+    } else if (currentMode === 'review') {
+        startReviewMode();
     } else {
         startGame(currentCategory);
     }
@@ -516,6 +520,7 @@ function goToMenu() {
     document.getElementById('answer-modal').style.display = 'none';
     document.getElementById('memory-screen').style.display = 'none';
     document.getElementById('category-screen').style.display = 'none';
+    document.getElementById('learn-complete-card').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
 }
 
@@ -568,6 +573,7 @@ function startModeWithCategory(category) {
     document.getElementById('category-screen').style.display = 'none';
     
     const allWords = vocabulary[category].words;
+    totalQuestions = Math.min(DEFAULT_TOTAL_QUESTIONS, allWords.length);
     learnWords = getWordsForReview(allWords, totalQuestions);
     quizWords = shuffle([...learnWords]);
     
@@ -620,36 +626,21 @@ function showQuizMode() {
 
 function showLearnComplete() {
     document.getElementById('learn-card').style.display = 'none';
-    
-    const card = document.getElementById('learn-card');
-    card.innerHTML = `
-        <div style="text-align:center; padding: 20px;">
-            <div style="font-size: 80px; margin-bottom: 15px;">🎉</div>
-            <h2 style="color: #333; margin-bottom: 10px;">VOCÊ TERMINOU ESTA CATEGORIA!</h2>
-            <p style="color: #666; margin-bottom: 25px;">Parabéns por estudar todas as palavras!</p>
-            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                <button class="learn-btn" onclick="startQuizAfterLearn()" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                    🎯 FAZER QUIZ
-                </button>
-                <button class="learn-btn" onclick="goToMenu()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                    🏠 VOLTAR AO MENU
-                </button>
-            </div>
-        </div>
-    `;
-    card.style.display = 'block';
+    document.getElementById('learn-complete-card').style.display = 'block';
 }
 
-function startQuizAfterLearn() {
+function startQuizFromLearn() {
     playSound('click');
-    document.getElementById('learn-card').style.display = 'none';
+    document.getElementById('learn-complete-card').style.display = 'none';
     currentQuizIndex = 0;
     dictationMode = false;
+    currentMode = 'quiz';
     showQuizMode();
 }
 
 function startReviewMode() {
     loadWordStats();
+    currentMode = 'review';
     
     const allWords = [];
     for (const [catKey, catData] of Object.entries(vocabulary)) {
@@ -669,11 +660,12 @@ function startReviewMode() {
     }
     
     allWords.sort((a, b) => b.wrongCount - a.wrongCount);
-    const reviewWords = allWords.slice(0, Math.min(15, allWords.length));
+    const reviewWords = allWords.slice(0, Math.min(DEFAULT_TOTAL_QUESTIONS, allWords.length));
     
     currentCategory = 'review';
     learnWords = reviewWords;
     quizWords = shuffle([...learnWords]);
+    totalQuestions = reviewWords.length;
     
     score = 0;
     combo = 0;
@@ -682,7 +674,6 @@ function startReviewMode() {
     wrongAnswersList = [];
     currentLearnIndex = 0;
     currentQuizIndex = 0;
-    totalQuestions = reviewWords.length;
     
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
