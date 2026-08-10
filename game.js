@@ -248,7 +248,7 @@ function nextLearnWord() {
     currentLearnIndex++;
     
     if (currentLearnIndex >= learnWords.length) {
-        startQuiz();
+        showLearnComplete();
     } else {
         showLearnMode();
     }
@@ -495,7 +495,14 @@ function showResult() {
 function playAgain() {
     playSound('click');
     document.getElementById('result-screen').style.display = 'none';
-    startGame(currentCategory);
+    
+    if (currentMode === 'quiz') {
+        startModeWithCategory(currentCategory);
+    } else if (currentMode === 'dictation') {
+        startModeWithCategory(currentCategory);
+    } else {
+        startGame(currentCategory);
+    }
 }
 
 function goToMenu() {
@@ -560,19 +567,85 @@ function startModeWithCategory(category) {
     currentCategory = category;
     document.getElementById('category-screen').style.display = 'none';
     
+    const allWords = vocabulary[category].words;
+    learnWords = getWordsForReview(allWords, totalQuestions);
+    quizWords = shuffle([...learnWords]);
+    
+    score = 0;
+    combo = 0;
+    maxCombo = 0;
+    correctAnswers = 0;
+    wrongAnswersList = [];
+    currentLearnIndex = 0;
+    currentQuizIndex = 0;
+    
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    document.getElementById('category-title').textContent = vocabulary[category].title;
+    document.getElementById('score').textContent = '0';
+    document.getElementById('combo').textContent = '0';
+    document.getElementById('current-num').textContent = '1';
+    document.getElementById('total-num').textContent = totalQuestions;
+    
     switch (currentMode) {
         case 'learn':
-            startGame(category);
+            showLearnMode();
             break;
         case 'quiz':
             dictationMode = false;
-            startGame(category);
+            showQuizMode();
             break;
         case 'dictation':
             dictationMode = true;
-            startGame(category);
+            showQuizMode();
             break;
     }
+}
+
+function showQuizMode() {
+    document.getElementById('learn-card').style.display = 'none';
+    document.getElementById('quiz-card').style.display = 'none';
+    document.getElementById('dictation-card').style.display = 'none';
+    
+    if (dictationMode) {
+        document.getElementById('dictation-card').style.display = 'block';
+        document.getElementById('dictation-input').removeEventListener('keypress', handleDictationKeyPress);
+        document.getElementById('dictation-input').addEventListener('keypress', handleDictationKeyPress);
+        showDictationQuestion();
+    } else {
+        document.getElementById('quiz-card').style.display = 'block';
+        showQuizQuestion();
+    }
+}
+
+function showLearnComplete() {
+    document.getElementById('learn-card').style.display = 'none';
+    
+    const card = document.getElementById('learn-card');
+    card.innerHTML = `
+        <div style="text-align:center; padding: 20px;">
+            <div style="font-size: 80px; margin-bottom: 15px;">🎉</div>
+            <h2 style="color: #333; margin-bottom: 10px;">VOCÊ TERMINOU ESTA CATEGORIA!</h2>
+            <p style="color: #666; margin-bottom: 25px;">Parabéns por estudar todas as palavras!</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="learn-btn" onclick="startQuizAfterLearn()" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    🎯 FAZER QUIZ
+                </button>
+                <button class="learn-btn" onclick="goToMenu()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    🏠 VOLTAR AO MENU
+                </button>
+            </div>
+        </div>
+    `;
+    card.style.display = 'block';
+}
+
+function startQuizAfterLearn() {
+    playSound('click');
+    document.getElementById('learn-card').style.display = 'none';
+    currentQuizIndex = 0;
+    dictationMode = false;
+    showQuizMode();
 }
 
 function startReviewMode() {
@@ -584,7 +657,7 @@ function startReviewMode() {
             const key = `${catKey}_${word.english}`;
             const stat = wordStats[key];
             if (stat && stat.wrong > 0) {
-                allWords.push({ ...word, category: catKey, wrongCount: stat.wrong, correctCount: stat.correct });
+                allWords.push({ ...word, originalCategory: catKey, wrongCount: stat.wrong, correctCount: stat.correct });
             }
         });
     }
@@ -598,7 +671,7 @@ function startReviewMode() {
     allWords.sort((a, b) => b.wrongCount - a.wrongCount);
     const reviewWords = allWords.slice(0, Math.min(15, allWords.length));
     
-    currentCategory = reviewWords[0].category;
+    currentCategory = 'review';
     learnWords = reviewWords;
     quizWords = shuffle([...learnWords]);
     
@@ -691,7 +764,8 @@ function saveWordStats() {
 }
 
 function updateWordStat(word, isCorrect) {
-    const key = `${currentCategory}_${word.english}`;
+    const wordCategory = word.originalCategory || currentCategory;
+    const key = `${wordCategory}_${word.english}`;
     if (!wordStats[key]) {
         wordStats[key] = { correct: 0, wrong: 0, lastSeen: 0, streak: 0 };
     }
@@ -711,7 +785,8 @@ function updateWordStat(word, isCorrect) {
 }
 
 function getWordPriority(word) {
-    const key = `${currentCategory}_${word.english}`;
+    const wordCategory = word.originalCategory || currentCategory;
+    const key = `${wordCategory}_${word.english}`;
     const stat = wordStats[key];
     
     if (!stat) return 10;

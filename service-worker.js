@@ -1,10 +1,10 @@
-const CACHE_NAME = 'english-fun-v1';
+const CACHE_NAME = 'english-fun-v3';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/game.js',
-    '/vocab.js',
-    '/manifest.json'
+    './',
+    './index.html',
+    './game.js',
+    './vocab.js',
+    './manifest.json'
 ];
 
 self.addEventListener('install', event => {

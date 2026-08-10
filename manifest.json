@@ -2,7 +2,7 @@
     "name": "English Fun - Aprenda Inglês",
     "short_name": "English Fun",
     "description": "Aprenda Inglês brincando! Jogo educativo para crianças.",
-    "start_url": "/",
+    "start_url": "./",
     "display": "standalone",
     "background_color": "#1a1a2e",
     "theme_color": "#00d4ff",
