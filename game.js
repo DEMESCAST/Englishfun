@@ -199,6 +199,15 @@ function showLearnMode() {
         document.getElementById('learn-sentence').style.background = '#f5f5f5';
     }
     
+    // Mostrar tradução da frase
+    const sentenceTranslationEl = document.getElementById('learn-sentence-translation');
+    if (word.sentenceTranslation) {
+        sentenceTranslationEl.textContent = word.sentenceTranslation;
+        sentenceTranslationEl.style.display = 'block';
+    } else {
+        sentenceTranslationEl.style.display = 'none';
+    }
+    
     // Mostrar/esconder botão voltar
     const backBtn = document.getElementById('back-learn-btn');
     if (currentLearnIndex === 0) {
