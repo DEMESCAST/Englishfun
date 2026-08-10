@@ -695,6 +695,146 @@ function handleDictationKeyPress(e) {
     }
 }
 
+// ==================== MEMORY GAME ====================
+let memoryCategory = null;
+let memoryCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let memoryMoves = 0;
+let memoryScore = 0;
+let memoryTimer = 0;
+let memoryTimerInterval = null;
+let canFlip = true;
+
+function startMemoryGame() {
+    playSound('click');
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('memory-screen').style.display = 'block';
+    document.getElementById('memory-category-select').style.display = 'grid';
+    document.getElementById('memory-game-board').style.display = 'none';
+}
+
+function startMemoryWithCategory(category) {
+    playSound('click');
+    memoryCategory = category;
+    matchedPairs = 0;
+    memoryMoves = 0;
+    memoryScore = 0;
+    memoryTimer = 0;
+    flippedCards = [];
+    canFlip = true;
+    
+    document.getElementById('memory-score').textContent = '0';
+    document.getElementById('memory-moves').textContent = '0';
+    document.getElementById('memory-pairs').textContent = '0';
+    document.getElementById('memory-time').textContent = '0';
+    
+    // Pegar 8 palavras aleatórias
+    const allWords = vocabulary[category].words;
+    const selectedWords = shuffle([...allWords]).slice(0, 8);
+    
+    // Criar pares (emoji + palavra)
+    memoryCards = [];
+    selectedWords.forEach(word => {
+        memoryCards.push({ id: word.english, type: 'emoji', content: word.emoji, word: word });
+        memoryCards.push({ id: word.english, type: 'word', content: word.english, word: word });
+    });
+    
+    memoryCards = shuffle(memoryCards);
+    
+    renderMemoryGrid();
+    
+    document.getElementById('memory-category-select').style.display = 'none';
+    document.getElementById('memory-game-board').style.display = 'block';
+    
+    // Iniciar timer
+    if (memoryTimerInterval) clearInterval(memoryTimerInterval);
+    memoryTimerInterval = setInterval(() => {
+        memoryTimer++;
+        document.getElementById('memory-time').textContent = memoryTimer;
+    }, 1000);
+}
+
+function renderMemoryGrid() {
+    const grid = document.getElementById('memory-grid');
+    grid.innerHTML = memoryCards.map((card, index) => `
+        <div class="memory-card" data-index="${index}" onclick="flipCard(${index})">
+            <div class="memory-card-inner">
+                <div class="memory-card-front">❓</div>
+                <div class="memory-card-back">
+                    <span class="card-emoji">${card.type === 'emoji' ? card.content : ''}</span>
+                    <span class="card-word">${card.type === 'word' ? card.content : ''}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function flipCard(index) {
+    if (!canFlip) return;
+    
+    const card = document.querySelector(`.memory-card[data-index="${index}"]`);
+    if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+    
+    playSound('click');
+    card.classList.add('flipped');
+    flippedCards.push({ index, card, data: memoryCards[index] });
+    
+    if (flippedCards.length === 2) {
+        canFlip = false;
+        memoryMoves++;
+        document.getElementById('memory-moves').textContent = memoryMoves;
+        
+        const [first, second] = flippedCards;
+        
+        if (first.data.id === second.data.id) {
+            // Par encontrado!
+            setTimeout(() => {
+                first.card.classList.add('matched');
+                second.card.classList.add('matched');
+                matchedPairs++;
+                memoryScore += 50;
+                document.getElementById('memory-pairs').textContent = matchedPairs;
+                document.getElementById('memory-score').textContent = memoryScore;
+                playSound('correct');
+                celebrateCorrect();
+                flippedCards = [];
+                canFlip = true;
+                
+                if (matchedPairs === 8) {
+                    // Vitória!
+                    setTimeout(() => {
+                        clearInterval(memoryTimerInterval);
+                        playSound('combo');
+                        celebratePerfect();
+                        showFeedback('🎉 Parabéns! Você completou o jogo da memória!', '#38ef7d');
+                        
+                        // Bonus por tempo
+                        if (memoryTimer < 30) memoryScore += 100;
+                        else if (memoryTimer < 60) memoryScore += 50;
+                        document.getElementById('memory-score').textContent = memoryScore;
+                    }, 500);
+                }
+            }, 500);
+        } else {
+            // Não combina
+            setTimeout(() => {
+                first.card.classList.remove('flipped');
+                second.card.classList.remove('flipped');
+                flippedCards = [];
+                canFlip = true;
+            }, 1000);
+        }
+    }
+}
+
+function resetMemoryGame() {
+    playSound('click');
+    if (memoryTimerInterval) clearInterval(memoryTimerInterval);
+    document.getElementById('memory-category-select').style.display = 'grid';
+    document.getElementById('memory-game-board').style.display = 'none';
+}
+
 // ==================== CONFETTI ====================
 const confettiCanvas = document.getElementById('confetti-canvas');
 const confettiCtx = confettiCanvas.getContext('2d');

@@ -381,6 +381,123 @@
             font-style: normal;
         }
         
+        /* Jogo da Memória */
+        .memory-game-section {
+            margin-top: 30px;
+        }
+        .memory-btn {
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(240,147,251,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+        .memory-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(240,147,251,0.5);
+        }
+        .memory-btn span { font-size: 28px; }
+        
+        #memory-screen {
+            display: none;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 15px;
+        }
+        #memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #memory-header h2 { font-size: 24px; }
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        .memory-card {
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .memory-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        .memory-card.flipped .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+        .memory-card-front, .memory-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .memory-card-front {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 40px;
+        }
+        .memory-card-back {
+            background: white;
+            transform: rotateY(180deg);
+            padding: 10px;
+        }
+        .memory-card-back .card-emoji { font-size: 35px; margin-bottom: 5px; }
+        .memory-card-back .card-word { font-size: 14px; font-weight: bold; color: #333; }
+        .memory-card.matched .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+        .memory-card.matched .memory-card-back {
+            background: linear-gradient(135deg, #38ef7d, #11998e);
+            color: white;
+        }
+        .memory-stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .memory-stat {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .memory-category-select {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        
         /* Modo Quiz */
         #quiz-card { display: none; }
         #quiz-emoji {
@@ -807,6 +924,12 @@
                     <span>💬</span> Frases
                 </button>
             </div>
+            
+            <div class="memory-game-section">
+                <button class="memory-btn" onclick="startMemoryGame()">
+                    <span>🧠</span> JOGO DA MEMÓRIA
+                </button>
+            </div>
         </div>
         
         <!-- Tela do Jogo -->
@@ -861,6 +984,51 @@
                     <button class="dictation-submit" onclick="checkDictation()">✓</button>
                 </div>
                 <button class="learn-btn" onclick="speakWord()" style="margin-top: 15px;">🔊 Ouvir novamente</button>
+            </div>
+        </div>
+        
+        <!-- Tela do Jogo da Memória -->
+        <div id="memory-screen">
+            <div id="memory-header">
+                <button id="back-btn" onclick="goToMenu()">← Voltar</button>
+                <h2>🧠 Jogo da Memória</h2>
+                <div class="header-info">
+                    <div class="score-box">⭐ <span id="memory-score">0</span></div>
+                </div>
+            </div>
+            
+            <!-- Seleção de Categoria -->
+            <div id="memory-category-select">
+                <h3 style="color: white; grid-column: 1/-1; margin-bottom: 10px;">Escolha uma categoria:</h3>
+                <button class="category-btn cat-animals" onclick="startMemoryWithCategory('animals')">
+                    <span>🐾</span> Animais
+                </button>
+                <button class="category-btn cat-food" onclick="startMemoryWithCategory('food')">
+                    <span>🍎</span> Comidas
+                </button>
+                <button class="category-btn cat-colors" onclick="startMemoryWithCategory('colors')">
+                    <span>🎨</span> Cores
+                </button>
+                <button class="category-btn cat-numbers" onclick="startMemoryWithCategory('numbers')">
+                    <span>🔢</span> Números
+                </button>
+                <button class="category-btn cat-body" onclick="startMemoryWithCategory('body')">
+                    <span>🦴</span> Corpo
+                </button>
+                <button class="category-btn cat-objects" onclick="startMemoryWithCategory('objects')">
+                    <span>⚽</span> Objetos
+                </button>
+            </div>
+            
+            <!-- Tabuleiro do Jogo -->
+            <div id="memory-game-board" style="display: none;">
+                <div class="memory-stats">
+                    <div class="memory-stat">🎯 Movimentos: <span id="memory-moves">0</span></div>
+                    <div class="memory-stat">✅ Pares: <span id="memory-pairs">0</span>/8</div>
+                    <div class="memory-stat">⏱️ Tempo: <span id="memory-time">0</span>s</div>
+                </div>
+                <div class="memory-grid" id="memory-grid"></div>
+                <button class="learn-btn" onclick="resetMemoryGame()">🔄 Jogar Novamente</button>
             </div>
         </div>
         
