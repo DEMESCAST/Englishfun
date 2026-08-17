@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="theme-color" content="#00d4ff">
     <meta name="description" content="Aprenda Inglês brincando! Jogo educativo para crianças.">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -58,6 +58,8 @@
             color: #00ff88;
             text-shadow: 0 0 10px #00ff88;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         
         /* Modos de Jogo */
@@ -71,6 +73,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         .mode-grid {
             display: flex;
@@ -80,23 +83,24 @@
             margin: 0 auto;
         }
         .mode-btn {
-            padding: 20px 30px;
-            font-size: 20px;
+            padding: 24px 35px;
+            font-size: 22px;
             font-weight: bold;
             border: none;
-            border-radius: 16px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 18px;
             justify-content: center;
             color: white;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            min-height: 80px;
         }
         .mode-btn::after {
             content: '';
@@ -105,22 +109,54 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
             transform: rotate(45deg);
             transition: 0.5s;
         }
         .mode-btn:hover::after { left: 100%; }
         .mode-btn:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         }
-        .mode-btn:active { transform: translateY(-2px) scale(1.01); }
-        .mode-btn span { font-size: 36px; }
-        .mode-learn { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .mode-quiz { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .mode-dictation { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #1a1a2e; }
-        .mode-memory { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #1a1a2e; }
-        .mode-review { background: linear-gradient(135deg, #fa709a, #fee140); color: #1a1a2e; }
+        .mode-btn:active { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .mode-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 4px;
+        }
+        .mode-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .mode-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 4px;
+        }
+        .mode-btn span { font-size: 42px; }
+        .mode-learn { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+        .mode-quiz { 
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.5);
+        }
+        .mode-dictation { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
+            color: #1a1a2e;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.5);
+        }
+        .mode-memory { 
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
+            color: #1a1a2e;
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.5);
+        }
+        .mode-review { 
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); 
+            color: #1a1a2e;
+            box-shadow: 0 10px 30px rgba(250, 112, 154, 0.5);
+        }
 
         /* Tela de Seleção de Categoria */
         #category-screen {
@@ -159,6 +195,17 @@
             gap: 8px;
         }
         .back-mode-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.05); }
+        .back-mode-btn:focus {
+            outline: 3px solid #00d4ff;
+            outline-offset: 2px;
+        }
+        .back-mode-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .back-mode-btn:focus-visible {
+            outline: 3px solid #00d4ff;
+            outline-offset: 2px;
+        }
         
         /* Grid de Categorias */
         .category-grid {
@@ -203,6 +250,17 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.5);
         }
         .category-btn:active { transform: translateY(-3px) scale(1.02); }
+        .category-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
+        .category-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .category-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
         .category-btn span { font-size: 32px; }
         .cat-animals { background: linear-gradient(135deg, #00b09b, #96c93d); color: white; }
         .cat-food { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
@@ -312,6 +370,17 @@
             transition: all 0.3s;
         }
         #back-btn:hover { background: rgba(255,255,255,0.4); }
+        #back-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
+        #back-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        #back-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
         
         /* Contador e Barra */
         #word-counter {
@@ -370,6 +439,17 @@
             box-shadow: 0 4px 15px rgba(102,126,234,0.4);
         }
         .learn-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.5); }
+        .learn-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
+        .learn-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .learn-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
         .learn-btn.small {
             padding: 10px 15px;
             font-size: 20px;
@@ -481,6 +561,17 @@
             aspect-ratio: 1;
             perspective: 1000px;
             cursor: pointer;
+        }
+        .memory-card:focus {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
+        .memory-card:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .memory-card:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
         }
         .memory-card-inner {
             position: relative;
@@ -596,6 +687,17 @@
             border-color: #667eea;
         }
         .option-btn:disabled { cursor: not-allowed; opacity: 0.8; }
+        .option-btn:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+        .option-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .option-btn:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
         .option-btn.correct {
             background: linear-gradient(135deg, #11998e, #38ef7d);
             color: white;
@@ -714,6 +816,17 @@
             transition: all 0.3s;
         }
         #modal-continue:hover { transform: scale(1.05); }
+        #modal-continue:focus {
+            outline: 3px solid #333;
+            outline-offset: 2px;
+        }
+        #modal-continue:focus:not(:focus-visible) {
+            outline: none;
+        }
+        #modal-continue:focus-visible {
+            outline: 3px solid #333;
+            outline-offset: 2px;
+        }
         
         /* Tela de Resultado */
         #result-screen {
@@ -757,6 +870,17 @@
             transition: all 0.3s;
         }
         .result-btn:hover { transform: scale(1.05); }
+        .result-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
+        .result-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .result-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
         #play-again-btn { background: #38ef7d; color: #333; }
         #menu-btn { background: rgba(255,255,255,0.3); color: white; }
         
@@ -806,6 +930,17 @@
             z-index: 200;
         }
         #audio-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+        #audio-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
+        #audio-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+        #audio-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
         
         /* Confetti Canvas */
         #confetti-canvas {
@@ -865,7 +1000,10 @@
             outline: none;
             transition: border-color 0.3s;
         }
-        #dictation-input:focus { border-color: #667eea; }
+        #dictation-input:focus { 
+            border-color: #667eea; 
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
         #dictation-input.correct { border-color: #38ef7d; background: #e8ffe8; }
         #dictation-input.wrong { border-color: #f45c43; background: #ffe8e8; }
         .dictation-submit {
@@ -879,33 +1017,68 @@
             transition: transform 0.2s;
         }
         .dictation-submit:hover { transform: scale(1.05); }
+        .dictation-submit:focus {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
+        .dictation-submit:focus:not(:focus-visible) {
+            outline: none;
+        }
+        .dictation-submit:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
         
-        /* Responsivo */
+        /* Responsivo - Tablet */
+        @media (min-width: 601px) and (max-width: 1024px) {
+            #start-screen h1 { font-size: 56px; }
+            .logo-emoji { font-size: 65px; }
+            .mode-btn { padding: 22px 30px; font-size: 20px; min-height: 75px; }
+            .mode-btn span { font-size: 40px; }
+            .mode-grid { max-width: 550px; }
+            .category-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+            .category-btn { padding: 20px; font-size: 15px; }
+            .category-btn span { font-size: 30px; }
+        }
+
+        /* Responsivo - Celular */
         @media (max-width: 600px) {
-            #start-screen h1 { font-size: 36px; }
-            #start-screen h2 { font-size: 16px; }
-            .logo-emoji { font-size: 50px; }
-            .mode-btn { padding: 16px 20px; font-size: 16px; }
-            .mode-btn span { font-size: 28px; }
-            .category-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .category-btn { padding: 15px; font-size: 13px; }
-            .category-btn span { font-size: 24px; }
-            .game-card { padding: 20px; }
-            #learn-emoji { font-size: 70px; }
-            #learn-english { font-size: 32px; }
-            #learn-portuguese { font-size: 22px; }
-            #quiz-emoji { font-size: 60px; }
-            #quiz-word { font-size: 20px; }
-            .option-btn { padding: 14px; font-size: 16px; }
+            #start-screen h1 { font-size: 32px; }
+            #start-screen h2 { font-size: 14px; }
+            .logo-emoji { font-size: 45px; }
+            .logo-container { gap: 10px; }
+            #mode-section h3 { font-size: 16px; letter-spacing: 1px; }
+            .mode-btn { 
+                padding: 18px 20px; 
+                font-size: 16px; 
+                min-height: 70px;
+                gap: 12px;
+                border-radius: 16px;
+            }
+            .mode-btn span { font-size: 30px; }
+            .mode-grid { gap: 12px; max-width: 100%; }
+            .category-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .category-btn { padding: 14px 10px; font-size: 12px; }
+            .category-btn span { font-size: 22px; }
+            .game-card { padding: 18px; }
+            #learn-emoji { font-size: 60px; }
+            #learn-english { font-size: 28px; }
+            #learn-portuguese { font-size: 20px; }
+            #quiz-emoji { font-size: 50px; }
+            #quiz-word { font-size: 18px; }
+            .option-btn { padding: 12px; font-size: 14px; }
             #options-grid { gap: 8px; }
-            .header-info { gap: 8px; }
-            .score-box, .combo-box, .timer-box { padding: 6px 12px; font-size: 12px; }
-            #category-screen h2 { font-size: 22px; }
+            .header-info { gap: 6px; }
+            .score-box, .combo-box, .timer-box { padding: 5px 10px; font-size: 11px; }
+            #category-screen h2 { font-size: 20px; }
+            .memory-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .memory-card-back .card-emoji { font-size: 28px; }
+            .memory-card-back .card-word { font-size: 11px; }
         }
     </style>
 </head>
 <body>
-    <button id="audio-btn" onclick="toggleAudio()">🔊</button>
+    <button id="audio-btn" onclick="toggleAudio()" aria-label="Alternar áudio">🔊</button>
     
     <!-- Background Animations -->
     <div class="floating-blocks">
@@ -960,7 +1133,7 @@
         <!-- Tela do Jogo -->
         <div id="game-screen">
             <div id="game-header">
-                <button id="back-btn" onclick="goToMenu()">← Voltar</button>
+                <button id="back-btn" onclick="goToMenu()" aria-label="Voltar ao menu">← Voltar</button>
                 <h2 id="category-title"></h2>
                 <div class="header-info">
                     <div class="timer-box" id="timer-box" style="display: none;">⏱️ <span id="timer">10</span></div>
@@ -983,9 +1156,9 @@
                 <div id="learn-sentence"></div>
                 <div id="learn-sentence-translation"></div>
                 <div class="learn-controls">
-                    <button class="learn-btn small" id="back-learn-btn" onclick="previousLearnWord()">←</button>
-                    <button class="learn-btn small" onclick="speakWord()">🔊</button>
-                    <button class="learn-btn small" onclick="nextLearnWord()">→</button>
+                    <button class="learn-btn small" id="back-learn-btn" onclick="previousLearnWord()" aria-label="Palavra anterior">←</button>
+                    <button class="learn-btn small" onclick="speakWord()" aria-label="Ouvir pronúncia">🔊</button>
+                    <button class="learn-btn small" onclick="nextLearnWord()" aria-label="Próxima palavra">→</button>
                 </div>
             </div>
             
@@ -995,10 +1168,10 @@
                 <h2 style="color: #333; margin-bottom: 10px;">VOCÊ TERMINOU ESTA CATEGORIA!</h2>
                 <p style="color: #666; margin-bottom: 25px;">Parabéns por estudar todas as palavras!</p>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <button class="learn-btn" onclick="startQuizFromLearn()" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <button class="learn-btn" onclick="startQuizFromLearn()" style="background: linear-gradient(135deg, #f093fb, #f5576c);" aria-label="Iniciar quiz após aprender">
                         🎯 FAZER QUIZ
                     </button>
-                    <button class="learn-btn" onclick="goToMenu()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <button class="learn-btn" onclick="goToMenu()" style="background: linear-gradient(135deg, #667eea, #764ba2);" aria-label="Voltar ao menu principal">
                         🏠 VOLTAR AO MENU
                     </button>
                 </div>
@@ -1021,16 +1194,16 @@
                 <div id="dictation-hint"></div>
                 <div class="dictation-input-container">
                     <input type="text" id="dictation-input" placeholder="Digite a palavra..." autocomplete="off" spellcheck="false">
-                    <button class="dictation-submit" onclick="checkDictation()">✓</button>
+                    <button class="dictation-submit" onclick="checkDictation()" aria-label="Verificar resposta">✓</button>
                 </div>
-                <button class="learn-btn" onclick="speakWord()" style="margin-top: 15px;">🔊 Ouvir novamente</button>
+                <button class="learn-btn" onclick="speakWord()" style="margin-top: 15px;" aria-label="Ouvir palavra novamente">🔊 Ouvir novamente</button>
             </div>
         </div>
         
         <!-- Tela do Jogo da Memória -->
         <div id="memory-screen">
             <div id="memory-header">
-                <button id="memory-back-btn" onclick="goToMenu()">← Voltar</button>
+                <button id="memory-back-btn" onclick="goToMenu()" aria-label="Voltar ao menu">← Voltar</button>
                 <h2>🧠 Jogo da Memória</h2>
                 <div class="header-info">
                     <div class="score-box">⭐ <span id="memory-score">0</span></div>
@@ -1040,22 +1213,22 @@
             <!-- Seleção de Categoria -->
             <div id="memory-category-select">
                 <h3 style="color: white; grid-column: 1/-1; margin-bottom: 10px;">Escolha uma categoria:</h3>
-                <button class="category-btn cat-animals" onclick="startMemoryWithCategory('animals')">
+                <button class="category-btn cat-animals" onclick="startMemoryWithCategory('animals')" aria-label="Categoria Animais">
                     <span>🐾</span> Animais
                 </button>
-                <button class="category-btn cat-food" onclick="startMemoryWithCategory('food')">
+                <button class="category-btn cat-food" onclick="startMemoryWithCategory('food')" aria-label="Categoria Comidas">
                     <span>🍎</span> Comidas
                 </button>
-                <button class="category-btn cat-colors" onclick="startMemoryWithCategory('colors')">
+                <button class="category-btn cat-colors" onclick="startMemoryWithCategory('colors')" aria-label="Categoria Cores">
                     <span>🎨</span> Cores
                 </button>
-                <button class="category-btn cat-numbers" onclick="startMemoryWithCategory('numbers')">
+                <button class="category-btn cat-numbers" onclick="startMemoryWithCategory('numbers')" aria-label="Categoria Números">
                     <span>🔢</span> Números
                 </button>
-                <button class="category-btn cat-body" onclick="startMemoryWithCategory('body')">
+                <button class="category-btn cat-body" onclick="startMemoryWithCategory('body')" aria-label="Categoria Corpo">
                     <span>🦴</span> Corpo
                 </button>
-                <button class="category-btn cat-objects" onclick="startMemoryWithCategory('objects')">
+                <button class="category-btn cat-objects" onclick="startMemoryWithCategory('objects')" aria-label="Categoria Objetos">
                     <span>⚽</span> Objetos
                 </button>
             </div>
@@ -1068,7 +1241,7 @@
                     <div class="memory-stat">⏱️ Tempo: <span id="memory-time">0</span>s</div>
                 </div>
                 <div class="memory-grid" id="memory-grid"></div>
-                <button class="learn-btn" onclick="resetMemoryGame()">🔄 Jogar Novamente</button>
+                <button class="learn-btn" onclick="resetMemoryGame()" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
             </div>
         </div>
         
@@ -1083,8 +1256,8 @@
                 <h3>📚 Reveja seus erros:</h3>
                 <div id="wrong-list"></div>
             </div>
-            <button class="result-btn" id="play-again-btn" onclick="playAgain()">Jogar Novamente</button>
-            <button class="result-btn" id="menu-btn" onclick="goToMenu()">Menu</button>
+            <button class="result-btn" id="play-again-btn" onclick="playAgain()" aria-label="Jogar novamente">Jogar Novamente</button>
+            <button class="result-btn" id="menu-btn" onclick="goToMenu()" aria-label="Voltar ao menu">Menu</button>
         </div>
         
         <!-- Feedback -->
@@ -1101,7 +1274,7 @@
                 <div id="modal-word"></div>
                 <div id="modal-translation"></div>
                 <div id="modal-sentence"></div>
-                <button id="modal-continue" onclick="closeModal()">Continuar</button>
+                <button id="modal-continue" onclick="closeModal()" aria-label="Continuar para próxima pergunta">Continuar</button>
             </div>
         </div>
     </div>
@@ -1112,6 +1285,7 @@
     <script src="vocab.js"></script>
     <script src="game.js"></script>
     <script>
+        // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
@@ -1119,6 +1293,43 @@
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
         }
+
+        // Navegação por teclado no menu principal
+        document.addEventListener('DOMContentLoaded', () => {
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            let currentFocusIndex = 0;
+
+            function updateFocus() {
+                modeButtons.forEach((btn, i) => {
+                    if (i === currentFocusIndex) {
+                        btn.focus();
+                        btn.style.transform = 'translateY(-8px) scale(1.05)';
+                        btn.style.boxShadow = '0 20px 50px rgba(0,0,0,0.6), 0 0 0 3px rgba(255,255,255,0.5)';
+                    } else {
+                        btn.style.transform = '';
+                        btn.style.boxShadow = '';
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                const startScreen = document.getElementById('start-screen');
+                if (!startScreen || startScreen.style.display === 'none') return;
+
+                if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    currentFocusIndex = (currentFocusIndex + 1) % modeButtons.length;
+                    updateFocus();
+                } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    currentFocusIndex = (currentFocusIndex - 1 + modeButtons.length) % modeButtons.length;
+                    updateFocus();
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    modeButtons[currentFocusIndex].click();
+                }
+            });
+        });
     </script>
 </body>
 </html>
