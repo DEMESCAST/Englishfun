@@ -21,7 +21,7 @@
         #game-container {
             width: 100vw;
             min-height: 100vh;
-            background: #080c24;
+            background: #060d1f;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -35,7 +35,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(ellipse at 50% 40%, rgba(10, 40, 100, 0.4) 0%, rgba(10, 40, 100, 0.1) 40%, transparent 70%);
+            background: radial-gradient(ellipse at 50% 35%, rgba(0, 50, 150, 0.25) 0%, transparent 60%);
             pointer-events: none;
             z-index: 0;
         }
@@ -43,7 +43,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(ellipse at 50% 100%, rgba(0, 80, 200, 0.12) 0%, transparent 50%);
+            background: radial-gradient(circle at 50% 95%, rgba(0, 100, 255, 0.15) 0%, transparent 35%);
             pointer-events: none;
             z-index: 0;
         }
@@ -59,30 +59,46 @@
         }
         .neon-arc {
             position: absolute;
-            border: 2px solid rgba(0, 120, 255, 0.25);
             border-radius: 50%;
             pointer-events: none;
         }
         .neon-arc-1 {
-            width: 600px; height: 600px;
-            bottom: -300px; left: -200px;
-            border-color: rgba(0, 120, 255, 0.2);
+            width: 900px; height: 900px;
+            bottom: -500px; left: -350px;
+            border: 2px solid rgba(0, 140, 255, 0.25);
+            box-shadow: 0 0 15px rgba(0, 140, 255, 0.15), inset 0 0 15px rgba(0, 140, 255, 0.1);
         }
         .neon-arc-2 {
-            width: 500px; height: 500px;
-            bottom: -250px; left: -150px;
-            border-color: rgba(0, 120, 255, 0.12);
+            width: 750px; height: 750px;
+            bottom: -420px; left: -280px;
+            border: 1.5px solid rgba(0, 140, 255, 0.15);
+            box-shadow: 0 0 10px rgba(0, 140, 255, 0.1);
         }
         .neon-arc-3 {
-            width: 600px; height: 600px;
-            bottom: -300px; right: -200px;
-            border-color: rgba(0, 120, 255, 0.2);
+            width: 900px; height: 900px;
+            bottom: -500px; right: -350px;
+            border: 2px solid rgba(0, 140, 255, 0.25);
+            box-shadow: 0 0 15px rgba(0, 140, 255, 0.15), inset 0 0 15px rgba(0, 140, 255, 0.1);
         }
         .neon-arc-4 {
-            width: 500px; height: 500px;
-            bottom: -250px; right: -150px;
-            border-color: rgba(0, 120, 255, 0.12);
+            width: 750px; height: 750px;
+            bottom: -420px; right: -280px;
+            border: 1.5px solid rgba(0, 140, 255, 0.15);
+            box-shadow: 0 0 10px rgba(0, 140, 255, 0.1);
         }
+        /* Anéis concêntricos inferiores */
+        .neon-ring {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 1.5px solid rgba(0, 140, 255, 0.12);
+        }
+        .neon-ring-1 { width: 300px; height: 300px; }
+        .neon-ring-2 { width: 450px; height: 450px; border-color: rgba(0, 140, 255, 0.08); }
+        .neon-ring-3 { width: 600px; height: 600px; border-color: rgba(0, 140, 255, 0.05); }
 
         /* Tela Inicial */
         #start-screen {
@@ -97,7 +113,7 @@
         .start-content {
             position: relative;
             z-index: 2;
-            max-width: 440px;
+            max-width: 470px;
             margin: 0 auto;
         }
         .character-left,
@@ -121,7 +137,7 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .logo-emoji {
             font-size: 75px;
@@ -144,7 +160,7 @@
         }
         #start-screen h2 {
             font-size: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             color: #00e87b;
             text-shadow: 0 0 10px rgba(0,232,123,0.5);
             font-weight: 700;
@@ -165,10 +181,10 @@
         }
 
         /* "COMO VOCÊ QUER JOGAR?" com decoração */
-        #mode-section { margin-bottom: 10px; }
+        #mode-section { margin-bottom: 8px; }
         #mode-section h3 {
             font-size: 15px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             color: #fff;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -176,29 +192,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
         #mode-section h3::before,
         #mode-section h3::after {
-            content: '◆';
-            font-size: 8px;
-            color: #3b82f6;
-            text-shadow: 0 0 6px rgba(59,130,246,0.8);
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6);
+        }
+        #mode-section h3::after {
+            background: linear-gradient(90deg, #3b82f6, transparent);
         }
 
         /* Botões */
         .mode-grid {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            max-width: 430px;
+            gap: 13px;
+            max-width: 460px;
             margin: 0 auto;
         }
         .mode-btn {
-            padding: 0 30px;
+            padding: 0 24px;
             font-size: 18px;
             font-weight: 800;
-            border: 2px solid rgba(100,180,255,0.35);
+            border: 2px solid rgba(100,180,255,0.4);
             border-radius: 14px;
             cursor: pointer;
             transition: all 0.25s ease;
@@ -211,7 +230,7 @@
             letter-spacing: 2px;
             position: relative;
             overflow: hidden;
-            min-height: 64px;
+            min-height: 62px;
             text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         .mode-btn::before {
@@ -219,9 +238,17 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 50%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 100%);
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
             border-radius: 12px 12px 0 0;
             pointer-events: none;
+        }
+        .mode-btn::after {
+            content: '›';
+            position: absolute;
+            right: 20px;
+            font-size: 28px;
+            font-weight: 300;
+            opacity: 0.7;
         }
         .mode-btn:hover {
             transform: translateY(-3px) scale(1.02);
@@ -243,28 +270,28 @@
         .mode-btn span { font-size: 32px; }
 
         .mode-learn {
-            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-            border-color: rgba(96, 165, 250, 0.5);
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            border-color: rgba(96, 165, 250, 0.6);
             box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
         .mode-quiz {
-            background: linear-gradient(180deg, #9333ea 0%, #7c3aed 100%);
-            border-color: rgba(167, 139, 250, 0.5);
+            background: linear-gradient(180deg, #a855f7 0%, #7c3aed 100%);
+            border-color: rgba(167, 139, 250, 0.6);
             box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
         .mode-dictation {
-            background: linear-gradient(180deg, #0891b2 0%, #0e7490 100%);
-            border-color: rgba(34, 211, 238, 0.5);
+            background: linear-gradient(180deg, #22d3ee 0%, #0891b2 100%);
+            border-color: rgba(34, 211, 238, 0.6);
             box-shadow: 0 4px 20px rgba(8, 145, 178, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
         .mode-memory {
-            background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
-            border-color: rgba(74, 222, 128, 0.5);
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+            border-color: rgba(74, 222, 128, 0.6);
             box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
         .mode-review {
-            background: linear-gradient(180deg, #ea580c 0%, #dc2626 100%);
-            border-color: rgba(251, 146, 60, 0.5);
+            background: linear-gradient(180deg, #f97316 0%, #dc2626 100%);
+            border-color: rgba(251, 146, 60, 0.6);
             box-shadow: 0 4px 20px rgba(234, 88, 12, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
 
@@ -423,6 +450,11 @@
             background: transparent;
             transform: rotate(45deg);
             border-radius: 2px;
+        }
+        .block-circle {
+            border-radius: 50%;
+            background: var(--color, #3b82f6);
+            opacity: 0.5;
         }
         @keyframes floatUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
@@ -1171,9 +1203,9 @@
         @media (min-width: 601px) and (max-width: 1024px) {
             #start-screen h1 { font-size: 58px; letter-spacing: 4px; }
             .logo-emoji { font-size: 60px; }
-            .mode-btn { padding: 0 22px; font-size: 16px; min-height: 58px; }
+            .mode-btn { padding: 0 22px; font-size: 16px; min-height: 56px; }
             .mode-btn span { font-size: 28px; }
-            .mode-grid { max-width: 380px; gap: 12px; }
+            .mode-grid { max-width: 390px; gap: 11px; }
             .character-img { max-height: 420px; }
             .category-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
             .category-btn { padding: 20px; font-size: 15px; }
@@ -1216,6 +1248,7 @@
                 border-radius: 10px;
             }
             .mode-btn span { font-size: 24px; }
+            .mode-btn::after { right: 12px; font-size: 22px; }
             .mode-grid { gap: 10px; max-width: 100%; }
             #audio-btn { width: 42px; height: 42px; font-size: 18px; top: 10px; right: 10px; }
             .neon-arcs { display: none; }
@@ -1244,12 +1277,14 @@
     
     <!-- Background Animations -->
     <div class="floating-blocks">
-        <div class="block block-square" style="--delay: 0s; --x: 6%; --size: 28px; --color: #3b82f6;"></div>
-        <div class="block block-triangle" style="--delay: 3s; --x: 12%; --size: 20px; --color: #60a5fa;"></div>
-        <div class="block block-diamond" style="--delay: 6s; --x: 22%; --size: 16px; --color: #06b6d4;"></div>
-        <div class="block block-square" style="--delay: 1.5s; --x: 80%; --size: 22px; --color: #a855f7;"></div>
-        <div class="block block-triangle" style="--delay: 4s; --x: 88%; --size: 24px; --color: #ec4899;"></div>
-        <div class="block block-diamond" style="--delay: 7s; --x: 94%; --size: 14px; --color: #3b82f6;"></div>
+        <div class="block block-square" style="--delay: 0s; --x: 5%; --size: 26px; --color: #3b82f6;"></div>
+        <div class="block block-circle" style="--delay: 2s; --x: 10%; --size: 10px; --color: #60a5fa;"></div>
+        <div class="block block-triangle" style="--delay: 4s; --x: 18%; --size: 18px; --color: #ec4899;"></div>
+        <div class="block block-diamond" style="--delay: 7s; --x: 24%; --size: 14px; --color: #06b6d4;"></div>
+        <div class="block block-circle" style="--delay: 1s; --x: 78%; --size: 8px; --color: #06b6d4;"></div>
+        <div class="block block-triangle" style="--delay: 3.5s; --x: 84%; --size: 20px; --color: #ec4899;"></div>
+        <div class="block block-square" style="--delay: 5.5s; --x: 92%; --size: 20px; --color: #3b82f6;"></div>
+        <div class="block block-diamond" style="--delay: 8s; --x: 96%; --size: 12px; --color: #a855f7;"></div>
     </div>
     
     <!-- Arcos neon de fundo -->
@@ -1258,6 +1293,9 @@
         <div class="neon-arc neon-arc-2"></div>
         <div class="neon-arc neon-arc-3"></div>
         <div class="neon-arc neon-arc-4"></div>
+        <div class="neon-ring neon-ring-1"></div>
+        <div class="neon-ring neon-ring-2"></div>
+        <div class="neon-ring neon-ring-3"></div>
     </div>
     
     <div id="game-container">
