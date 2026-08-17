@@ -21,7 +21,7 @@
         #game-container {
             width: 100vw;
             min-height: 100vh;
-            background: radial-gradient(ellipse at center, #0a1628 0%, #060d1a 50%, #020509 100%);
+            background: #080c24;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -34,33 +34,56 @@
         #game-container::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(ellipse at 30% 50%, rgba(0, 100, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 50%, rgba(0, 100, 255, 0.08) 0%, transparent 50%);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 50% 40%, rgba(10, 40, 100, 0.4) 0%, rgba(10, 40, 100, 0.1) 40%, transparent 70%);
             pointer-events: none;
+            z-index: 0;
         }
         #game-container::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(90deg, transparent 0%, rgba(0, 150, 255, 0.03) 50%, transparent 100%),
-                linear-gradient(0deg, transparent 0%, rgba(0, 150, 255, 0.03) 50%, transparent 100%);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 50% 100%, rgba(0, 80, 200, 0.12) 0%, transparent 50%);
             pointer-events: none;
-            animation: scanline 8s linear infinite;
+            z-index: 0;
         }
-        @keyframes scanline {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 100%; }
+
+        /* Arcos neon de fundo */
+        .neon-arcs {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
         }
-        
+        .neon-arc {
+            position: absolute;
+            border: 2px solid rgba(0, 120, 255, 0.25);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .neon-arc-1 {
+            width: 600px; height: 600px;
+            bottom: -300px; left: -200px;
+            border-color: rgba(0, 120, 255, 0.2);
+        }
+        .neon-arc-2 {
+            width: 500px; height: 500px;
+            bottom: -250px; left: -150px;
+            border-color: rgba(0, 120, 255, 0.12);
+        }
+        .neon-arc-3 {
+            width: 600px; height: 600px;
+            bottom: -300px; right: -200px;
+            border-color: rgba(0, 120, 255, 0.2);
+        }
+        .neon-arc-4 {
+            width: 500px; height: 500px;
+            bottom: -250px; right: -150px;
+            border-color: rgba(0, 120, 255, 0.12);
+        }
+
         /* Tela Inicial */
         #start-screen {
             text-align: center;
@@ -69,76 +92,13 @@
             max-width: 1200px;
             position: relative;
             z-index: 2;
-        }
-        #start-screen h1 {
-            font-size: 80px;
-            margin-bottom: 5px;
-            text-shadow: 
-                0 0 10px #fff,
-                0 0 20px #fff,
-                0 0 30px #fff,
-                0 0 40px #00d4ff,
-                0 0 50px #00d4ff,
-                0 0 60px #00d4ff,
-                0 0 70px #00d4ff;
-            animation: glow 2s ease-in-out infinite alternate;
-            font-weight: 900;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-        }
-        @keyframes glow {
-            from {
-                text-shadow: 
-                    0 0 10px #fff,
-                    0 0 20px #fff,
-                    0 0 30px #fff,
-                    0 0 40px #00d4ff,
-                    0 0 50px #00d4ff,
-                    0 0 60px #00d4ff,
-                    0 0 70px #00d4ff;
-            }
-            to {
-                text-shadow: 
-                    0 0 10px #fff,
-                    0 0 20px #fff,
-                    0 0 30px #fff,
-                    0 0 40px #00ff88,
-                    0 0 50px #00ff88,
-                    0 0 60px #00ff88,
-                    0 0 70px #00ff88;
-            }
-        }
-        #start-screen h2 {
-            font-size: 22px;
-            margin-bottom: 25px;
-            color: #00ff88;
-            text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            position: relative;
-            display: inline-block;
-        }
-        #start-screen h2::before,
-        #start-screen h2::after {
-            content: '—';
-            margin: 0 15px;
-            color: #00ff88;
-        }
-        
-        /* Layout da Tela Inicial com Personagens */
-        #start-screen {
-            position: relative;
-            width: 100%;
-            max-width: 1200px;
             min-height: 80vh;
         }
         .start-content {
             position: relative;
             z-index: 2;
-            max-width: 480px;
+            max-width: 440px;
             margin: 0 auto;
-            padding-top: 20px;
         }
         .character-left,
         .character-right {
@@ -146,116 +106,166 @@
             bottom: 0;
             z-index: 1;
         }
-        .character-left {
-            left: 20px;
-        }
-        .character-right {
-            right: 20px;
-        }
+        .character-left { left: 0; }
+        .character-right { right: 0; }
         .character-img {
-            max-height: 550px;
+            max-height: 560px;
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 15px 40px rgba(0,0,0,0.7));
         }
-        
-        /* Modos de Jogo */
-        #mode-section {
-            margin-bottom: 20px;
+
+        /* Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 4px;
         }
+        .logo-emoji {
+            font-size: 75px;
+            filter: drop-shadow(0 0 8px rgba(0,212,255,0.4));
+        }
+        #start-screen h1 {
+            font-size: 78px;
+            margin: 0;
+            color: #fff;
+            text-shadow:
+                0 0 8px #fff,
+                0 0 16px #fff,
+                0 0 30px rgba(0,140,255,0.8),
+                0 0 50px rgba(0,140,255,0.5),
+                0 0 80px rgba(0,140,255,0.3);
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        #start-screen h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #00e87b;
+            text-shadow: 0 0 10px rgba(0,232,123,0.5);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        #start-screen h2::before,
+        #start-screen h2::after {
+            content: '';
+            width: 40px;
+            height: 2px;
+            background: #00e87b;
+            flex-shrink: 0;
+        }
+
+        /* "COMO VOCÊ QUER JOGAR?" com decoração */
+        #mode-section { margin-bottom: 10px; }
         #mode-section h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 15px;
+            margin-bottom: 16px;
             color: #fff;
             text-transform: uppercase;
             letter-spacing: 3px;
             font-weight: 700;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
+        #mode-section h3::before,
+        #mode-section h3::after {
+            content: '◆';
+            font-size: 8px;
+            color: #3b82f6;
+            text-shadow: 0 0 6px rgba(59,130,246,0.8);
+        }
+
+        /* Botões */
         .mode-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-width: 450px;
+            gap: 14px;
+            max-width: 430px;
             margin: 0 auto;
         }
         .mode-btn {
-            padding: 20px 30px;
-            font-size: 20px;
-            font-weight: bold;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 12px;
+            padding: 0 30px;
+            font-size: 18px;
+            font-weight: 800;
+            border: 2px solid rgba(100,180,255,0.35);
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
             justify-content: center;
-            color: white;
+            color: #fff;
             text-transform: uppercase;
             letter-spacing: 2px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
-            min-height: 70px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            min-height: 64px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
-        .mode-btn::after {
+        .mode-btn::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: rotate(45deg);
-            transition: 0.5s;
+            top: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 12px 12px 0 0;
+            pointer-events: none;
         }
-        .mode-btn:hover::after { left: 100%; }
         .mode-btn:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            transform: translateY(-3px) scale(1.02);
+            filter: brightness(1.15);
         }
-        .mode-btn:active { 
-            transform: translateY(-3px) scale(1.02); 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        .mode-btn:active {
+            transform: translateY(0) scale(0.98);
+            filter: brightness(0.95);
         }
         .mode-btn:focus {
             outline: 3px solid #fff;
             outline-offset: 4px;
         }
-        .mode-btn:focus:not(:focus-visible) {
-            outline: none;
-        }
+        .mode-btn:focus:not(:focus-visible) { outline: none; }
         .mode-btn:focus-visible {
             outline: 3px solid #fff;
             outline-offset: 4px;
         }
-        .mode-btn span { font-size: 35px; }
-        .mode-learn { 
-            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
-            border-color: #60a5fa;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5), inset 0 -3px 0 rgba(0,0,0,0.2);
+        .mode-btn span { font-size: 32px; }
+
+        .mode-learn {
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
-        .mode-quiz { 
-            background: linear-gradient(180deg, #9333ea 0%, #7c3aed 50%, #6d28d9 100%);
-            border-color: #a78bfa;
-            box-shadow: 0 8px 25px rgba(147, 51, 234, 0.5), inset 0 -3px 0 rgba(0,0,0,0.2);
+        .mode-quiz {
+            background: linear-gradient(180deg, #9333ea 0%, #7c3aed 100%);
+            border-color: rgba(167, 139, 250, 0.5);
+            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
-        .mode-dictation { 
-            background: linear-gradient(180deg, #0891b2 0%, #0e7490 50%, #155e75 100%); 
-            border-color: #22d3ee;
-            box-shadow: 0 8px 25px rgba(8, 145, 178, 0.5), inset 0 -3px 0 rgba(0,0,0,0.2);
+        .mode-dictation {
+            background: linear-gradient(180deg, #0891b2 0%, #0e7490 100%);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 4px 20px rgba(8, 145, 178, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
-        .mode-memory { 
-            background: linear-gradient(180deg, #16a34a 0%, #15803d 50%, #166534 100%); 
-            border-color: #4ade80;
-            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.5), inset 0 -3px 0 rgba(0,0,0,0.2);
+        .mode-memory {
+            background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+            border-color: rgba(74, 222, 128, 0.5);
+            box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
-        .mode-review { 
-            background: linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%); 
-            border-color: #f87171;
-            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5), inset 0 -3px 0 rgba(0,0,0,0.2);
+        .mode-review {
+            background: linear-gradient(180deg, #ea580c 0%, #dc2626 100%);
+            border-color: rgba(251, 146, 60, 0.5);
+            box-shadow: 0 4px 20px rgba(234, 88, 12, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
 
         /* Tela de Seleção de Categoria */
@@ -376,51 +386,80 @@
         .hidden-emoji { display: none !important; }
         
         /* Background Animations */
+        /* Blocos flutuantes */
         .floating-blocks {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
             overflow: hidden;
         }
         .block {
             position: absolute;
-            bottom: -100px;
+            bottom: -80px;
             left: var(--x);
             width: var(--size);
             height: var(--size);
-            opacity: 0.7;
-            animation: floatUp 12s linear infinite;
+            opacity: 0.6;
+            animation: floatUp 14s linear infinite;
             animation-delay: var(--delay);
-            filter: drop-shadow(0 0 10px currentColor);
+            filter: drop-shadow(0 0 8px var(--color, rgba(0,150,255,0.5)));
         }
         .block-square {
-            border-radius: 4px;
-            background: linear-gradient(135deg, var(--color) 0%, var(--color-dark) 100%);
-            box-shadow: 0 0 15px currentColor, inset 0 0 10px rgba(255,255,255,0.3);
+            border: 2px solid var(--color, #3b82f6);
+            border-radius: 3px;
+            background: transparent;
         }
         .block-triangle {
-            width: 0;
-            height: 0;
-            background: transparent;
+            width: 0 !important; height: 0 !important;
+            background: transparent !important;
             border-left: calc(var(--size) / 2) solid transparent;
             border-right: calc(var(--size) / 2) solid transparent;
-            border-bottom: var(--size) solid var(--color);
-            filter: drop-shadow(0 0 10px var(--color));
+            border-bottom: var(--size) solid var(--color, #3b82f6);
         }
         .block-diamond {
-            border-radius: 4px;
-            background: linear-gradient(135deg, var(--color) 0%, var(--color-dark) 100%);
-            box-shadow: 0 0 15px currentColor;
+            border: 2px solid var(--color, #06b6d4);
+            background: transparent;
             transform: rotate(45deg);
+            border-radius: 2px;
         }
         @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
-            50% { opacity: 0.8; }
-            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { opacity: 0.7; }
+            100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Botão de Som */
+        #audio-btn {
+            position: fixed;
+            top: 20px; right: 20px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            border: 3px solid rgba(96, 165, 250, 0.6);
+            color: white;
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 200;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), inset 0 -2px 0 rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #audio-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.8), inset 0 -2px 0 rgba(0,0,0,0.2);
+        }
+        #audio-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
+        #audio-btn:focus:not(:focus-visible) { outline: none; }
+        #audio-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
         }
         
         /* Logo Container */
@@ -1041,40 +1080,6 @@
         .wrong-english { font-weight: bold; color: #ff6b6b; }
         .wrong-portuguese { font-size: 12px; opacity: 0.9; }
         
-        /* Botão Áudio */
-        #audio-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
-            border: 3px solid #60a5fa;
-            color: white;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 200;
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.7), 0 0 50px rgba(59, 130, 246, 0.3), inset 0 -3px 0 rgba(0,0,0,0.2);
-        }
-        #audio-btn:hover { 
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%); 
-            transform: scale(1.1); 
-            box-shadow: 0 0 35px rgba(59, 130, 246, 0.9), 0 0 70px rgba(59, 130, 246, 0.5), inset 0 -3px 0 rgba(0,0,0,0.2);
-        }
-        #audio-btn:focus {
-            outline: 3px solid #fff;
-            outline-offset: 2px;
-        }
-        #audio-btn:focus:not(:focus-visible) {
-            outline: none;
-        }
-        #audio-btn:focus-visible {
-            outline: 3px solid #fff;
-            outline-offset: 2px;
-        }
-        
         /* Confetti Canvas */
         #confetti-canvas {
             position: fixed;
@@ -1164,11 +1169,11 @@
         
         /* Responsivo - Tablet */
         @media (min-width: 601px) and (max-width: 1024px) {
-            #start-screen h1 { font-size: 60px; }
-            .logo-emoji { font-size: 65px; }
-            .mode-btn { padding: 18px 25px; font-size: 18px; min-height: 65px; }
-            .mode-btn span { font-size: 30px; }
-            .mode-grid { max-width: 400px; }
+            #start-screen h1 { font-size: 58px; letter-spacing: 4px; }
+            .logo-emoji { font-size: 60px; }
+            .mode-btn { padding: 0 22px; font-size: 16px; min-height: 58px; }
+            .mode-btn span { font-size: 28px; }
+            .mode-grid { max-width: 380px; gap: 12px; }
             .character-img { max-height: 420px; }
             .category-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
             .category-btn { padding: 20px; font-size: 15px; }
@@ -1177,6 +1182,7 @@
 
         /* Responsivo - Celular */
         @media (max-width: 600px) {
+            #game-container { padding: 10px; }
             #start-screen {
                 min-height: 100vh;
                 display: flex;
@@ -1185,43 +1191,34 @@
             .character-left,
             .character-right {
                 position: relative;
-                bottom: auto;
-                left: auto;
-                right: auto;
+                bottom: auto; left: auto; right: auto;
                 text-align: center;
-                order: 0;
             }
-            .character-img {
-                max-height: 140px;
-            }
-            .character-left {
-                order: 1;
-            }
-            .character-right {
-                order: 3;
-            }
+            .character-img { max-height: 130px; }
+            .character-left { order: 1; }
+            .character-right { order: 3; }
             .start-content {
                 order: 2;
                 max-width: 100%;
-                padding: 0 10px;
+                padding: 0 5px;
             }
-            #start-screen h1 { font-size: 40px; letter-spacing: 3px; }
-            #start-screen h2 { font-size: 14px; margin-bottom: 15px; }
-            #start-screen h2::before,
-            #start-screen h2::after { margin: 0 8px; }
-            .logo-emoji { font-size: 50px; }
-            .logo-container { gap: 10px; margin-bottom: 0; }
-            #mode-section h3 { font-size: 14px; letter-spacing: 1px; margin-bottom: 10px; }
-            .mode-btn { 
-                padding: 14px 18px; 
-                font-size: 14px; 
-                min-height: 55px;
-                gap: 10px;
+            .logo-container { gap: 8px; margin-bottom: 0; }
+            .logo-emoji { font-size: 42px; }
+            #start-screen h1 { font-size: 32px; letter-spacing: 2px; }
+            #start-screen h2 { font-size: 12px; margin-bottom: 12px; letter-spacing: 2px; }
+            #start-screen h2::before, #start-screen h2::after { width: 20px; }
+            #mode-section h3 { font-size: 11px; letter-spacing: 1px; margin-bottom: 10px; }
+            .mode-btn {
+                padding: 0 16px;
+                font-size: 13px;
+                min-height: 50px;
+                gap: 8px;
                 border-radius: 10px;
             }
-            .mode-btn span { font-size: 26px; }
+            .mode-btn span { font-size: 24px; }
             .mode-grid { gap: 10px; max-width: 100%; }
-            #audio-btn { width: 45px; height: 45px; font-size: 20px; top: 10px; right: 10px; }
+            #audio-btn { width: 42px; height: 42px; font-size: 18px; top: 10px; right: 10px; }
+            .neon-arcs { display: none; }
             .category-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .category-btn { padding: 14px 10px; font-size: 12px; }
             .category-btn span { font-size: 22px; }
@@ -1247,12 +1244,20 @@
     
     <!-- Background Animations -->
     <div class="floating-blocks">
-        <div class="block block-square" style="--delay: 0s; --x: 5%; --size: 35px; --color: #3b82f6; --color-dark: #1d4ed8; color: #3b82f6;"></div>
-        <div class="block block-triangle" style="--delay: 2s; --x: 15%; --size: 30px; --color: #06b6d4; color: #06b6d4;"></div>
-        <div class="block block-diamond" style="--delay: 4s; --x: 25%; --size: 25px; --color: #8b5cf6; --color-dark: #6d28d9; color: #8b5cf6;"></div>
-        <div class="block block-square" style="--delay: 1s; --x: 75%; --size: 30px; --color: #ec4899; --color-dark: #db2777; color: #ec4899;"></div>
-        <div class="block block-triangle" style="--delay: 3s; --x: 85%; --size: 35px; --color: #3b82f6; color: #3b82f6;"></div>
-        <div class="block block-diamond" style="--delay: 5s; --x: 95%; --size: 28px; --color: #06b6d4; --color-dark: #0891b2; color: #06b6d4;"></div>
+        <div class="block block-square" style="--delay: 0s; --x: 6%; --size: 28px; --color: #3b82f6;"></div>
+        <div class="block block-triangle" style="--delay: 3s; --x: 12%; --size: 20px; --color: #60a5fa;"></div>
+        <div class="block block-diamond" style="--delay: 6s; --x: 22%; --size: 16px; --color: #06b6d4;"></div>
+        <div class="block block-square" style="--delay: 1.5s; --x: 80%; --size: 22px; --color: #a855f7;"></div>
+        <div class="block block-triangle" style="--delay: 4s; --x: 88%; --size: 24px; --color: #ec4899;"></div>
+        <div class="block block-diamond" style="--delay: 7s; --x: 94%; --size: 14px; --color: #3b82f6;"></div>
+    </div>
+    
+    <!-- Arcos neon de fundo -->
+    <div class="neon-arcs">
+        <div class="neon-arc neon-arc-1"></div>
+        <div class="neon-arc neon-arc-2"></div>
+        <div class="neon-arc neon-arc-3"></div>
+        <div class="neon-arc neon-arc-4"></div>
     </div>
     
     <div id="game-container">
