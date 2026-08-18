@@ -20,6 +20,25 @@ let wordStats = {};
 let isReviewSession = false;
 let playerName = '';
 
+// ==================== FIREBASE CONFIG ====================
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+};
+
+let db = null;
+try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+} catch(e) {
+    console.log('Firebase não configurado, usando ranking local');
+}
+
 // Categorias disponíveis
 const categoryData = {
     animals:   { emoji: '🐾', name: 'Animais' },
@@ -435,59 +454,67 @@ function showAchievement(ach) {
 
 // ==================== RANKING ====================
 function saveRanking() {
+    const correctCount = totalQuestions - wrongAnswersList.length;
+    const entry = {
+        name: playerName,
+        score: score,
+        correct: correctCount,
+        total: totalQuestions,
+        maxCombo: maxCombo,
+        category: currentCategory,
+        mode: currentMode,
+        date: new Date().toISOString()
+    };
+    
+    // Salvar no Firebase
+    if (db) {
+        try {
+            db.ref('ranking').push(entry);
+        } catch(e) {}
+    }
+    
+    // Também salvar localmente como backup
     try {
         const key = 'englishFunRanking';
         const data = JSON.parse(localStorage.getItem(key) || '[]');
-        const correctCount = totalQuestions - wrongAnswersList.length;
-        
-        data.push({
-            name: playerName,
-            score: score,
-            correct: correctCount,
-            total: totalQuestions,
-            maxCombo: maxCombo,
-            category: currentCategory,
-            mode: currentMode,
-            date: new Date().toISOString()
-        });
-        
-        // Manter apenas os 50 melhores
+        data.push(entry);
         data.sort((a, b) => b.score - a.score);
         localStorage.setItem(key, JSON.stringify(data.slice(0, 50)));
     } catch(e) {}
 }
 
 function displayRanking() {
-    try {
-        const key = 'englishFunRanking';
-        const data = JSON.parse(localStorage.getItem(key) || '[]');
-        const section = document.getElementById('ranking-section');
-        const table = document.getElementById('ranking-table');
-        
-        if (data.length === 0) {
-            section.style.display = 'none';
-            return;
-        }
-        
-        section.style.display = 'block';
-        const top10 = data.slice(0, 10);
-        
-        table.innerHTML = top10.map((entry, i) => {
-            const isYou = entry.name === playerName && entry.score === score && entry.date && 
-                         new Date(entry.date).toDateString() === new Date().toDateString();
-            const pos = i + 1;
-            const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
-            return `
-                <div class="ranking-row">
-                    <span class="ranking-pos">${medal}</span>
-                    <span class="ranking-name">${entry.name}${isYou ? ' <span class="ranking-you">(você)</span>' : ''}</span>
-                    <span class="ranking-score">${entry.score} pts</span>
-                </div>
-            `;
-        }).join('');
-    } catch(e) {
-        document.getElementById('ranking-section').style.display = 'none';
+    const section = document.getElementById('ranking-section');
+    const table = document.getElementById('ranking-table');
+    
+    if (db) {
+        db.ref('ranking').orderByChild('score').limitToLast(10).once('value', (snapshot) => {
+            const data = [];
+            snapshot.forEach((child) => data.push(child.val()));
+            data.reverse();
+            renderRankingTable(data, table, section);
+        }).catch(() => renderRankingLocal(table, section));
+    } else {
+        renderRankingLocal(table, section);
     }
+}
+
+function renderRankingLocal(table, section) {
+    try {
+        const data = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        renderRankingTable(data.slice(0, 10), table, section);
+    } catch(e) { section.style.display = 'none'; }
+}
+
+function renderRankingTable(data, table, section) {
+    if (!data || data.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    table.innerHTML = data.map((entry, i) => {
+        const isYou = entry.name === playerName && entry.score === score;
+        const pos = i + 1;
+        const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
+        return `<div class="ranking-row"><span class="ranking-pos">${medal}</span><span class="ranking-name">${entry.name}${isYou ? ' <span class="ranking-you">(você)</span>' : ''}</span><span class="ranking-score">${entry.score} pts</span></div>`;
+    }).join('');
 }
 
 function showResult() {
@@ -1220,29 +1247,38 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function displayHomeRanking() {
+    const list = document.getElementById('home-ranking-list');
+    if (!list) return;
+    
+    if (db) {
+        db.ref('ranking').orderByChild('score').limitToLast(5).once('value', (snapshot) => {
+            const data = [];
+            snapshot.forEach((child) => data.push(child.val()));
+            data.reverse();
+            renderHomeRanking(data, list);
+        }).catch(() => renderHomeRankingLocal(list));
+    } else {
+        renderHomeRankingLocal(list);
+    }
+}
+
+function renderHomeRankingLocal(list) {
     try {
-        const key = 'englishFunRanking';
-        const data = JSON.parse(localStorage.getItem(key) || '[]');
-        const list = document.getElementById('home-ranking-list');
-        
-        if (!list) return;
-        
-        if (data.length === 0) {
-            list.innerHTML = '<div class="home-ranking-empty">Nenhuma pontuação ainda</div>';
-            return;
-        }
-        
-        const top5 = data.slice(0, 5);
-        list.innerHTML = top5.map((entry, i) => {
-            const pos = i + 1;
-            const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
-            return `
-                <div class="home-ranking-row">
-                    <span class="home-ranking-pos">${medal}</span>
-                    <span class="home-ranking-name">${entry.name}</span>
-                    <span class="home-ranking-score">${entry.score} pts</span>
-                </div>
-            `;
-        }).join('');
-    } catch(e) {}
+        const data = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        renderHomeRanking(data.slice(0, 5), list);
+    } catch(e) {
+        list.innerHTML = '<div class="home-ranking-empty">Nenhuma pontuação ainda</div>';
+    }
+}
+
+function renderHomeRanking(data, list) {
+    if (!data || data.length === 0) {
+        list.innerHTML = '<div class="home-ranking-empty">Nenhuma pontuação ainda</div>';
+        return;
+    }
+    list.innerHTML = data.map((entry, i) => {
+        const pos = i + 1;
+        const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
+        return `<div class="home-ranking-row"><span class="home-ranking-pos">${medal}</span><span class="home-ranking-name">${entry.name}</span><span class="home-ranking-score">${entry.score} pts</span></div>`;
+    }).join('');
 }
