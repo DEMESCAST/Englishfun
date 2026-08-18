@@ -22,13 +22,14 @@ let playerName = '';
 
 // ==================== FIREBASE CONFIG ====================
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
-    projectId: "SEU_PROJETO",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
+    apiKey: "AIzaSyDlaI77a3nbonR7ixl_BgePCiXWgz5coAA",
+    authDomain: "englishfun-ranking.firebaseapp.com",
+    databaseURL: "https://englishfun-ranking-default-rtdb.firebaseio.com",
+    projectId: "englishfun-ranking",
+    storageBucket: "englishfun-ranking.firebasestorage.app",
+    messagingSenderId: "424548644810",
+    appId: "1:424548644810:web:227546b109ffaad98c0133",
+    measurementId: "G-HGZR7JSTNB"
 };
 
 let db = null;
