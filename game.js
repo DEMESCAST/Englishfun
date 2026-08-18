@@ -562,7 +562,9 @@ async function displayRanking() {
         try {
             const snapshot = await db.ref('ranking').once('value');
             const rawData = [];
-            snapshot.forEach((child) => rawData.push(child.val()));
+            snapshot.forEach((child) => {
+                rawData.push(child.val());
+            });
             
             console.log('Ranking bruto recebido do Firebase:', rawData);
             
@@ -1402,7 +1404,9 @@ async function displayHomeRanking() {
         try {
             const snapshot = await db.ref('ranking').once('value');
             const rawData = [];
-            snapshot.forEach((child) => rawData.push(child.val()));
+            snapshot.forEach((child) => {
+                rawData.push(child.val());
+            });
             
             console.log('Ranking inicial bruto do Firebase:', rawData);
             
