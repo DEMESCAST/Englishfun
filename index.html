@@ -1680,15 +1680,15 @@
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"></canvas>
     
-    <script src="vocab.js"></script>
+    <script src="vocab.js?v=20260818-1"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="game.js"></script>
+    <script src="game.js?v=20260818-1"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
+                navigator.serviceWorker.register('./service-worker.js?v=7')
                     .then(reg => console.log('Service Worker registrado:', reg.scope))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
