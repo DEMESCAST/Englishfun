@@ -578,6 +578,7 @@ function goToMenu() {
     document.getElementById('category-screen').style.display = 'none';
     document.getElementById('learn-complete-card').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
+    displayHomeRanking();
 }
 
 // ==================== SELEÇÃO DE MODO E CATEGORIA ====================
@@ -1213,4 +1214,35 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('player-name-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') confirmName();
     });
+    
+    // Carregar ranking na tela inicial
+    displayHomeRanking();
 });
+
+function displayHomeRanking() {
+    try {
+        const key = 'englishFunRanking';
+        const data = JSON.parse(localStorage.getItem(key) || '[]');
+        const list = document.getElementById('home-ranking-list');
+        
+        if (!list) return;
+        
+        if (data.length === 0) {
+            list.innerHTML = '<div class="home-ranking-empty">Nenhuma pontuação ainda</div>';
+            return;
+        }
+        
+        const top5 = data.slice(0, 5);
+        list.innerHTML = top5.map((entry, i) => {
+            const pos = i + 1;
+            const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
+            return `
+                <div class="home-ranking-row">
+                    <span class="home-ranking-pos">${medal}</span>
+                    <span class="home-ranking-name">${entry.name}</span>
+                    <span class="home-ranking-score">${entry.score} pts</span>
+                </div>
+            `;
+        }).join('');
+    } catch(e) {}
+}
