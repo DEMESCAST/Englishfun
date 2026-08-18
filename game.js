@@ -560,7 +560,7 @@ async function displayRanking() {
     
     if (db) {
         try {
-            const snapshot = await db.ref('ranking').orderByChild('score').limitToLast(100).once('value');
+            const snapshot = await db.ref('ranking').once('value');
             const rawData = [];
             snapshot.forEach((child) => rawData.push(child.val()));
             
@@ -1395,7 +1395,7 @@ async function displayHomeRanking() {
     
     if (db) {
         try {
-            const snapshot = await db.ref('ranking').orderByChild('score').limitToLast(100).once('value');
+            const snapshot = await db.ref('ranking').once('value');
             const rawData = [];
             snapshot.forEach((child) => rawData.push(child.val()));
             
