@@ -763,7 +763,9 @@ async function showResult() {
         if (db) {
             try {
                 const snapshot = await db.ref('ranking').once('value');
-                snapshot.forEach(child => entries.push(child.val()));
+                snapshot.forEach(child => {
+                    entries.push(child.val());
+                });
             } catch(e) {
                 // Firebase falhou, usar localStorage
                 entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
