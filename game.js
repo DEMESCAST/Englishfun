@@ -560,11 +560,20 @@ async function displayRanking() {
     
     if (db) {
         try {
-            const snapshot = await db.ref('ranking').orderByChild('score').limitToLast(10).once('value');
-            const data = [];
-            snapshot.forEach((child) => data.push(child.val()));
-            data.reverse();
-            renderRankingTable(data, table, section);
+            const snapshot = await db.ref('ranking').orderByChild('score').limitToLast(100).once('value');
+            const rawData = [];
+            snapshot.forEach((child) => rawData.push(child.val()));
+            
+            console.log('Ranking bruto recebido do Firebase:', rawData);
+            
+            const validData = rawData
+                .map(normalizeRankingEntry)
+                .filter(Boolean)
+                .sort((a, b) => b.score - a.score);
+            
+            console.log('Ranking válido após normalização:', validData);
+            
+            renderRankingTable(validData.slice(0, 10), table, section);
         } catch (error) {
             console.error('Erro ao ler ranking do Firebase:', error.code, error.message);
             renderRankingLocal(table, section);
@@ -587,7 +596,7 @@ function renderRankingTable(data, table, section) {
     table.innerHTML = '';
     
     data.forEach((entry, i) => {
-        const safe = normalizeRankingEntry(entry);
+        const safe = entry || normalizeRankingEntry(entry);
         if (!safe) return;
         
         const isYou = safe.name === playerName && safe.score === score;
@@ -1380,17 +1389,30 @@ document.addEventListener('DOMContentLoaded', () => {
     displayHomeRanking();
 });
 
-function displayHomeRanking() {
+async function displayHomeRanking() {
     const list = document.getElementById('home-ranking-list');
     if (!list) return;
     
     if (db) {
-        db.ref('ranking').orderByChild('score').limitToLast(5).once('value', (snapshot) => {
-            const data = [];
-            snapshot.forEach((child) => data.push(child.val()));
-            data.reverse();
-            renderHomeRanking(data, list);
-        }).catch(() => renderHomeRankingLocal(list));
+        try {
+            const snapshot = await db.ref('ranking').orderByChild('score').limitToLast(100).once('value');
+            const rawData = [];
+            snapshot.forEach((child) => rawData.push(child.val()));
+            
+            console.log('Ranking inicial bruto do Firebase:', rawData);
+            
+            const validData = rawData
+                .map(normalizeRankingEntry)
+                .filter(Boolean)
+                .sort((a, b) => b.score - a.score);
+            
+            console.log('Ranking inicial válido:', validData);
+            
+            renderHomeRanking(validData.slice(0, 5), list);
+        } catch (error) {
+            console.error('Erro ao ler ranking inicial:', error.code, error.message);
+            renderHomeRankingLocal(list);
+        }
     } else {
         renderHomeRankingLocal(list);
     }
