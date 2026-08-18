@@ -680,7 +680,6 @@ function confirmName() {
             break;
     }
 }
-}
 
 function showQuizMode() {
     document.getElementById('learn-card').style.display = 'none';
