@@ -454,6 +454,63 @@ function showAchievement(ach) {
 }
 
 // ==================== RANKING ====================
+
+// Normalizar e validar entrada do ranking
+function normalizeRankingEntry(entry) {
+    if (!entry || typeof entry !== 'object') return null;
+    
+    // Validar apelido
+    let name = typeof entry.name === 'string' ? entry.name.trim() : '';
+    name = name.replace(/\s+/g, ' ');
+    if (name.length < 2 || name.length > 16) name = 'Jogador';
+    
+    // Validar score
+    const score = Number(entry.score);
+    if (!Number.isFinite(score) || score < 0 || score > 10000) return null;
+    
+    // Validar outros campos numéricos
+    const correct = Number(entry.correct);
+    const total = Number(entry.total);
+    const maxCombo = Number(entry.maxCombo);
+    if (!Number.isFinite(correct) || correct < 0) return null;
+    if (!Number.isFinite(total) || total < 1 || total > 100) return null;
+    if (!Number.isFinite(maxCombo) || maxCombo < 0 || maxCombo > 100) return null;
+    
+    return {
+        name: name,
+        score: Math.round(score),
+        correct: Math.round(correct),
+        total: Math.round(total),
+        maxCombo: Math.round(maxCombo),
+        category: typeof entry.category === 'string' ? entry.category : 'unknown',
+        mode: typeof entry.mode === 'string' ? entry.mode : 'unknown',
+        date: typeof entry.date === 'string' ? entry.date : new Date().toISOString()
+    };
+}
+
+// Validar apelido do jogador
+function validateNickname(value) {
+    if (typeof value !== 'string') return { valid: false, error: 'Escolha um apelido de 2 a 16 caracteres.' };
+    
+    let nick = value.trim().replace(/\s+/g, ' ');
+    
+    // Remover caracteres de controle
+    nick = nick.replace(/[\x00-\x1f\x7f]/g, '');
+    
+    // Remover tags HTML
+    nick = nick.replace(/<[^>]*>/g, '');
+    
+    if (nick.length < 2) return { valid: false, error: 'Escolha um apelido de 2 a 16 caracteres.' };
+    if (nick.length > 16) nick = nick.substring(0, 16);
+    
+    // Permitir apenas letras, números, espaço, hífen, underscore
+    if (!/^[a-zA-ZÀ-ÿ0-9 _\-]+$/.test(nick)) {
+        return { valid: false, error: 'Use apenas letras, números, espaço, hífen ou underscore.' };
+    }
+    
+    return { valid: true, value: nick };
+}
+
 function saveRanking() {
     const correctCount = totalQuestions - wrongAnswersList.length;
     const entry = {
@@ -510,12 +567,43 @@ function renderRankingLocal(table, section) {
 function renderRankingTable(data, table, section) {
     if (!data || data.length === 0) { section.style.display = 'none'; return; }
     section.style.display = 'block';
-    table.innerHTML = data.map((entry, i) => {
-        const isYou = entry.name === playerName && entry.score === score;
+    table.innerHTML = '';
+    
+    data.forEach((entry, i) => {
+        const safe = normalizeRankingEntry(entry);
+        if (!safe) return;
+        
+        const isYou = safe.name === playerName && safe.score === score;
         const pos = i + 1;
         const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
-        return `<div class="ranking-row"><span class="ranking-pos">${medal}</span><span class="ranking-name">${entry.name}${isYou ? ' <span class="ranking-you">(você)</span>' : ''}</span><span class="ranking-score">${entry.score} pts</span></div>`;
-    }).join('');
+        
+        const row = document.createElement('div');
+        row.className = 'ranking-row';
+        
+        const posSpan = document.createElement('span');
+        posSpan.className = 'ranking-pos';
+        posSpan.textContent = medal;
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'ranking-name';
+        nameSpan.textContent = safe.name;
+        
+        if (isYou) {
+            const youSpan = document.createElement('span');
+            youSpan.className = 'ranking-you';
+            youSpan.textContent = ' (você)';
+            nameSpan.appendChild(youSpan);
+        }
+        
+        const scoreSpan = document.createElement('span');
+        scoreSpan.className = 'ranking-score';
+        scoreSpan.textContent = `${safe.score} pts`;
+        
+        row.appendChild(posSpan);
+        row.appendChild(nameSpan);
+        row.appendChild(scoreSpan);
+        table.appendChild(row);
+    });
 }
 
 function showResult() {
@@ -671,9 +759,10 @@ function startModeWithCategory(category) {
     currentLearnIndex = 0;
     currentQuizIndex = 0;
     
-    // Salvar nome do último jogador
-    const savedName = localStorage.getItem('englishFunPlayerName') || '';
+    // Salvar nome do último jogador (migrar se necessário)
+    const savedName = localStorage.getItem('englishFunPlayerNickname') || localStorage.getItem('englishFunPlayerName') || '';
     document.getElementById('player-name-input').value = savedName;
+    document.getElementById('name-error').textContent = '';
     
     // Mostrar tela de nome
     document.getElementById('name-screen').style.display = 'flex';
@@ -682,8 +771,23 @@ function startModeWithCategory(category) {
 
 function confirmName() {
     const input = document.getElementById('player-name-input');
-    playerName = input.value.trim() || 'Jogador';
-    localStorage.setItem('englishFunPlayerName', playerName);
+    const errorEl = document.getElementById('name-error');
+    const result = validateNickname(input.value);
+    
+    if (!result.valid) {
+        errorEl.textContent = result.error;
+        input.focus();
+        return;
+    }
+    
+    errorEl.textContent = '';
+    playerName = result.value;
+    
+    // Salvar com nova chave e migrar se necessário
+    localStorage.setItem('englishFunPlayerNickname', playerName);
+    if (localStorage.getItem('englishFunPlayerName')) {
+        localStorage.removeItem('englishFunPlayerName');
+    }
     
     playSound('click');
     document.getElementById('name-screen').style.display = 'none';
@@ -1274,18 +1378,50 @@ function renderHomeRankingLocal(list) {
         const data = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
         renderHomeRanking(data.slice(0, 5), list);
     } catch(e) {
-        list.innerHTML = '<div class="home-ranking-empty">Nenhuma pontuação ainda</div>';
+        list.innerHTML = '';
+        const empty = document.createElement('div');
+        empty.className = 'home-ranking-empty';
+        empty.textContent = 'Nenhuma pontuação ainda';
+        list.appendChild(empty);
     }
 }
 
 function renderHomeRanking(data, list) {
+    list.innerHTML = '';
+    
     if (!data || data.length === 0) {
-        list.innerHTML = '<div class="home-ranking-empty">Nenhuma pontuação ainda</div>';
+        const empty = document.createElement('div');
+        empty.className = 'home-ranking-empty';
+        empty.textContent = 'Nenhuma pontuação ainda';
+        list.appendChild(empty);
         return;
     }
-    list.innerHTML = data.map((entry, i) => {
+    
+    data.forEach((entry, i) => {
+        const safe = normalizeRankingEntry(entry);
+        if (!safe) return;
+        
         const pos = i + 1;
         const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
-        return `<div class="home-ranking-row"><span class="home-ranking-pos">${medal}</span><span class="home-ranking-name">${entry.name}</span><span class="home-ranking-score">${entry.score} pts</span></div>`;
-    }).join('');
+        
+        const row = document.createElement('div');
+        row.className = 'home-ranking-row';
+        
+        const posSpan = document.createElement('span');
+        posSpan.className = 'home-ranking-pos';
+        posSpan.textContent = medal;
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'home-ranking-name';
+        nameSpan.textContent = safe.name;
+        
+        const scoreSpan = document.createElement('span');
+        scoreSpan.className = 'home-ranking-score';
+        scoreSpan.textContent = `${safe.score} pts`;
+        
+        row.appendChild(posSpan);
+        row.appendChild(nameSpan);
+        row.appendChild(scoreSpan);
+        list.appendChild(row);
+    });
 }

@@ -1154,6 +1154,12 @@
             margin-top: 10px;
         }
         .name-back-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+        .name-error {
+            color: #ff6b6b;
+            font-size: 13px;
+            min-height: 20px;
+            margin-bottom: 10px;
+        }
         
         /* Ranking */
         #ranking-section {
@@ -1643,10 +1649,11 @@
         <div id="name-screen" style="display: none;">
             <div class="name-card">
                 <div class="name-emoji">👤</div>
-                <h2>Qual é o seu nome?</h2>
-                <p>Digite seu nome para aparecer no ranking</p>
-                <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="20" autocomplete="off">
-                <button class="name-btn" onclick="confirmName()" aria-label="Confirmar nome">Começar! 🚀</button>
+                <h2>Escolha um apelido</h2>
+                <p>Use um apelido. Não coloque seu nome completo.</p>
+                <input type="text" id="player-name-input" placeholder="Ex.: SuperLeo" maxlength="16" autocomplete="off">
+                <div id="name-error" class="name-error" aria-live="polite"></div>
+                <button class="name-btn" onclick="confirmName()" aria-label="Confirmar apelido">Começar! 🚀</button>
                 <button class="name-back-btn" onclick="goBackFromName()" aria-label="Voltar">← Voltar</button>
             </div>
         </div>
