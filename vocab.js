@@ -289,7 +289,7 @@ const vocabulary = {
             { emoji: '🎤', english: 'Shout', phonetic: '/sháut/', portuguese: 'Gritar', sentence: 'Do not shout!', sentenceTranslation: 'Não grite!' },
             { emoji: '🤫', english: 'Whisper', phonetic: '/uís-per/', portuguese: 'Sussurrar', sentence: 'Whisper quietly.', sentenceTranslation: 'Sussurre baixinho.' },
             { emoji: '🎨', english: 'Draw', phonetic: '/dró/', portuguese: 'Desenhar', sentence: 'I draw a picture.', sentenceTranslation: 'Eu faço um desenho.' },
-            { emoji: '🚶', english: 'Jog', phonetic: '/djág/', portuguese: 'Correr', sentence: 'I jog every morning.', sentenceTranslation: 'Eu corro toda manhã.' },
+            { emoji: '🚶', english: 'Jog', phonetic: '/djóg/', portuguese: 'Correr', sentence: 'I jog every morning.', sentenceTranslation: 'Eu corro toda manhã.' },
             { emoji: '🧘', english: 'Stretch', phonetic: '/strétch/', portuguese: 'Alongar', sentence: 'Stretch your body.', sentenceTranslation: 'Alongue seu corpo.' },
             { emoji: '🤸', english: 'Flip', phonetic: '/flíp/', portuguese: 'Dar um mortal', sentence: 'I can flip!', sentenceTranslation: 'Eu posso dar um mortal!' },
             { emoji: '🏄', english: 'Surf', phonetic: '/sârf/', portuguese: 'Surfar', sentence: 'I surf the waves.', sentenceTranslation: 'Eu surfo nas ondas.' },
@@ -302,7 +302,7 @@ const vocabulary = {
         title: 'Frases', icon: '💬',
         words: [
             { emoji: '👋', english: 'Hello, how are you?', phonetic: '/he-lôu, háu ar iú?/', portuguese: 'Olá, como vai você?', sentence: 'Hello, how are you?', sentenceTranslation: 'Olá, como vai você?' },
-            { emoji: '🙏', english: 'Thank you very much', phonetic: '/thénk iú vé-ri mâtch/', portuguese: 'Muito obrigado', sentence: 'Thank you very much', sentenceTranslation: 'Muito obrigado' },
+            { emoji: '🙏', english: 'Thank you very much', phonetic: '/thénk iú vé-ri mátch/', portuguese: 'Muito obrigado', sentence: 'Thank you very much', sentenceTranslation: 'Muito obrigado' },
             { emoji: '🗣️', english: 'Excuse me', phonetic: '/iks-kiúz mí/', portuguese: 'Com licença', sentence: 'Excuse me, where is the bathroom?', sentenceTranslation: 'Com licença, onde fica o banheiro?' },
             { emoji: '🙋', english: 'My name is...', phonetic: '/mai nêim iz.../', portuguese: 'Meu nome é...', sentence: 'My name is John.', sentenceTranslation: 'Meu nome é João.' },
             { emoji: '❓', english: 'What is your name?', phonetic: '/uât iz iór nêim?/', portuguese: 'Qual é o seu nome?', sentence: 'What is your name?', sentenceTranslation: 'Qual é o seu nome?' },

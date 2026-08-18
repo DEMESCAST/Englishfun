@@ -424,12 +424,12 @@ function closeModal() {
     }
 }
 
-function showFeedback(text, color) {
+function showFeedback(text, color, duration = 1000) {
     const fb = document.getElementById('feedback');
     fb.textContent = text;
     fb.style.color = color;
     fb.className = 'show';
-    setTimeout(() => fb.className = '', 1000);
+    setTimeout(() => fb.className = '', duration);
 }
 
 function checkAchievements() {
@@ -596,7 +596,7 @@ function renderRankingTable(data, table, section) {
     table.innerHTML = '';
     
     data.forEach((entry, i) => {
-        const safe = entry || normalizeRankingEntry(entry);
+        const safe = normalizeRankingEntry(entry) || entry;
         if (!safe) return;
         
         const isYou = safe.name === playerName && safe.score === score;
@@ -900,8 +900,8 @@ function startReviewMode() {
     }
     
     if (allWords.length === 0) {
-        alert('Nenhum erro registrado ainda! Jogue primeiro para poder revisar.');
         document.getElementById('start-screen').style.display = 'block';
+        showFeedback('Nenhum erro registrado ainda! Jogue primeiro para poder revisar.', '#ffd700');
         return;
     }
     
@@ -1242,7 +1242,7 @@ function flipCard(index) {
                         clearInterval(memoryTimerInterval);
                         playSound('combo');
                         celebratePerfect();
-                        showFeedback('🎉 Parabéns! Você completou o jogo da memória!', '#38ef7d');
+                        showFeedback('🎉 Parabéns! Você completou o jogo da memória!', '#38ef7d', 3000);
                         
                         // Bonus por tempo
                         if (memoryTimer < 30) memoryScore += 100;
@@ -1275,8 +1275,11 @@ let confettiCanvas = null;
 let confettiCtx = null;
 let confettiParticles = [];
 let confettiAnimationId = null;
+let confettiInitialized = false;
 
 function initConfetti() {
+    if (confettiInitialized) return;
+    confettiInitialized = true;
     confettiCanvas = document.getElementById('confetti-canvas');
     if (confettiCanvas) {
         confettiCtx = confettiCanvas.getContext('2d');
@@ -1337,7 +1340,9 @@ class ConfettiParticle {
 
 function createConfetti(count = 100) {
     if (!confettiCanvas || !confettiCtx) return;
-    for (let i = 0; i < count; i++) {
+    const maxParticles = 300;
+    const toAdd = Math.min(count, maxParticles - confettiParticles.length);
+    for (let i = 0; i < toAdd; i++) {
         confettiParticles.push(new ConfettiParticle());
     }
     if (!confettiAnimationId) animateConfetti();
