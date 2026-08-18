@@ -1097,7 +1097,6 @@
             max-width: 400px;
             width: 90%;
             box-shadow: 0 0 40px rgba(0,212,255,0.2);
-            position: relative;
         }
         .name-emoji { font-size: 60px; margin-bottom: 15px; }
         .name-card h2 {
@@ -1141,6 +1140,20 @@
             transition: all 0.3s;
         }
         .name-btn:hover { transform: scale(1.03); filter: brightness(1.1); }
+        .name-back-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .name-back-btn:hover { background: rgba(255,255,255,0.2); color: white; }
         
         /* Ranking */
         #ranking-section {
@@ -1629,12 +1642,12 @@
         <!-- Tela de Nome do Jogador -->
         <div id="name-screen" style="display: none;">
             <div class="name-card">
-                <button class="back-mode-btn" onclick="goBackFromName()" style="position: absolute; top: 15px; left: 15px;" aria-label="Voltar">← Voltar</button>
                 <div class="name-emoji">👤</div>
                 <h2>Qual é o seu nome?</h2>
                 <p>Digite seu nome para aparecer no ranking</p>
                 <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="20" autocomplete="off">
                 <button class="name-btn" onclick="confirmName()" aria-label="Confirmar nome">Começar! 🚀</button>
+                <button class="name-back-btn" onclick="goBackFromName()" aria-label="Voltar">← Voltar</button>
             </div>
         </div>
         
