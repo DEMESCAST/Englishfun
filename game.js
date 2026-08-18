@@ -569,6 +569,9 @@ function normalizeRankingEntry(entry) {
     return {
         name: name,
         score: Math.round(score),
+        generalPoints: typeof entry.generalPoints === 'number' && entry.generalPoints >= 0 && entry.generalPoints <= 400
+            ? entry.generalPoints
+            : undefined,
         correct: Math.round(correct),
         total: Math.round(total),
         maxCombo: Math.round(maxCombo),
@@ -756,21 +759,31 @@ async function showResult() {
     const comboKey = `${currentMode}_${currentCategory}`;
     
     try {
-        let allEntries = [];
+        let entries = [];
         if (db) {
-            const snapshot = await db.ref('ranking').once('value');
-            snapshot.forEach(child => allEntries.push(child.val()));
+            try {
+                const snapshot = await db.ref('ranking').once('value');
+                snapshot.forEach(child => entries.push(child.val()));
+            } catch(e) {
+                // Firebase falhou, usar localStorage
+                entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+            }
+        } else {
+            entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
         }
-        const localData = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
-        allEntries = allEntries.concat(localData);
         
+        // Usar buildGeneralRanking para calcular pontuação geral correta
+        const generalRanking = buildGeneralRanking(entries);
         const playerKey = normalizeNicknameKey(playerName);
-        allEntries.forEach(entry => {
+        const currentPlayer = generalRanking.find(p => normalizeNicknameKey(p.name) === playerKey);
+        previousGeneral = currentPlayer ? currentPlayer.generalPoints : 0;
+        
+        // Encontrar melhor resultado anterior para esta combinação
+        entries.forEach(entry => {
             if (normalizeNicknameKey(entry.name) === playerKey) {
-                const gp = getGeneralPoints(entry);
                 const ek = `${entry.mode}_${entry.category}`;
-                previousGeneral += gp;
                 if (ek === comboKey) {
+                    const gp = getGeneralPoints(entry);
                     previousBestForCombo = Math.max(previousBestForCombo, gp);
                 }
             }
