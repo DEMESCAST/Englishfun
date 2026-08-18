@@ -1097,6 +1097,7 @@
             max-width: 400px;
             width: 90%;
             box-shadow: 0 0 40px rgba(0,212,255,0.2);
+            position: relative;
         }
         .name-emoji { font-size: 60px; margin-bottom: 15px; }
         .name-card h2 {
@@ -1628,6 +1629,7 @@
         <!-- Tela de Nome do Jogador -->
         <div id="name-screen" style="display: none;">
             <div class="name-card">
+                <button class="back-mode-btn" onclick="goBackFromName()" style="position: absolute; top: 15px; left: 15px;" aria-label="Voltar">← Voltar</button>
                 <div class="name-emoji">👤</div>
                 <h2>Qual é o seu nome?</h2>
                 <p>Digite seu nome para aparecer no ranking</p>

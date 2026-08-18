@@ -710,6 +710,12 @@ function confirmName() {
     }
 }
 
+function goBackFromName() {
+    playSound('click');
+    document.getElementById('name-screen').style.display = 'none';
+    document.getElementById('category-screen').style.display = 'block';
+}
+
 function showQuizMode() {
     document.getElementById('learn-card').style.display = 'none';
     document.getElementById('quiz-card').style.display = 'none';
