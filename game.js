@@ -670,8 +670,14 @@ async function showResult() {
     
     // Salvar e mostrar ranking
     if (!isReviewSession) {
-        await saveRanking();
-        await displayRanking();
+        const firebaseSaved = await saveRanking();
+        if (firebaseSaved) {
+            await displayRanking();
+        } else {
+            const section = document.getElementById('ranking-section');
+            const table = document.getElementById('ranking-table');
+            renderRankingLocal(table, section);
+        }
     } else {
         document.getElementById('ranking-section').style.display = 'none';
     }
