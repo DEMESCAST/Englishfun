@@ -1077,6 +1077,103 @@
         #play-again-btn { background: #38ef7d; color: #333; }
         #menu-btn { background: rgba(255,255,255,0.3); color: white; }
         
+        /* Tela de Nome */
+        #name-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+        }
+        .name-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 40px rgba(0,212,255,0.2);
+        }
+        .name-emoji { font-size: 60px; margin-bottom: 15px; }
+        .name-card h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #00d4ff;
+        }
+        .name-card p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+        }
+        #player-name-input {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 18px;
+            border: 2px solid rgba(0,212,255,0.4);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        #player-name-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0,212,255,0.3);
+        }
+        #player-name-input::placeholder { color: rgba(255,255,255,0.4); }
+        .name-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .name-btn:hover { transform: scale(1.03); filter: brightness(1.1); }
+        
+        /* Ranking */
+        #ranking-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        #ranking-section h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #ffd700;
+        }
+        .ranking-table {
+            width: 100%;
+        }
+        .ranking-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-size: 14px;
+            gap: 10px;
+        }
+        .ranking-row:nth-child(1) { background: rgba(255,215,0,0.2); color: #ffd700; }
+        .ranking-row:nth-child(2) { background: rgba(192,192,192,0.2); color: #c0c0c0; }
+        .ranking-row:nth-child(3) { background: rgba(205,127,50,0.2); color: #cd7f32; }
+        .ranking-row:nth-child(n+4) { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); }
+        .ranking-pos { font-weight: bold; min-width: 24px; }
+        .ranking-name { flex: 1; text-align: left; }
+        .ranking-score { font-weight: bold; min-width: 50px; text-align: right; }
+        .ranking-you { font-size: 11px; opacity: 0.7; }
+        
         /* Lista de erros */
         #wrong-answers {
             background: rgba(255,255,255,0.1);
@@ -1470,8 +1567,26 @@
                 <h3>📚 Reveja seus erros:</h3>
                 <div id="wrong-list"></div>
             </div>
+            
+            <!-- Ranking -->
+            <div id="ranking-section" style="display: none;">
+                <h3>🏆 Ranking</h3>
+                <div id="ranking-table"></div>
+            </div>
+            
             <button class="result-btn" id="play-again-btn" onclick="playAgain()" aria-label="Jogar novamente">Jogar Novamente</button>
             <button class="result-btn" id="menu-btn" onclick="goToMenu()" aria-label="Voltar ao menu">Menu</button>
+        </div>
+        
+        <!-- Tela de Nome do Jogador -->
+        <div id="name-screen" style="display: none;">
+            <div class="name-card">
+                <div class="name-emoji">👤</div>
+                <h2>Qual é o seu nome?</h2>
+                <p>Digite seu nome para aparecer no ranking</p>
+                <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="20" autocomplete="off">
+                <button class="name-btn" onclick="confirmName()" aria-label="Confirmar nome">Começar! 🚀</button>
+            </div>
         </div>
         
         <!-- Feedback -->

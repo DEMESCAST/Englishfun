@@ -18,6 +18,7 @@ let audioCtx = null;
 let achievements = [];
 let wordStats = {};
 let isReviewSession = false;
+let playerName = '';
 
 // Categorias disponíveis
 const categoryData = {
@@ -432,6 +433,63 @@ function showAchievement(ach) {
     setTimeout(() => el.remove(), 3500);
 }
 
+// ==================== RANKING ====================
+function saveRanking() {
+    try {
+        const key = 'englishFunRanking';
+        const data = JSON.parse(localStorage.getItem(key) || '[]');
+        const correctCount = totalQuestions - wrongAnswersList.length;
+        
+        data.push({
+            name: playerName,
+            score: score,
+            correct: correctCount,
+            total: totalQuestions,
+            maxCombo: maxCombo,
+            category: currentCategory,
+            mode: currentMode,
+            date: new Date().toISOString()
+        });
+        
+        // Manter apenas os 50 melhores
+        data.sort((a, b) => b.score - a.score);
+        localStorage.setItem(key, JSON.stringify(data.slice(0, 50)));
+    } catch(e) {}
+}
+
+function displayRanking() {
+    try {
+        const key = 'englishFunRanking';
+        const data = JSON.parse(localStorage.getItem(key) || '[]');
+        const section = document.getElementById('ranking-section');
+        const table = document.getElementById('ranking-table');
+        
+        if (data.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+        
+        section.style.display = 'block';
+        const top10 = data.slice(0, 10);
+        
+        table.innerHTML = top10.map((entry, i) => {
+            const isYou = entry.name === playerName && entry.score === score && entry.date && 
+                         new Date(entry.date).toDateString() === new Date().toDateString();
+            const pos = i + 1;
+            const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
+            return `
+                <div class="ranking-row">
+                    <span class="ranking-pos">${medal}</span>
+                    <span class="ranking-name">${entry.name}${isYou ? ' <span class="ranking-you">(você)</span>' : ''}</span>
+                    <span class="ranking-score">${entry.score} pts</span>
+                </div>
+            `;
+        }).join('');
+    } catch(e) {
+        document.getElementById('ranking-section').style.display = 'none';
+    }
+}
+
 function showResult() {
     playSound('correct');
     document.getElementById('game-screen').style.display = 'none';
@@ -475,6 +533,14 @@ function showResult() {
         `).join('');
     } else {
         wrongContainer.style.display = 'none';
+    }
+    
+    // Salvar e mostrar ranking
+    if (!isReviewSession) {
+        saveRanking();
+        displayRanking();
+    } else {
+        document.getElementById('ranking-section').style.display = 'none';
     }
     
     saveProgress();
@@ -576,9 +642,25 @@ function startModeWithCategory(category) {
     currentLearnIndex = 0;
     currentQuizIndex = 0;
     
+    // Salvar nome do último jogador
+    const savedName = localStorage.getItem('englishFunPlayerName') || '';
+    document.getElementById('player-name-input').value = savedName;
+    
+    // Mostrar tela de nome
+    document.getElementById('name-screen').style.display = 'flex';
+    document.getElementById('player-name-input').focus();
+}
+
+function confirmName() {
+    const input = document.getElementById('player-name-input');
+    playerName = input.value.trim() || 'Jogador';
+    localStorage.setItem('englishFunPlayerName', playerName);
+    
+    playSound('click');
+    document.getElementById('name-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
-    document.getElementById('category-title').textContent = vocabulary[category].title;
+    document.getElementById('category-title').textContent = vocabulary[currentCategory].title;
     document.getElementById('score').textContent = '0';
     document.getElementById('combo').textContent = '0';
     document.getElementById('current-num').textContent = '1';
@@ -597,6 +679,7 @@ function startModeWithCategory(category) {
             showQuizMode();
             break;
     }
+}
 }
 
 function showQuizMode() {
@@ -1126,4 +1209,9 @@ function celebrateCombo() {
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('start-screen').style.display = 'block';
     initConfetti();
+    
+    // Enter key no input de nome
+    document.getElementById('player-name-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') confirmName();
+    });
 });
