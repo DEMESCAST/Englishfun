@@ -1452,6 +1452,288 @@
             .memory-card-back .card-emoji { font-size: 28px; }
             .memory-card-back .card-word { font-size: 11px; }
         }
+
+        /* ==================== MEU PROGRESSO ==================== */
+        .mode-progress {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb) !important;
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .mode-progress:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4); }
+
+        #progress-nickname-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(4px);
+        }
+        .progress-nickname-card {
+            background: linear-gradient(145deg, #0d1b3e, #1a2d5a);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .progress-nickname-card h2 { margin: 0 0 8px; font-size: 22px; color: #00d4ff; }
+        .progress-nickname-card p { margin: 0 0 20px; font-size: 14px; color: rgba(255,255,255,0.7); }
+        .progress-nickname-card input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,212,255,0.3);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .progress-nickname-card input:focus { border-color: #00d4ff; box-shadow: 0 0 12px rgba(0,212,255,0.3); }
+        .progress-nickname-buttons { display: flex; gap: 10px; margin-top: 8px; }
+        .progress-nickname-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .progress-nickname-cancel { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+        .progress-nickname-confirm { background: linear-gradient(135deg, #00d4ff, #0ea5e9); color: #fff; }
+        .progress-nickname-btn:hover { transform: scale(1.03); }
+
+        #progress-screen {
+            position: fixed;
+            inset: 0;
+            background: #060d1f;
+            z-index: 1500;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 40px;
+        }
+        .progress-header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .progress-header .back-mode-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .progress-header .back-mode-btn:hover { background: rgba(255,255,255,0.2); }
+        .progress-header h2 { margin: 0 0 4px; font-size: 22px; color: #fff; letter-spacing: 1px; }
+        .progress-header-name { font-size: 16px; color: #00d4ff; font-weight: 700; }
+        .progress-header-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+        .progress-loading { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.6); font-size: 15px; }
+
+        .progress-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.7);
+        }
+        .progress-empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .progress-empty h3 { color: #00d4ff; font-size: 18px; margin: 0 0 8px; }
+        .progress-empty p { font-size: 14px; color: rgba(255,255,255,0.5); margin: 0; }
+
+        .progress-summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .progress-card {
+            background: linear-gradient(145deg, #0d1b3e, #1a2d5a);
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+        .progress-card-icon { font-size: 24px; margin-bottom: 6px; }
+        .progress-card-label { font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,0.5); margin-bottom: 4px; font-weight: 600; }
+        .progress-card-value { font-size: 22px; font-weight: 900; color: #fff; }
+        .progress-card-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+        .progress-secondary {
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+        .progress-stat-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .progress-stat-item {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        .progress-stat-value { font-size: 18px; font-weight: 800; color: #fff; }
+        .progress-stat-label { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+        .progress-categories, .progress-vocab, .progress-attention, .progress-recent {
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+        .progress-categories h3, .progress-vocab h3, .progress-attention h3, .progress-recent h3 {
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.5);
+            margin: 0 0 12px;
+            font-weight: 600;
+        }
+
+        .progress-cat-row {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .progress-cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .progress-cat-name { font-size: 13px; font-weight: 700; color: #fff; }
+        .progress-cat-pts { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+        .progress-bar-outer {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #334155, #475569);
+            transition: width 0.6s ease;
+        }
+        .bar-excellent { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .bar-good { background: linear-gradient(90deg, #0ea5e9, #2563eb); }
+        .bar-started { background: linear-gradient(90deg, #f59e0b, #d97706); }
+
+        .progress-cat-details { display: flex; gap: 8px; flex-wrap: wrap; }
+        .progress-cat-mode {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.6);
+        }
+        .progress-cat-mode.mode-empty { color: rgba(255,255,255,0.25); }
+
+        .progress-vocab-summary {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .progress-vocab-item {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+        }
+        .vocab-strong { border-color: rgba(34,197,94,0.3); }
+        .vocab-training { border-color: rgba(14,165,233,0.3); }
+        .vocab-review { border-color: rgba(245,158,11,0.3); }
+        .vocab-none { border-color: rgba(255,255,255,0.06); }
+
+        .progress-attention-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .progress-attention-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(245,158,11,0.06);
+            border: 1px solid rgba(245,158,11,0.15);
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+        .progress-attention-word { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .progress-attention-errors { font-size: 12px; color: #f59e0b; }
+        .progress-attention-empty { font-size: 13px; color: rgba(255,255,255,0.4); text-align: center; padding: 16px; }
+
+        .progress-recent-list { display: flex; flex-direction: column; gap: 6px; }
+        .progress-recent-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+        .progress-recent-left { display: flex; flex-direction: column; gap: 2px; }
+        .progress-recent-mode { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); }
+        .progress-recent-pts { font-size: 11px; color: #00d4ff; }
+        .progress-recent-date { font-size: 11px; color: rgba(255,255,255,0.4); }
+        .progress-recent-empty { font-size: 13px; color: rgba(255,255,255,0.4); text-align: center; padding: 16px; }
+
+        .progress-highlight {
+            max-width: 600px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(14,165,233,0.08));
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+        }
+        .progress-highlight-label { font-size: 10px; letter-spacing: 2px; color: rgba(0,212,255,0.6); font-weight: 600; margin-bottom: 2px; }
+        .progress-highlight-value { font-size: 15px; font-weight: 700; color: #00d4ff; }
+
+        @media (max-width: 600px) {
+            .progress-summary-cards { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .progress-card { padding: 12px; }
+            .progress-card-value { font-size: 18px; }
+            .progress-stat-row { grid-template-columns: repeat(2, 1fr); }
+            .progress-vocab-summary { flex-direction: column; }
+            .progress-cat-details { gap: 4px; }
+            .mode-progress { font-size: 13px; padding: 12px 16px; }
+        }
     </style>
 </head>
 <body>
@@ -1513,6 +1795,9 @@
                         </button>
                         <button class="mode-btn mode-review" onclick="selectMode('review')" aria-label="Revisar meus erros">
                             <span>⭐</span> REVISAR MEUS ERROS
+                        </button>
+                        <button class="mode-btn mode-progress" onclick="openProgress()" aria-label="Ver meu progresso">
+                            <span>📊</span> MEU PROGRESSO
                         </button>
                     </div>
                     
@@ -1653,6 +1938,31 @@
             </div>
         </div>
         
+        <!-- Modal: Nickname para Progresso -->
+        <div id="progress-nickname-modal" style="display: none;">
+            <div class="progress-nickname-card">
+                <h2>📊 MEU PROGRESSO</h2>
+                <p>Escolha um apelido para ver seu progresso.</p>
+                <input type="text" id="progress-nickname-input" placeholder="Seu apelido" maxlength="16" aria-label="Seu apelido">
+                <div id="progress-nickname-error" class="name-error" aria-live="polite"></div>
+                <div class="progress-nickname-buttons">
+                    <button class="progress-nickname-btn progress-nickname-cancel" onclick="closeProgressNicknameModal()" aria-label="Cancelar">Cancelar</button>
+                    <button class="progress-nickname-btn progress-nickname-confirm" onclick="confirmProgressNickname()" aria-label="Continuar">CONTINUAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Meu Progresso -->
+        <div id="progress-screen" style="display: none;">
+            <div class="progress-header">
+                <button class="back-mode-btn" onclick="closeProgress()" aria-label="Voltar ao menu">← VOLTAR</button>
+                <h2>MEU PROGRESSO</h2>
+                <div class="progress-header-name" id="progress-player-name"></div>
+                <div class="progress-header-sub">Acompanhe sua evolução no English Fun</div>
+            </div>
+            <div id="progress-content" aria-live="polite"></div>
+        </div>
+        
         <!-- Tela de Resultado -->
         <div id="result-screen">
             <div id="result-emoji"></div>
@@ -1714,12 +2024,12 @@
     <script src="vocab.js?v=20260818-1"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="game.js?v=20260818-5"></script>
+    <script src="game.js?v=20260818-6"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=9')
+                navigator.serviceWorker.register('./service-worker.js?v=10')
                     .then(reg => console.log('Service Worker registrado:', reg.scope))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });

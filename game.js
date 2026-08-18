@@ -1197,9 +1197,51 @@ function startReviewMode() {
     showLearnMode();
 }
 
+// ==================== PER-PLAYER STORAGE ====================
+function getPlayerStorageKey(baseKey) {
+    const nickname =
+        playerName ||
+        localStorage.getItem('englishFunPlayerNickname') ||
+        '';
+
+    const key = normalizeNicknameKey(nickname);
+
+    return key ? `${baseKey}:${key}` : baseKey;
+}
+
+function migrateOldProgressData() {
+    try {
+        const oldProgress = localStorage.getItem('englishFunProgress');
+        if (oldProgress) {
+            const nickname = playerName || localStorage.getItem('englishFunPlayerNickname') || '';
+            const key = normalizeNicknameKey(nickname);
+            if (key) {
+                const newStorageKey = `englishFunProgress:${key}`;
+                if (!localStorage.getItem(newStorageKey)) {
+                    localStorage.setItem(newStorageKey, oldProgress);
+                }
+            }
+        }
+
+        const oldWordStats = localStorage.getItem('englishFunWordStats');
+        if (oldWordStats) {
+            const nickname = playerName || localStorage.getItem('englishFunPlayerNickname') || '';
+            const key = normalizeNicknameKey(nickname);
+            if (key) {
+                const newStorageKey = `englishFunWordStats:${key}`;
+                if (!localStorage.getItem(newStorageKey)) {
+                    localStorage.setItem(newStorageKey, oldWordStats);
+                }
+            }
+        }
+    } catch(e) {}
+}
+
+// ==================== SAVE PROGRESS ====================
 function saveProgress() {
     try {
-        const data = JSON.parse(localStorage.getItem('englishFunProgress') || '{}');
+        const storageKey = getPlayerStorageKey('englishFunProgress');
+        const data = JSON.parse(localStorage.getItem(storageKey) || '{}');
         if (!data.categories) data.categories = {};
         
         const cat = currentCategory;
@@ -1231,7 +1273,6 @@ function saveProgress() {
         data.totalWrongAll = (data.totalWrongAll || 0) + wrongAnswersList.length;
         data.achievements = [...new Set([...(data.achievements || []), ...achievements])];
         
-        // Calcular streak de dias
         const today = new Date().toDateString();
         const lastDate = data.lastPlayDate;
         if (lastDate !== today) {
@@ -1250,14 +1291,15 @@ function saveProgress() {
             data.lastPlayDate = today;
         }
         
-        localStorage.setItem('englishFunProgress', JSON.stringify(data));
+        localStorage.setItem(storageKey, JSON.stringify(data));
     } catch(e) {}
 }
 
 // ==================== SPACED REPETITION ====================
 function loadWordStats() {
     try {
-        wordStats = JSON.parse(localStorage.getItem('englishFunWordStats') || '{}');
+        const storageKey = getPlayerStorageKey('englishFunWordStats');
+        wordStats = JSON.parse(localStorage.getItem(storageKey) || '{}');
     } catch(e) {
         wordStats = {};
     }
@@ -1265,7 +1307,8 @@ function loadWordStats() {
 
 function saveWordStats() {
     try {
-        localStorage.setItem('englishFunWordStats', JSON.stringify(wordStats));
+        const storageKey = getPlayerStorageKey('englishFunWordStats');
+        localStorage.setItem(storageKey, JSON.stringify(wordStats));
     } catch(e) {}
 }
 
@@ -1648,10 +1691,553 @@ function celebrateCombo() {
 
 // ==================== STAR BURST EFFECT ====================
 
+// ==================== MEU PROGRESSO ====================
+function openProgress() {
+    playSound('click');
+    initAudio();
+
+    const nick = playerName || localStorage.getItem('englishFunPlayerNickname') || '';
+    if (nick && validateNickname(nick).valid) {
+        playerName = playerName || validateNickname(nick).value;
+        showProgressScreen();
+    } else {
+        showProgressNicknameModal();
+    }
+}
+
+function showProgressNicknameModal() {
+    document.getElementById('start-screen').style.display = 'none';
+    const modal = document.getElementById('progress-nickname-modal');
+    modal.style.display = 'flex';
+    const input = document.getElementById('progress-nickname-input');
+    input.value = playerName || localStorage.getItem('englishFunPlayerNickname') || '';
+    document.getElementById('progress-nickname-error').textContent = '';
+    input.focus();
+}
+
+function confirmProgressNickname() {
+    const input = document.getElementById('progress-nickname-input');
+    const errorEl = document.getElementById('progress-nickname-error');
+    const result = validateNickname(input.value);
+
+    if (!result.valid) {
+        errorEl.textContent = result.error;
+        input.focus();
+        return;
+    }
+
+    errorEl.textContent = '';
+    playerName = result.value;
+    localStorage.setItem('englishFunPlayerNickname', playerName);
+    migrateOldProgressData();
+
+    document.getElementById('progress-nickname-modal').style.display = 'none';
+    showProgressScreen();
+}
+
+function closeProgressNicknameModal() {
+    document.getElementById('progress-nickname-modal').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
+}
+
+function showProgressScreen() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('progress-screen').style.display = 'block';
+
+    const nameEl = document.getElementById('progress-player-name');
+    if (nameEl) nameEl.textContent = playerName;
+
+    loadProgressDashboard();
+}
+
+function closeProgress() {
+    document.getElementById('progress-screen').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
+}
+
+async function loadProgressDashboard() {
+    const container = document.getElementById('progress-content');
+    container.innerHTML = '<div class="progress-loading" aria-live="polite">Carregando seu progresso...</div>';
+
+    let entries = [];
+    if (db) {
+        try {
+            const snapshot = await db.ref('ranking').once('value');
+            snapshot.forEach(child => {
+                entries.push(child.val());
+            });
+        } catch(e) {
+            entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        }
+    } else {
+        entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+    }
+
+    const progressKey = getPlayerStorageKey('englishFunProgress');
+    const progressData = JSON.parse(localStorage.getItem(progressKey) || '{}');
+    if (!progressData.categories) progressData.categories = {};
+
+    const wordStatsKey = getPlayerStorageKey('englishFunWordStats');
+    const allWordStats = JSON.parse(localStorage.getItem(wordStatsKey) || '{}');
+
+    const generalRanking = buildGeneralRanking(entries);
+    const playerKey = normalizeNicknameKey(playerName);
+    const currentPlayer = generalRanking.find(p => normalizeNicknameKey(p.name) === playerKey);
+    const generalPoints = currentPlayer ? currentPlayer.generalPoints : 0;
+    const rankingPosition = currentPlayer ? generalRanking.indexOf(currentPlayer) + 1 : 0;
+
+    const totalCorrectAll = progressData.totalCorrectAll || 0;
+    const totalWrongAll = progressData.totalWrongAll || 0;
+    const totalAnswered = totalCorrectAll + totalWrongAll;
+    const accuracy = totalAnswered > 0 ? Math.round((totalCorrectAll / totalAnswered) * 100) : 0;
+    const dailyStreak = progressData.dailyStreak || 0;
+
+    let totalPlays = progressData.totalPlays || 0;
+    let bestComboAll = 0;
+    let perfectGamesAll = 0;
+    Object.values(progressData.categories).forEach(cat => {
+        if (cat.bestCombo > bestComboAll) bestComboAll = cat.bestCombo;
+        perfectGamesAll += cat.perfectGames || 0;
+    });
+
+    let wordsPracticed = 0;
+    let wordsStrong = 0;
+    let wordsTraining = 0;
+    let wordsReview = 0;
+    let wordsNotPracticed = 0;
+    const attentionWords = [];
+
+    const allVocab = [];
+    Object.entries(categoryData).forEach(([catKey, catData]) => {
+        const catWords = getWordsForCategory(catKey);
+        if (catWords) {
+            catWords.forEach(w => {
+                allVocab.push({ ...w, catKey });
+            });
+        }
+    });
+
+    allVocab.forEach(w => {
+        const key = `${w.catKey}_${w.english}`;
+        const stat = allWordStats[key];
+        if (!stat || (stat.correct === 0 && stat.wrong === 0)) {
+            wordsNotPracticed++;
+            return;
+        }
+        wordsPracticed++;
+        if (stat.correct >= 3 && stat.streak >= 3 && stat.correct > stat.wrong) {
+            wordsStrong++;
+        } else if (stat.wrong > 0 && stat.wrong >= stat.correct) {
+            wordsReview++;
+            attentionWords.push({ word: w.english, errors: stat.wrong, streak: stat.streak, lastSeen: stat.lastSeen || 0 });
+        } else {
+            wordsTraining++;
+        }
+    });
+
+    attentionWords.sort((a, b) => {
+        if (b.errors !== a.errors) return b.errors - a.errors;
+        if (a.streak !== b.streak) return a.streak - b.streak;
+        return (b.lastSeen || 0) - (a.lastSeen || 0);
+    });
+    const topAttention = attentionWords.slice(0, 5);
+
+    const categoryProgress = {};
+    Object.keys(categoryData).forEach(catKey => {
+        categoryProgress[catKey] = {
+            learn: 0,
+            quiz: 0,
+            dictation: 0,
+            memory: 0,
+            total: 0,
+            percent: 0
+        };
+    });
+
+    entries.forEach(entry => {
+        if (normalizeNicknameKey(entry.name) !== playerKey) return;
+        if (entry.mode === 'review') return;
+        const cat = entry.category;
+        if (!categoryProgress[cat]) return;
+        const gp = getGeneralPoints(entry);
+        const mode = entry.mode;
+        if (mode === 'learn' && gp > categoryProgress[cat].learn) categoryProgress[cat].learn = gp;
+        else if (mode === 'quiz' && gp > categoryProgress[cat].quiz) categoryProgress[cat].quiz = gp;
+        else if (mode === 'dictation' && gp > categoryProgress[cat].dictation) categoryProgress[cat].dictation = gp;
+        else if (mode === 'memory' && gp > categoryProgress[cat].memory) categoryProgress[cat].memory = gp;
+    });
+
+    Object.keys(categoryProgress).forEach(catKey => {
+        const cat = categoryProgress[catKey];
+        cat.total = cat.learn + cat.quiz + cat.dictation + cat.memory;
+        cat.percent = Math.max(0, Math.min(100, Math.round((cat.total / 1250) * 100)));
+    });
+
+    let recentActivities = [];
+    entries.forEach(entry => {
+        if (normalizeNicknameKey(entry.name) !== playerKey) return;
+        if (entry.mode === 'review') return;
+        recentActivities.push(entry);
+    });
+    recentActivities.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    recentActivities = recentActivities.slice(0, 5);
+
+    let bestCategory = null;
+    let bestPercent = 0;
+    Object.entries(categoryProgress).forEach(([catKey, data]) => {
+        if (data.percent > bestPercent && data.total > 0) {
+            bestPercent = data.percent;
+            bestCategory = catKey;
+        }
+    });
+
+    const hasAnyData = totalPlays > 0 || entries.some(e => normalizeNicknameKey(e.name) === playerKey);
+
+    renderProgressDashboard({
+        generalPoints,
+        rankingPosition,
+        totalPlayers: generalRanking.length,
+        accuracy,
+        dailyStreak,
+        totalPlays,
+        bestComboAll,
+        perfectGamesAll,
+        wordsPracticed,
+        wordsStrong,
+        wordsTraining,
+        wordsReview,
+        wordsNotPracticed,
+        topAttention,
+        categoryProgress,
+        recentActivities,
+        bestCategory,
+        bestPercent,
+        hasAnyData
+    });
+}
+
+function getWordsForCategory(catKey) {
+    if (typeof vocabData === 'undefined') return [];
+    if (catKey === 'sentences') return vocabData.sentences || [];
+    const catVocab = vocabData[catKey];
+    if (!catVocab) return [];
+    const all = [];
+    Object.values(catVocab).forEach(arr => {
+        if (Array.isArray(arr)) all.push(...arr);
+    });
+    return all;
+}
+
+function renderProgressDashboard(data) {
+    const container = document.getElementById('progress-content');
+    container.innerHTML = '';
+
+    if (!data.hasAnyData) {
+        const empty = document.createElement('div');
+        empty.className = 'progress-empty';
+        empty.innerHTML = '<div class="progress-empty-icon">📊</div>' +
+            '<h3>SEU PROGRESSO COMEÇA AQUI</h3>' +
+            '<p>Complete uma atividade para começar a acompanhar sua evolução.</p>';
+        container.appendChild(empty);
+        renderProgressSummaryCards(container, data);
+        return;
+    }
+
+    renderProgressSummaryCards(container, data);
+    renderSecondaryStats(container, data);
+    renderCategoryProgressSection(container, data);
+    renderVocabularySection(container, data);
+    renderAttentionWords(container, data);
+    renderRecentActivities(container, data);
+    if (data.bestCategory) renderBestCategory(container, data);
+}
+
+function renderProgressSummaryCards(container, data) {
+    const cards = document.createElement('div');
+    cards.className = 'progress-summary-cards';
+
+    cards.innerHTML =
+        '<div class="progress-card">' +
+            '<div class="progress-card-icon">⭐</div>' +
+            '<div class="progress-card-label">PONTUAÇÃO GERAL</div>' +
+            '<div class="progress-card-value">' + data.generalPoints.toLocaleString('pt-BR') + ' pts</div>' +
+        '</div>' +
+        '<div class="progress-card">' +
+            '<div class="progress-card-icon">🏆</div>' +
+            '<div class="progress-card-label">RANKING</div>' +
+            '<div class="progress-card-value">' + (data.rankingPosition > 0 ? data.rankingPosition + 'º lugar' : 'Ainda sem posição') + '</div>' +
+            '<div class="progress-card-sub">' + data.totalPlayers + ' jogador' + (data.totalPlayers !== 1 ? 'es' : '') + '</div>' +
+        '</div>' +
+        '<div class="progress-card">' +
+            '<div class="progress-card-icon">🎯</div>' +
+            '<div class="progress-card-label">TAXA DE ACERTO</div>' +
+            '<div class="progress-card-value">' + (data.accuracy > 0 ? data.accuracy + '%' : '—') + '</div>' +
+        '</div>' +
+        '<div class="progress-card">' +
+            '<div class="progress-card-icon">🔥</div>' +
+            '<div class="progress-card-label">SEQUÊNCIA</div>' +
+            '<div class="progress-card-value">' + data.dailyStreak + ' dia' + (data.dailyStreak !== 1 ? 's' : '') + '</div>' +
+            '<div class="progress-card-sub">neste dispositivo</div>' +
+        '</div>';
+
+    container.appendChild(cards);
+}
+
+function renderSecondaryStats(container, data) {
+    const section = document.createElement('div');
+    section.className = 'progress-secondary';
+
+    section.innerHTML =
+        '<div class="progress-stat-row">' +
+            '<div class="progress-stat-item">' +
+                '<div class="progress-stat-value">' + data.totalPlays + '</div>' +
+                '<div class="progress-stat-label">Atividades realizadas</div>' +
+            '</div>' +
+            '<div class="progress-stat-item">' +
+                '<div class="progress-stat-value">' + data.bestComboAll + 'x</div>' +
+                '<div class="progress-stat-label">Melhor sequência</div>' +
+            '</div>' +
+            '<div class="progress-stat-item">' +
+                '<div class="progress-stat-value">' + data.perfectGamesAll + '</div>' +
+                '<div class="progress-stat-label">Jogos perfeitos</div>' +
+            '</div>' +
+            '<div class="progress-stat-item">' +
+                '<div class="progress-stat-value">' + data.wordsPracticed + '</div>' +
+                '<div class="progress-stat-label">Palavras praticadas</div>' +
+            '</div>' +
+        '</div>';
+
+    container.appendChild(section);
+}
+
+function renderCategoryProgressSection(container, data) {
+    const section = document.createElement('div');
+    section.className = 'progress-categories';
+
+    const title = document.createElement('h3');
+    title.textContent = 'PROGRESSO POR CATEGORIA';
+    section.appendChild(title);
+
+    Object.entries(categoryData).forEach(([catKey, catInfo]) => {
+        const catData = data.categoryProgress[catKey];
+        const row = document.createElement('div');
+        row.className = 'progress-cat-row';
+
+        const header = document.createElement('div');
+        header.className = 'progress-cat-header';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'progress-cat-name';
+        nameSpan.textContent = catInfo.emoji + ' ' + catInfo.name.toUpperCase();
+
+        const ptsSpan = document.createElement('span');
+        ptsSpan.className = 'progress-cat-pts';
+        ptsSpan.textContent = catData.total + ' / 1250 pts';
+
+        header.appendChild(nameSpan);
+        header.appendChild(ptsSpan);
+        row.appendChild(header);
+
+        const barOuter = document.createElement('div');
+        barOuter.className = 'progress-bar-outer';
+        barOuter.setAttribute('role', 'progressbar');
+        barOuter.setAttribute('aria-valuenow', catData.percent);
+        barOuter.setAttribute('aria-valuemin', '0');
+        barOuter.setAttribute('aria-valuemax', '100');
+        barOuter.setAttribute('aria-label', catInfo.name + ' ' + catData.percent + '%');
+
+        const barInner = document.createElement('div');
+        barInner.className = 'progress-bar-inner';
+        barInner.style.width = catData.percent + '%';
+        if (catData.percent >= 80) barInner.classList.add('bar-excellent');
+        else if (catData.percent >= 50) barInner.classList.add('bar-good');
+        else if (catData.percent > 0) barInner.classList.add('bar-started');
+
+        barOuter.appendChild(barInner);
+        row.appendChild(barOuter);
+
+        const details = document.createElement('div');
+        details.className = 'progress-cat-details';
+
+        const modes = [
+            { key: 'learn', label: 'APRENDER' },
+            { key: 'quiz', label: 'QUIZ' },
+            { key: 'dictation', label: 'OUVIR' },
+            { key: 'memory', label: 'MEMÓRIA' }
+        ];
+
+        modes.forEach(m => {
+            const val = catData[m.key];
+            const maxVal = m.key === 'learn' ? 50 : 400;
+            const detail = document.createElement('span');
+            detail.className = 'progress-cat-mode';
+            if (val > 0) {
+                detail.textContent = m.label + ' ' + val + '/' + maxVal;
+            } else {
+                detail.textContent = m.label + ' —';
+                detail.classList.add('mode-empty');
+            }
+            details.appendChild(detail);
+        });
+
+        row.appendChild(details);
+        section.appendChild(row);
+    });
+
+    container.appendChild(section);
+}
+
+function renderVocabularySection(container, data) {
+    const section = document.createElement('div');
+    section.className = 'progress-vocab';
+
+    const title = document.createElement('h3');
+    title.textContent = 'VOCABULÁRIO';
+    section.appendChild(title);
+
+    const summary = document.createElement('div');
+    summary.className = 'progress-vocab-summary';
+
+    summary.innerHTML =
+        '<div class="progress-vocab-item vocab-strong">💪 ' + data.wordsStrong + ' fortes</div>' +
+        '<div class="progress-vocab-item vocab-training">📘 ' + data.wordsTraining + ' em treino</div>' +
+        '<div class="progress-vocab-item vocab-review">🔁 ' + data.wordsReview + ' para revisar</div>' +
+        '<div class="progress-vocab-item vocab-none">○ ' + data.wordsNotPracticed + ' não praticadas</div>';
+
+    section.appendChild(summary);
+    container.appendChild(section);
+}
+
+function renderAttentionWords(container, data) {
+    const section = document.createElement('div');
+    section.className = 'progress-attention';
+
+    const title = document.createElement('h3');
+    title.textContent = 'PRECISAM DE ATENÇÃO';
+    section.appendChild(title);
+
+    if (data.topAttention.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'progress-attention-empty';
+        empty.textContent = 'Nenhuma palavra precisa de atenção agora. 🎉';
+        section.appendChild(empty);
+    } else {
+        const list = document.createElement('div');
+        list.className = 'progress-attention-list';
+
+        data.topAttention.forEach(w => {
+            const row = document.createElement('div');
+            row.className = 'progress-attention-row';
+
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'progress-attention-word';
+            wordSpan.textContent = w.word;
+
+            const errSpan = document.createElement('span');
+            errSpan.className = 'progress-attention-errors';
+            errSpan.textContent = w.errors + ' erro' + (w.errors !== 1 ? 's' : '');
+
+            row.appendChild(wordSpan);
+            row.appendChild(errSpan);
+            list.appendChild(row);
+        });
+
+        section.appendChild(list);
+    }
+
+    container.appendChild(section);
+}
+
+function renderRecentActivities(container, data) {
+    const section = document.createElement('div');
+    section.className = 'progress-recent';
+
+    const title = document.createElement('h3');
+    title.textContent = 'ATIVIDADES RECENTES';
+    section.appendChild(title);
+
+    if (data.recentActivities.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'progress-recent-empty';
+        empty.textContent = 'Nenhuma atividade registrada ainda.';
+        section.appendChild(empty);
+    } else {
+        const list = document.createElement('div');
+        list.className = 'progress-recent-list';
+
+        data.recentActivities.forEach(entry => {
+            const row = document.createElement('div');
+            row.className = 'progress-recent-row';
+
+            const modeLabels = { quiz: 'QUIZ', dictation: 'OUVIR E ESCREVER', learn: 'APRENDER', memory: 'MEMÓRIA' };
+            const modeLabel = modeLabels[entry.mode] || entry.mode.toUpperCase();
+            const catInfo = categoryData[entry.category] || { emoji: '', name: entry.category };
+            const gp = getGeneralPoints(entry);
+
+            const left = document.createElement('div');
+            left.className = 'progress-recent-left';
+
+            const modeSpan = document.createElement('span');
+            modeSpan.className = 'progress-recent-mode';
+            modeSpan.textContent = modeLabel + ' · ' + catInfo.name.toUpperCase();
+            left.appendChild(modeSpan);
+
+            const ptsSpan = document.createElement('span');
+            ptsSpan.className = 'progress-recent-pts';
+            ptsSpan.textContent = (entry.mode === 'learn' ? '+' : '') + gp + ' pts';
+            left.appendChild(ptsSpan);
+
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'progress-recent-date';
+            dateSpan.textContent = formatDateRelative(entry.date);
+
+            row.appendChild(left);
+            row.appendChild(dateSpan);
+            list.appendChild(row);
+        });
+
+        section.appendChild(list);
+    }
+
+    container.appendChild(section);
+}
+
+function renderBestCategory(container, data) {
+    const catInfo = categoryData[data.bestCategory];
+    if (!catInfo) return;
+
+    const section = document.createElement('div');
+    section.className = 'progress-highlight';
+
+    section.innerHTML =
+        '<div class="progress-highlight-label">DESTAQUE</div>' +
+        '<div class="progress-highlight-value">' + catInfo.name + ' · ' + data.bestPercent + '%</div>';
+
+    container.appendChild(section);
+}
+
+function formatDateRelative(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return 'Hoje';
+        if (diffDays === 1) return 'Ontem';
+        if (diffDays < 7) return diffDays + ' dias atrás';
+        return date.toLocaleDateString('pt-BR');
+    } catch(e) {
+        return '';
+    }
+}
+
 // ==================== DOMContentLoaded ====================
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('start-screen').style.display = 'block';
     initConfetti();
+    migrateOldProgressData();
     
     // Enter key no input de nome
     document.getElementById('player-name-input').addEventListener('keypress', (e) => {
