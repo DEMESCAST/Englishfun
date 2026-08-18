@@ -303,7 +303,7 @@ const vocabulary = {
         words: [
             { emoji: '👋', english: 'Hello, how are you?', phonetic: '/hé-lóu, háu ár iú?/', portuguese: 'Olá, como vai você?', sentence: 'Hello, how are you?', sentenceTranslation: 'Olá, como vai você?' },
             { emoji: '🙏', english: 'Thank you very much', phonetic: '/sénk iú vérri máts/', portuguese: 'Muito obrigado', sentence: 'Thank you very much', sentenceTranslation: 'Muito obrigado' },
-            { emoji: 'Excuse me', english: 'Excuse me', phonetic: '/iks-kiús mi/', portuguese: 'Com licença', sentence: 'Excuse me, where is the bathroom?', sentenceTranslation: 'Com licença, onde fica o banheiro?' },
+            { emoji: '🗣️', english: 'Excuse me', phonetic: '/iks-kiús mi/', portuguese: 'Com licença', sentence: 'Excuse me, where is the bathroom?', sentenceTranslation: 'Com licença, onde fica o banheiro?' },
             { emoji: '🙋', english: 'My name is...', phonetic: '/mai ném iz.../', portuguese: 'Meu nome é...', sentence: 'My name is John.', sentenceTranslation: 'Meu nome é João.' },
             { emoji: '❓', english: 'What is your name?', phonetic: '/uót iz iór ném?/', portuguese: 'Qual é o seu nome?', sentence: 'What is your name?', sentenceTranslation: 'Qual é o seu nome?' },
             { emoji: '❤️', english: 'I love you', phonetic: '/ái lóv iú/', portuguese: 'Eu te amo', sentence: 'I love you so much.', sentenceTranslation: 'Eu te amo muito.' },

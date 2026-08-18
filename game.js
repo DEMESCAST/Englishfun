@@ -56,7 +56,12 @@ const achievementList = [
 
 // Inicializar áudio
 function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
 }
 
 // Falar palavra
@@ -65,6 +70,7 @@ function speakWord() {
     const word = dictationMode && currentDictationWord ? currentDictationWord : learnWords[currentLearnIndex];
     if (!word) return;
     
+    speechSynthesis.cancel();
     const rate = currentCategory === 'sentences' ? 0.7 : 0.8;
     
     // Falar a palavra primeiro
@@ -153,12 +159,6 @@ function shuffle(array) {
     return arr;
 }
 
-function setDifficulty(level) {
-    difficulty = level;
-    document.querySelectorAll('#difficulty-section .diff-btn').forEach(btn => {
-        btn.classList.toggle('selected', btn.dataset.level === level);
-    });
-}
 
 function startGame(category) {
     initAudio();
@@ -255,22 +255,6 @@ function nextLearnWord() {
         showLearnComplete();
     } else {
         showLearnMode();
-    }
-}
-
-function startQuiz() {
-    document.getElementById('learn-card').style.display = 'none';
-    document.getElementById('quiz-card').style.display = 'none';
-    document.getElementById('dictation-card').style.display = 'none';
-    
-    if (dictationMode) {
-        document.getElementById('dictation-card').style.display = 'block';
-        document.getElementById('dictation-input').removeEventListener('keypress', handleDictationKeyPress);
-        document.getElementById('dictation-input').addEventListener('keypress', handleDictationKeyPress);
-        showDictationQuestion();
-    } else {
-        document.getElementById('quiz-card').style.display = 'block';
-        showQuizQuestion();
     }
 }
 
@@ -733,13 +717,17 @@ function saveProgress() {
         const today = new Date().toDateString();
         const lastDate = data.lastPlayDate;
         if (lastDate !== today) {
-            const last = new Date(lastDate);
-            const now = new Date();
-            const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
-            if (diffDays === 1) {
-                data.dailyStreak = (data.dailyStreak || 0) + 1;
-            } else if (diffDays > 1) {
+            if (!lastDate) {
                 data.dailyStreak = 1;
+            } else {
+                const last = new Date(lastDate);
+                const now = new Date();
+                const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                    data.dailyStreak = (data.dailyStreak || 0) + 1;
+                } else if (diffDays > 1) {
+                    data.dailyStreak = 1;
+                }
             }
             data.lastPlayDate = today;
         }
@@ -821,14 +809,6 @@ function getWordsForReview(words, count) {
 // ==================== DICTATION MODE ====================
 let dictationMode = false;
 let currentDictationWord = null;
-
-function startDictationMode() {
-    dictationMode = true;
-    document.getElementById('learn-card').style.display = 'none';
-    document.getElementById('quiz-card').style.display = 'none';
-    document.getElementById('dictation-card').style.display = 'block';
-    showDictationQuestion();
-}
 
 function showDictationQuestion() {
     if (currentQuizIndex >= quizWords.length) {
@@ -1141,26 +1121,6 @@ function celebrateCombo() {
 }
 
 // ==================== STAR BURST EFFECT ====================
-function createStarBurst(x, y) {
-    const colors = ['#feca57', '#ff6b6b', '#48dbfb', '#ff9ff3'];
-    for (let i = 0; i < 8; i++) {
-        const star = document.createElement('div');
-        star.style.cssText = `
-            position: fixed;
-            left: ${x}px;
-            top: ${y}px;
-            width: 10px;
-            height: 10px;
-            background: ${colors[i % colors.length]};
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1001;
-            animation: starBurst 0.6s ease-out forwards;
-        `;
-        document.body.appendChild(star);
-        setTimeout(() => star.remove(), 600);
-    }
-}
 
 // ==================== DOMContentLoaded ====================
 document.addEventListener('DOMContentLoaded', () => {

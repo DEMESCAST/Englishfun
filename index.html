@@ -827,7 +827,7 @@
             border-radius: 20px;
             font-weight: bold;
         }
-        .memory-category-select {
+        #memory-category-select {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
@@ -1042,6 +1042,10 @@
             font-size: 100px;
             margin-bottom: 15px;
             animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
         #result-screen h2 {
             font-size: 36px;
