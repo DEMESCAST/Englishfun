@@ -9,7 +9,7 @@
         ".write": "!data.exists() && newData.exists()",
         ".validate": "newData.hasChildren(['name', 'score', 'correct', 'total', 'maxCombo', 'category', 'mode', 'date'])",
         "name": {
-          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16 && !newData.val().matches(/.*<.*>.*/) && !newData.val().matches(/.*\\n.*/)"
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16 && !newData.val().matches(/.*<.*>.*/)"
         },
         "score": {
           ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
@@ -24,10 +24,10 @@
           ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
         },
         "category": {
-          ".validate": "newData.isString() && newData.val().matches(/^(animals|food|colors|numbers|body|objects|family|clothes|weather|actions|sentences|review)$/"
+          ".validate": "newData.isString() && newData.val().matches(/^(animals|food|colors|numbers|body|objects|family|clothes|weather|actions|sentences|review)$/)"
         },
         "mode": {
-          ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review)$/"
+          ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review)$/)"
         },
         "date": {
           ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 30"

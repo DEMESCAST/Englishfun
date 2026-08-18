@@ -1,4 +1,4 @@
-const CACHE_NAME = 'english-fun-v4';
+const CACHE_NAME = 'english-fun-v5';
 const urlsToCache = [
     './',
     './index.html',
@@ -33,13 +33,44 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+    const url = new URL(event.request.url);
+    
+    // Network-first para arquivos críticos (HTML, JS)
+    if (event.request.method === 'GET' && 
+        (url.pathname.endsWith('.html') || 
+         url.pathname.endsWith('.js') || 
+         url.pathname === './' || 
+         url.pathname.endsWith('/'))) {
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseClone);
+                    });
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
+    
+    // Cache-first para outros recursos (imagens, etc)
     event.respondWith(
         caches.match(event.request)
             .then(response => {
                 if (response) {
                     return response;
                 }
-                return fetch(event.request);
+                return fetch(event.request).then(response => {
+                    if (response && response.status === 200) {
+                        const responseClone = response.clone();
+                        caches.open(CACHE_NAME).then(cache => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return response;
+                });
             })
     );
 });

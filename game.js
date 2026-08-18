@@ -511,7 +511,7 @@ function validateNickname(value) {
     return { valid: true, value: nick };
 }
 
-function saveRanking() {
+async function saveRanking() {
     const correctCount = totalQuestions - wrongAnswersList.length;
     const entry = {
         name: playerName,
@@ -524,34 +524,51 @@ function saveRanking() {
         date: new Date().toISOString()
     };
     
+    console.log('Entrada enviada ao ranking:', entry);
+    
+    let firebaseSaved = false;
+
     // Salvar no Firebase
     if (db) {
         try {
-            db.ref('ranking').push(entry);
-        } catch(e) {}
+            await db.ref('ranking').push(entry);
+            firebaseSaved = true;
+            console.log('Ranking salvo no Firebase:', entry);
+        } catch (error) {
+            console.error('Erro ao salvar ranking no Firebase:', error.code, error.message);
+        }
     }
     
-    // Também salvar localmente como backup
+    // Sempre salvar localmente como backup
     try {
         const key = 'englishFunRanking';
         const data = JSON.parse(localStorage.getItem(key) || '[]');
         data.push(entry);
         data.sort((a, b) => b.score - a.score);
         localStorage.setItem(key, JSON.stringify(data.slice(0, 50)));
-    } catch(e) {}
+        console.log('Ranking salvo localmente');
+    } catch(e) {
+        console.error('Erro ao salvar ranking local:', e);
+    }
+    
+    return firebaseSaved;
 }
 
-function displayRanking() {
+async function displayRanking() {
     const section = document.getElementById('ranking-section');
     const table = document.getElementById('ranking-table');
     
     if (db) {
-        db.ref('ranking').orderByChild('score').limitToLast(10).once('value', (snapshot) => {
+        try {
+            const snapshot = await db.ref('ranking').orderByChild('score').limitToLast(10).once('value');
             const data = [];
             snapshot.forEach((child) => data.push(child.val()));
             data.reverse();
             renderRankingTable(data, table, section);
-        }).catch(() => renderRankingLocal(table, section));
+        } catch (error) {
+            console.error('Erro ao ler ranking do Firebase:', error.code, error.message);
+            renderRankingLocal(table, section);
+        }
     } else {
         renderRankingLocal(table, section);
     }
@@ -606,7 +623,7 @@ function renderRankingTable(data, table, section) {
     });
 }
 
-function showResult() {
+async function showResult() {
     playSound('correct');
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'block';
@@ -653,8 +670,8 @@ function showResult() {
     
     // Salvar e mostrar ranking
     if (!isReviewSession) {
-        saveRanking();
-        displayRanking();
+        await saveRanking();
+        await displayRanking();
     } else {
         document.getElementById('ranking-section').style.display = 'none';
     }
