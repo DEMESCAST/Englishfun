@@ -455,6 +455,96 @@ function showAchievement(ach) {
 
 // ==================== RANKING ====================
 
+// Normalizar chave do apelido (para agrupar jogadores)
+function normalizeNicknameKey(name) {
+    if (typeof name !== 'string') return '';
+    return name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+// Calcular generalPoints a partir de um registro
+function getGeneralPoints(entry) {
+    if (!entry) return 0;
+    if (typeof entry.generalPoints === 'number' && entry.generalPoints >= 0) {
+        return entry.generalPoints;
+    }
+    // Fallback para registros antigos
+    if (entry.mode === 'learn') return 50;
+    if (entry.mode === 'memory') {
+        const maxMemory = 500;
+        return Math.round(((entry.score || 0) / maxMemory) * 400);
+    }
+    if (entry.correct != null && entry.total != null && entry.total > 0) {
+        return Math.round((entry.correct / entry.total) * 400);
+    }
+    return 0;
+}
+
+// Converter score da memória para 0-400
+function calculateMemoryGeneralPoints(memoryScore) {
+    const maxMemory = 500;
+    const pts = Math.round((memoryScore / maxMemory) * 400);
+    return Math.max(0, Math.min(400, pts));
+}
+
+// Construir ranking geral agrupado por jogador
+function buildGeneralRanking(entries) {
+    const players = {};
+    
+    entries.forEach(entry => {
+        const safe = normalizeRankingEntry(entry);
+        if (!safe) return;
+        
+        const key = normalizeNicknameKey(safe.name);
+        if (!key) return;
+        
+        if (!players[key]) {
+            players[key] = {
+                name: safe.name,
+                totalGeneralPoints: 0,
+                combinations: 0,
+                lastDate: safe.date,
+                bestPerCombo: {}
+            };
+        }
+        
+        const player = players[key];
+        const comboKey = `${safe.mode}_${safe.category}`;
+        const gp = getGeneralPoints(safe);
+        
+        if (!player.bestPerCombo[comboKey] || gp > player.bestPerCombo[comboKey]) {
+            player.bestPerCombo[comboKey] = gp;
+        }
+        
+        if (safe.date > player.lastDate) player.lastDate = safe.date;
+    });
+    
+    // Somar melhores resultados
+    const result = [];
+    Object.values(players).forEach(player => {
+        let total = 0;
+        let combos = 0;
+        Object.values(player.bestPerCombo).forEach(pts => {
+            total += pts;
+            combos++;
+        });
+        result.push({
+            name: player.name,
+            generalPoints: total,
+            combinations: combos,
+            lastDate: player.lastDate
+        });
+    });
+    
+    // Ordenar: maior pontuação, mais combos, data mais recente
+    result.sort((a, b) => {
+        if (b.generalPoints !== a.generalPoints) return b.generalPoints - a.generalPoints;
+        if (b.combinations !== a.combinations) return b.combinations - a.combinations;
+        return (b.lastDate || '').localeCompare(a.lastDate || '');
+    });
+    
+    return result;
+}
+
 // Normalizar e validar entrada do ranking
 function normalizeRankingEntry(entry) {
     if (!entry || typeof entry !== 'object') return null;
@@ -513,9 +603,18 @@ function validateNickname(value) {
 
 async function saveRanking() {
     const correctCount = totalQuestions - wrongAnswersList.length;
+    
+    // Calcular generalPoints
+    let generalPoints = 0;
+    if (currentMode === 'quiz' || currentMode === 'dictation') {
+        generalPoints = Math.round((correctCount / totalQuestions) * 400);
+        generalPoints = Math.max(0, Math.min(400, generalPoints));
+    }
+    
     const entry = {
         name: playerName,
         score: score,
+        generalPoints: generalPoints,
         correct: correctCount,
         total: totalQuestions,
         maxCombo: maxCombo,
@@ -566,16 +665,10 @@ async function displayRanking() {
                 rawData.push(child.val());
             });
             
-            console.log('Ranking bruto recebido do Firebase:', rawData);
+            const generalRanking = buildGeneralRanking(rawData);
+            console.log('Ranking geral calculado:', generalRanking);
             
-            const validData = rawData
-                .map(normalizeRankingEntry)
-                .filter(Boolean)
-                .sort((a, b) => b.score - a.score);
-            
-            console.log('Ranking válido após normalização:', validData);
-            
-            renderRankingTable(validData.slice(0, 10), table, section);
+            renderRankingTable(generalRanking.slice(0, 10), table, section);
         } catch (error) {
             console.error('Erro ao ler ranking do Firebase:', error.code, error.message);
             renderRankingLocal(table, section);
@@ -588,7 +681,8 @@ async function displayRanking() {
 function renderRankingLocal(table, section) {
     try {
         const data = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
-        renderRankingTable(data.slice(0, 10), table, section);
+        const generalRanking = buildGeneralRanking(data);
+        renderRankingTable(generalRanking.slice(0, 10), table, section);
     } catch(e) { section.style.display = 'none'; }
 }
 
@@ -598,10 +692,12 @@ function renderRankingTable(data, table, section) {
     table.innerHTML = '';
     
     data.forEach((entry, i) => {
-        const safe = normalizeRankingEntry(entry) || entry;
-        if (!safe) return;
+        const name = entry.name || 'Jogador';
+        const gp = entry.generalPoints || 0;
+        const key = normalizeNicknameKey(name);
+        const playerKey = normalizeNicknameKey(playerName);
+        const isYou = key === playerKey && key !== '';
         
-        const isYou = safe.name === playerName && safe.score === score;
         const pos = i + 1;
         const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
         
@@ -614,7 +710,7 @@ function renderRankingTable(data, table, section) {
         
         const nameSpan = document.createElement('span');
         nameSpan.className = 'ranking-name';
-        nameSpan.textContent = safe.name;
+        nameSpan.textContent = name;
         
         if (isYou) {
             const youSpan = document.createElement('span');
@@ -625,7 +721,7 @@ function renderRankingTable(data, table, section) {
         
         const scoreSpan = document.createElement('span');
         scoreSpan.className = 'ranking-score';
-        scoreSpan.textContent = `${safe.score} pts`;
+        scoreSpan.textContent = `${gp} pts`;
         
         row.appendChild(posSpan);
         row.appendChild(nameSpan);
@@ -644,6 +740,66 @@ async function showResult() {
     
     document.getElementById('result-score').textContent = `Pontuação: ${score}`;
     document.getElementById('result-stats').textContent = `Acertos: ${correctCount}/${totalQuestions} | Sequência máxima: ${maxCombo}x`;
+    
+    // Calcular generalPoints desta partida
+    let matchGeneralPoints = 0;
+    if (currentMode === 'quiz' || currentMode === 'dictation') {
+        matchGeneralPoints = Math.round((correctCount / totalQuestions) * 400);
+        matchGeneralPoints = Math.max(0, Math.min(400, matchGeneralPoints));
+    } else if (currentMode === 'learn') {
+        matchGeneralPoints = 50;
+    }
+    
+    // Buscar pontuação geral anterior do jogador
+    let previousGeneral = 0;
+    let previousBestForCombo = 0;
+    const comboKey = `${currentMode}_${currentCategory}`;
+    
+    try {
+        let allEntries = [];
+        if (db) {
+            const snapshot = await db.ref('ranking').once('value');
+            snapshot.forEach(child => allEntries.push(child.val()));
+        }
+        const localData = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        allEntries = allEntries.concat(localData);
+        
+        const playerKey = normalizeNicknameKey(playerName);
+        allEntries.forEach(entry => {
+            if (normalizeNicknameKey(entry.name) === playerKey) {
+                const gp = getGeneralPoints(entry);
+                const ek = `${entry.mode}_${entry.category}`;
+                previousGeneral += gp;
+                if (ek === comboKey) {
+                    previousBestForCombo = Math.max(previousBestForCombo, gp);
+                }
+            }
+        });
+    } catch(e) {}
+    
+    const newBest = matchGeneralPoints > previousBestForCombo;
+    const gained = newBest ? matchGeneralPoints - previousBestForCombo : 0;
+    const newGeneral = previousGeneral + gained;
+    
+    // Mostrar pontuação geral na tela
+    const generalEl = document.getElementById('result-general');
+    if (generalEl) {
+        if (currentMode !== 'review') {
+            let html = `<div class="general-score-box">`;
+            html += `<div class="general-label">PONTUAÇÃO GERAL</div>`;
+            html += `<div class="general-value">${newGeneral.toLocaleString('pt-BR')} pts</div>`;
+            if (newBest && gained > 0) {
+                html += `<div class="general-gain">+${gained} pontos no ranking</div>`;
+            } else if (matchGeneralPoints > 0) {
+                html += `<div class="general-neutral">Seu recorde nesta atividade foi mantido.</div>`;
+            }
+            html += `</div>`;
+            generalEl.innerHTML = html;
+            generalEl.style.display = 'block';
+        } else {
+            generalEl.style.display = 'none';
+        }
+    }
     
     if (pct >= 90) {
         document.getElementById('result-emoji').textContent = '🏆';
@@ -873,6 +1029,98 @@ function showQuizMode() {
 function showLearnComplete() {
     document.getElementById('learn-card').style.display = 'none';
     document.getElementById('learn-complete-card').style.display = 'block';
+    // Salvar bonus de learn
+    saveLearnBonus();
+}
+
+// Salvar bonus de Learn (50 pontos, uma vez por categoria)
+async function saveLearnBonus() {
+    if (!playerName || !currentCategory) return;
+    
+    // Verificar se já existe learn + categoria para este jogador
+    const key = normalizeNicknameKey(playerName);
+    const comboKey = `learn_${currentCategory}`;
+    
+    if (db) {
+        try {
+            const snapshot = await db.ref('ranking').once('value');
+            let alreadyHas = false;
+            snapshot.forEach(child => {
+                const entry = child.val();
+                if (normalizeNicknameKey(entry.name) === key && entry.mode === 'learn' && entry.category === currentCategory) {
+                    alreadyHas = true;
+                }
+            });
+            if (alreadyHas) return;
+        } catch(e) {}
+    }
+    
+    // Verificar localmente também
+    try {
+        const localData = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        const alreadyHasLocal = localData.some(e => normalizeNicknameKey(e.name) === key && e.mode === 'learn' && e.category === currentCategory);
+        if (alreadyHasLocal) return;
+    } catch(e) {}
+    
+    const entry = {
+        name: playerName,
+        score: 0,
+        generalPoints: 50,
+        correct: 1,
+        total: 1,
+        maxCombo: 0,
+        category: currentCategory,
+        mode: 'learn',
+        date: new Date().toISOString()
+    };
+    
+    if (db) {
+        try { await db.ref('ranking').push(entry); } catch(e) {}
+    }
+    
+    try {
+        const data = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        data.push(entry);
+        localStorage.setItem('englishFunRanking', JSON.stringify(data));
+    } catch(e) {}
+}
+
+// Salvar resultado da memória no ranking
+async function saveMemoryRanking() {
+    if (!playerName || !memoryCategory) return;
+    
+    const generalPoints = calculateMemoryGeneralPoints(memoryScore);
+    
+    const entry = {
+        name: playerName,
+        score: memoryScore,
+        generalPoints: generalPoints,
+        correct: matchedPairs,
+        total: 8,
+        maxCombo: matchedPairs,
+        category: memoryCategory,
+        mode: 'memory',
+        date: new Date().toISOString()
+    };
+    
+    let firebaseSaved = false;
+    if (db) {
+        try {
+            await db.ref('ranking').push(entry);
+            firebaseSaved = true;
+        } catch(e) {
+            console.error('Erro ao salvar ranking memória:', e.code, e.message);
+        }
+    }
+    
+    try {
+        const data = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        data.push(entry);
+        data.sort((a, b) => b.score - a.score);
+        localStorage.setItem('englishFunRanking', JSON.stringify(data.slice(0, 50)));
+    } catch(e) {}
+    
+    return firebaseSaved;
 }
 
 function startQuizFromLearn() {
@@ -1250,6 +1498,9 @@ function flipCard(index) {
                         if (memoryTimer < 30) memoryScore += 100;
                         else if (memoryTimer < 60) memoryScore += 50;
                         document.getElementById('memory-score').textContent = memoryScore;
+                        
+                        // Salvar no ranking
+                        saveMemoryRanking();
                     }, 500);
                 }
             }, 500);
@@ -1408,16 +1659,10 @@ async function displayHomeRanking() {
                 rawData.push(child.val());
             });
             
-            console.log('Ranking inicial bruto do Firebase:', rawData);
+            const generalRanking = buildGeneralRanking(rawData);
+            console.log('Ranking inicial geral:', generalRanking);
             
-            const validData = rawData
-                .map(normalizeRankingEntry)
-                .filter(Boolean)
-                .sort((a, b) => b.score - a.score);
-            
-            console.log('Ranking inicial válido:', validData);
-            
-            renderHomeRanking(validData.slice(0, 5), list);
+            renderHomeRanking(generalRanking.slice(0, 5), list);
         } catch (error) {
             console.error('Erro ao ler ranking inicial:', error.code, error.message);
             renderHomeRankingLocal(list);
@@ -1430,7 +1675,8 @@ async function displayHomeRanking() {
 function renderHomeRankingLocal(list) {
     try {
         const data = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
-        renderHomeRanking(data.slice(0, 5), list);
+        const generalRanking = buildGeneralRanking(data);
+        renderHomeRanking(generalRanking.slice(0, 5), list);
     } catch(e) {
         list.innerHTML = '';
         const empty = document.createElement('div');
@@ -1452,8 +1698,8 @@ function renderHomeRanking(data, list) {
     }
     
     data.forEach((entry, i) => {
-        const safe = normalizeRankingEntry(entry);
-        if (!safe) return;
+        const name = entry.name || 'Jogador';
+        const gp = entry.generalPoints || 0;
         
         const pos = i + 1;
         const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
@@ -1467,11 +1713,11 @@ function renderHomeRanking(data, list) {
         
         const nameSpan = document.createElement('span');
         nameSpan.className = 'home-ranking-name';
-        nameSpan.textContent = safe.name;
+        nameSpan.textContent = name;
         
         const scoreSpan = document.createElement('span');
         scoreSpan.className = 'home-ranking-score';
-        scoreSpan.textContent = `${safe.score} pts`;
+        scoreSpan.textContent = `${gp} pts`;
         
         row.appendChild(posSpan);
         row.appendChild(nameSpan);

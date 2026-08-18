@@ -14,6 +14,9 @@
         "score": {
           ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
         },
+        "generalPoints": {
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 500)"
+        },
         "correct": {
           ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
         },
@@ -27,7 +30,7 @@
           ".validate": "newData.isString() && newData.val().matches(/^(animals|food|colors|numbers|body|objects|family|clothes|weather|actions|sentences|review)$/)"
         },
         "mode": {
-          ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review)$/)"
+          ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review|memory)$/)"
         },
         "date": {
           ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 30"

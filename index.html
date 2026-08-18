@@ -1052,6 +1052,36 @@
             margin-bottom: 25px;
             opacity: 0.9;
         }
+        .general-score-box {
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 15px;
+        }
+        .general-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 4px;
+        }
+        .general-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0,212,255,0.5);
+        }
+        .general-gain {
+            font-size: 14px;
+            color: #38ef7d;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+        .general-neutral {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+        }
         .result-btn {
             padding: 14px 35px;
             font-size: 16px;
@@ -1628,6 +1658,7 @@
             <div id="result-emoji"></div>
             <h2>Parabéns!</h2>
             <div id="result-score"></div>
+            <div id="result-general" style="display: none;"></div>
             <div id="result-stats"></div>
             <div id="result-message"></div>
             <div id="wrong-answers" style="display: none;">
@@ -1683,12 +1714,12 @@
     <script src="vocab.js?v=20260818-1"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="game.js?v=20260818-2"></script>
+    <script src="game.js?v=20260818-3"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=8')
+                navigator.serviceWorker.register('./service-worker.js?v=9')
                     .then(reg => console.log('Service Worker registrado:', reg.scope))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
