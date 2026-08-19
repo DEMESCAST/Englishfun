@@ -1044,8 +1044,8 @@ function showQuizMode() {
 function showLearnComplete() {
     document.getElementById('learn-card').style.display = 'none';
     document.getElementById('learn-complete-card').style.display = 'block';
-    // Salvar bonus de learn
     saveLearnBonus();
+    updateLocalProgress(currentCategory, 'learn');
 }
 
 // Salvar bonus de Learn (50 pontos, uma vez por categoria)
@@ -1295,7 +1295,46 @@ function saveProgress() {
     } catch(e) {}
 }
 
-// ==================== SPACED REPETITION ====================
+// Atualizar progresso local para modos que não têm acertos/erros
+function updateLocalProgress(cat, mode) {
+    try {
+        const storageKey = getPlayerStorageKey('englishFunProgress');
+        const data = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        if (!data.categories) data.categories = {};
+
+        if (!data.categories[cat]) {
+            data.categories[cat] = {
+                plays: 0, bestScore: 0, totalCorrect: 0, totalWrong: 0,
+                bestCombo: 0, perfectGames: 0, lastPlayed: 0
+            };
+        }
+
+        data.categories[cat].lastPlayed = Date.now();
+        data.categories[cat].plays++;
+
+        data.totalPlays = (data.totalPlays || 0) + 1;
+
+        const today = new Date().toDateString();
+        const lastDate = data.lastPlayDate;
+        if (lastDate !== today) {
+            if (!lastDate) {
+                data.dailyStreak = 1;
+            } else {
+                const last = new Date(lastDate);
+                const now = new Date();
+                const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                    data.dailyStreak = (data.dailyStreak || 0) + 1;
+                } else if (diffDays > 1) {
+                    data.dailyStreak = 1;
+                }
+            }
+            data.lastPlayDate = today;
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(data));
+    } catch(e) {}
+}
 function loadWordStats() {
     try {
         const storageKey = getPlayerStorageKey('englishFunWordStats');
@@ -1559,6 +1598,7 @@ function flipCard(index) {
                         
                         // Salvar no ranking
                         saveMemoryRanking();
+                        updateLocalProgress(memoryCategory, 'memory');
                     }, 500);
                 }
             }, 500);
@@ -1917,15 +1957,10 @@ async function loadProgressDashboard() {
 }
 
 function getWordsForCategory(catKey) {
-    if (typeof vocabData === 'undefined') return [];
-    if (catKey === 'sentences') return vocabData.sentences || [];
-    const catVocab = vocabData[catKey];
-    if (!catVocab) return [];
-    const all = [];
-    Object.values(catVocab).forEach(arr => {
-        if (Array.isArray(arr)) all.push(...arr);
-    });
-    return all;
+    if (typeof vocabulary === 'undefined') return [];
+    const cat = vocabulary[catKey];
+    if (!cat || !cat.words) return [];
+    return cat.words;
 }
 
 function renderProgressDashboard(data) {
