@@ -22,20 +22,23 @@ const EFAuth = {
         return !!this.auth.currentUser;
     },
 
-    deriveEmail(playerCode) {
-        const normalized = playerCode.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-        return normalized + '@players.englishfun.invalid';
+    normalizeNickname(name) {
+        if (typeof name !== 'string') return '';
+        return name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
     },
 
-    async createAccount(playerCode, pin) {
-        const email = this.deriveEmail(playerCode);
-        const credential = firebase.auth.EmailAuthProvider.credential(email, pin);
+    deriveEmail(normalizedNickname) {
+        return normalizedNickname + '@players.englishfun.invalid';
+    },
+
+    async createAccount(normalizedNickname, pin) {
+        const email = this.deriveEmail(normalizedNickname);
         const userCredential = await this.auth.createUserWithEmailAndPassword(email, pin);
         return userCredential.user;
     },
 
-    async signIn(playerCode, pin) {
-        const email = this.deriveEmail(playerCode);
+    async signIn(normalizedNickname, pin) {
+        const email = this.deriveEmail(normalizedNickname);
         const userCredential = await this.auth.signInWithEmailAndPassword(email, pin);
         return userCredential.user;
     },

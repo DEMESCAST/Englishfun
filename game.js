@@ -641,22 +641,28 @@ async function handleCreatePlayer() {
     errorEl.parentNode.insertBefore(loadingEl, errorEl.nextSibling);
 
     try {
-        const tempCode = 'EF-TEMP-' + Date.now().toString(36).toUpperCase();
-        const user = await EFAuth.createAccount(tempCode, pinInput.value);
-        const result = await EFPlayer.createPlayer(user.uid, nickResult.value, pinInput.value, db);
+        const normalized = EFAuth.normalizeNickname(nickResult.value);
+        const taken = await EFPlayer.isNicknameTaken(normalized);
+        if (taken) {
+            errorEl.textContent = 'ESSE APELIDO JÁ ESTÁ SENDO USADO. TENTE OUTRO.';
+            loadingEl.remove();
+            return;
+        }
+
+        const user = await EFAuth.createAccount(normalized, pinInput.value);
+        const result = await EFPlayer.createPlayer(user.uid, nickResult.value, normalized, pinInput.value, db);
 
         playerUid = user.uid;
         playerName = nickResult.value;
 
         document.getElementById('created-nickname').textContent = nickResult.value;
-        document.getElementById('created-code').textContent = result.code;
 
         hideAllScreens();
         document.getElementById('created-screen').style.display = 'flex';
     } catch(e) {
         console.error('Erro ao criar jogador:', e);
         if (e.code === 'auth/email-already-in-use') {
-            errorEl.textContent = 'Já existe um jogador com esses dados. Tente novamente.';
+            errorEl.textContent = 'ESSE APELIDO JÁ ESTÁ SENDO USADO. TENTE OUTRO.';
         } else {
             errorEl.textContent = 'Erro ao criar jogador. Tente novamente.';
         }
@@ -673,14 +679,14 @@ function startPlaying() {
 }
 
 async function handleLogin() {
-    const codeInput = document.getElementById('login-code');
+    const nickInput = document.getElementById('login-nickname');
     const pinInput = document.getElementById('login-pin');
     const errorEl = document.getElementById('login-error');
 
-    const code = codeInput.value.trim().toUpperCase();
-    if (!code || !code.startsWith('EF-')) {
-        errorEl.textContent = 'Código inválido. Use o formato EF-XXXX-XXXX.';
-        codeInput.focus();
+    const nickResult = EFPlayer.validateNickname(nickInput.value);
+    if (!nickResult.valid) {
+        errorEl.textContent = nickResult.error;
+        nickInput.focus();
         return;
     }
 
@@ -698,14 +704,15 @@ async function handleLogin() {
     errorEl.parentNode.insertBefore(loadingEl, errorEl.nextSibling);
 
     try {
-        const user = await EFAuth.signIn(code, pinInput.value);
+        const normalized = EFAuth.normalizeNickname(nickResult.value);
+        const user = await EFAuth.signIn(normalized, pinInput.value);
         playerUid = user.uid;
 
         const profile = await EFPlayer.getProfile(playerUid, db);
         if (profile) {
             playerName = profile.nickname;
         } else {
-            playerName = 'Jogador';
+            playerName = nickResult.value;
         }
 
         hideAllScreens();
@@ -2463,7 +2470,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('create-pin').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleCreatePlayer();
     });
-    document.getElementById('login-code').addEventListener('keypress', (e) => {
+    document.getElementById('login-nickname').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') document.getElementById('login-pin').focus();
     });
     document.getElementById('login-pin').addEventListener('keypress', (e) => {

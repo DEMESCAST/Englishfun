@@ -3,13 +3,27 @@
     ".read": false,
     ".write": false,
 
+    "nicknames": {
+      "$normalized": {
+        ".read": true,
+        ".write": "auth != null && !data.exists() && newData.exists()",
+        ".validate": "newData.hasChildren(['uid'])",
+        "uid": {
+          ".validate": "newData.isString()"
+        }
+      }
+    },
+
     "players": {
       "$uid": {
         ".read": true,
         ".write": "$uid === auth.uid",
-        ".validate": "newData.hasChildren(['nickname', 'playerCode', 'createdAt'])",
+        ".validate": "newData.hasChildren(['nickname', 'normalizedNickname', 'playerCode', 'createdAt'])",
         "nickname": {
           ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
+        },
+        "normalizedNickname": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 32"
         },
         "playerCode": {
           ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 14"

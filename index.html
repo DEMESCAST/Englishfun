@@ -1962,16 +1962,11 @@
         <div id="created-screen" style="display: none;">
             <div class="auth-card">
                 <div class="auth-success-icon">🎉</div>
-                <h2>SEU JOGADOR FOI CRIADO!</h2>
+                <h2>JOGADOR CRIADO!</h2>
                 <div class="auth-player-info">
-                    <div class="auth-info-label">Jogador</div>
                     <div id="created-nickname" class="auth-info-value"></div>
                 </div>
-                <div class="auth-player-info">
-                    <div class="auth-info-label">Seu Código</div>
-                    <div id="created-code" class="auth-info-code"></div>
-                </div>
-                <p class="auth-warning">GUARDE SEU CÓDIGO E SEU PIN. VOCÊ VAI PRECISAR DELES PARA JOGAR EM OUTRO APARELHO.</p>
+                <p class="auth-info-label">SEU PERFIL ESTÁ PRONTO!</p>
                 <button class="auth-btn auth-btn-primary" onclick="startPlaying()" aria-label="Começar a jogar">
                     COMEÇAR A JOGAR
                 </button>
@@ -1983,8 +1978,8 @@
             <div class="auth-card">
                 <h2>QUE BOM VER VOCÊ DE NOVO!</h2>
                 <div class="auth-field">
-                    <label for="login-code">CÓDIGO DO JOGADOR</label>
-                    <input type="text" id="login-code" placeholder="EF-XXXX-XXXX" maxlength="14" autocomplete="off" style="text-transform: uppercase;">
+                    <label for="login-nickname">APELIDO</label>
+                    <input type="text" id="login-nickname" placeholder="APELIDO" maxlength="16" autocomplete="off">
                 </div>
                 <div class="auth-field">
                     <label for="login-pin">PIN</label>

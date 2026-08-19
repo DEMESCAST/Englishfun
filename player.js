@@ -7,7 +7,7 @@ const EFPlayer = {
         const segments = [];
         for (let s = 0; s < 3; s++) {
             let segment = '';
-            const randomValues = new Uint8Array(s === 0 ? 4 : 4);
+            const randomValues = new Uint8Array(4);
             crypto.getRandomValues(randomValues);
             for (let i = 0; i < 4; i++) {
                 segment += this.CHARS[randomValues[i] % this.CHARS.length];
@@ -32,29 +32,36 @@ const EFPlayer = {
         do {
             code = this.generateCode();
             attempts++;
-            if (attempts > 20) {
-                throw new Error('Não foi possível gerar um código único');
-            }
+            if (attempts > 20) throw new Error('Não foi possível gerar um código único');
         } while (await this.isCodeTaken(code));
         return code;
     },
 
-    async createPlayer(uid, nickname, pin, dbRef) {
+    async isNicknameTaken(normalizedNickname) {
+        try {
+            const snapshot = await db.ref('nicknames/' + normalizedNickname).once('value');
+            return snapshot.exists();
+        } catch(e) {
+            return false;
+        }
+    },
+
+    async createPlayer(uid, nickname, normalizedNickname, pin, dbRef) {
         const code = await this.generateUniqueCode();
 
-        const playerData = {
+        const updates = {};
+        updates['players/' + uid] = {
             nickname: nickname,
+            normalizedNickname: normalizedNickname,
             playerCode: code,
             createdAt: Date.now()
         };
-
-        const updates = {};
-        updates['players/' + uid] = playerData;
+        updates['nicknames/' + normalizedNickname] = { uid: uid };
         updates['playerCodes/' + code] = { uid: uid };
 
         await dbRef.ref().update(updates);
 
-        return { code: code, playerData: playerData };
+        return { code: code };
     },
 
     async getProfile(uid, dbRef) {
@@ -66,11 +73,13 @@ const EFPlayer = {
         }
     },
 
-    async updateProfile(uid, data, dbRef) {
+    async getUidByNickname(normalizedNickname) {
         try {
-            await dbRef.ref('players/' + uid).update(data);
+            const snapshot = await db.ref('nicknames/' + normalizedNickname).once('value');
+            const data = snapshot.val();
+            return data ? data.uid : null;
         } catch(e) {
-            console.error('Erro ao atualizar perfil:', e);
+            return null;
         }
     },
 
