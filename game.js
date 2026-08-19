@@ -642,12 +642,6 @@ async function handleCreatePlayer() {
 
     try {
         const normalized = EFAuth.normalizeNickname(nickResult.value);
-        const taken = await EFPlayer.isNicknameTaken(normalized);
-        if (taken) {
-            errorEl.textContent = 'ESSE APELIDO JÁ ESTÁ SENDO USADO. TENTE OUTRO.';
-            loadingEl.remove();
-            return;
-        }
 
         const user = await EFAuth.createAccount(normalized, pinInput.value);
         try {

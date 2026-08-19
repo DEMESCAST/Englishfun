@@ -17,49 +17,15 @@ const EFPlayer = {
         return 'EF-' + segments[0].slice(0, 4) + '-' + segments[1].slice(0, 2) + segments[2].slice(0, 2);
     },
 
-    async isCodeTaken(code) {
-        try {
-            const snapshot = await db.ref('playerCodes/' + code).once('value');
-            return snapshot.exists();
-        } catch(e) {
-            return false;
-        }
-    },
-
-    async generateUniqueCode() {
-        let code;
-        let attempts = 0;
-        do {
-            code = this.generateCode();
-            attempts++;
-            if (attempts > 20) throw new Error('Não foi possível gerar um código único');
-        } while (await this.isCodeTaken(code));
-        return code;
-    },
-
-    async isNicknameTaken(normalizedNickname) {
-        try {
-            const snapshot = await db.ref('nicknames/' + normalizedNickname).once('value');
-            return snapshot.exists();
-        } catch(e) {
-            return false;
-        }
-    },
-
     async createPlayer(uid, nickname, normalizedNickname, pin, dbRef) {
-        const code = await this.generateUniqueCode();
+        const code = this.generateCode();
 
-        const updates = {};
-        updates['players/' + uid] = {
+        await dbRef.ref('players/' + uid).set({
             nickname: nickname,
             normalizedNickname: normalizedNickname,
             playerCode: code,
             createdAt: Date.now()
-        };
-        updates['nicknames/' + normalizedNickname] = { uid: uid };
-        updates['playerCodes/' + code] = { uid: uid };
-
-        await dbRef.ref().update(updates);
+        });
 
         return { code: code };
     },

@@ -3,41 +3,25 @@
     ".read": false,
     ".write": false,
 
-    "nicknames": {
-      "$normalized": {
-        ".read": false,
-        ".write": "auth != null && !data.exists() && newData.exists() && newData.child('uid').val() === auth.uid",
-        ".validate": "newData.hasChildren(['uid']) && newData.child('uid').isString() && newData.child('uid').val() === auth.uid && newData.numChildren() === 1"
-      }
-    },
-
     "players": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && newData.exists()",
         ".validate": "newData.hasChildren(['nickname', 'normalizedNickname', 'playerCode', 'createdAt'])",
         "nickname": {
-          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16 && (!data.exists() || newData.val() === data.val())"
         },
         "normalizedNickname": {
-          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 32"
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 32 && (!data.exists() || newData.val() === data.val())"
         },
         "playerCode": {
-          ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 14"
+          ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 14 && (!data.exists() || newData.val() === data.val())"
         },
         "createdAt": {
-          ".validate": "newData.isNumber()"
-        }
-      }
-    },
-
-    "playerCodes": {
-      "$code": {
-        ".read": false,
-        ".write": "auth != null && !data.exists() && newData.exists()",
-        ".validate": "newData.hasChildren(['uid'])",
-        "uid": {
-          ".validate": "newData.isString()"
+          ".validate": "newData.isNumber() && (!data.exists() || newData.val() === data.val())"
+        },
+        "$other": {
+          ".validate": false
         }
       }
     },
@@ -46,25 +30,31 @@
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && newData.exists()",
         ".validate": "newData.hasChildren(['uid', 'nickname', 'totalGeneral', 'updatedAt'])",
         "uid": {
           ".validate": "newData.isString() && newData.val() === $uid"
         },
         "nickname": {
-          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
+          ".validate": "newData.isString() && newData.val() === root.child('players').child($uid).child('nickname').val()"
         },
         "totalGeneral": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5000"
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 50000"
         },
         "totalScore": {
           ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
         },
         "bestPerCombo": {
-          ".validate": "!newData.exists() || newData.isMap()"
+          ".validate": "!newData.exists() || newData.hasChildren()",
+          "$combo": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 400"
+          }
         },
         "updatedAt": {
           ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
         }
       }
     },
@@ -79,7 +69,7 @@
             ".validate": "newData.isString() && newData.val() === $uid"
           },
           "name": {
-            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
+            ".validate": "newData.isString() && newData.val() === root.child('players').child($uid).child('nickname').val()"
           },
           "score": {
             ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
@@ -104,6 +94,9 @@
           },
           "date": {
             ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 30"
+          },
+          "$other": {
+            ".validate": false
           }
         }
       }
