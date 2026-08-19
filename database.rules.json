@@ -23,7 +23,11 @@
     "playerCodes": {
       "$code": {
         ".read": false,
-        ".write": false
+        ".write": "auth != null && !data.exists() && newData.exists()",
+        ".validate": "newData.hasChildren(['uid'])",
+        "uid": {
+          ".validate": "newData.isString()"
+        }
       }
     },
 
