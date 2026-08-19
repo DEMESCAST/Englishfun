@@ -73,16 +73,6 @@ const EFPlayer = {
         }
     },
 
-    async getUidByNickname(normalizedNickname) {
-        try {
-            const snapshot = await db.ref('nicknames/' + normalizedNickname).once('value');
-            const data = snapshot.val();
-            return data ? data.uid : null;
-        } catch(e) {
-            return null;
-        }
-    },
-
     validateNickname(value) {
         if (typeof value !== 'string') return { valid: false, error: 'Escolha um apelido de 2 a 16 caracteres.' };
 

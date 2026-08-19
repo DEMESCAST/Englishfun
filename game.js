@@ -650,7 +650,15 @@ async function handleCreatePlayer() {
         }
 
         const user = await EFAuth.createAccount(normalized, pinInput.value);
-        const result = await EFPlayer.createPlayer(user.uid, nickResult.value, normalized, pinInput.value, db);
+        try {
+            await EFPlayer.createPlayer(user.uid, nickResult.value, normalized, pinInput.value, db);
+        } catch(dbError) {
+            console.error('Erro ao salvar dados do jogador:', dbError);
+            try { await user.delete(); } catch(delErr) { console.error('Falha ao rollback:', delErr); }
+            errorEl.textContent = 'Erro ao criar jogador. Tente novamente.';
+            loadingEl.remove();
+            return;
+        }
 
         playerUid = user.uid;
         playerName = nickResult.value;
@@ -721,7 +729,7 @@ async function handleLogin() {
         displayHomeRanking();
     } catch(e) {
         console.error('Erro ao entrar:', e);
-        errorEl.textContent = 'CÓDIGO OU PIN INCORRETO. TENTE NOVAMENTE.';
+        errorEl.textContent = 'APELIDO OU PIN INCORRETO. TENTE NOVAMENTE.';
     } finally {
         loadingEl.remove();
     }

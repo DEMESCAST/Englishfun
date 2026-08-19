@@ -5,19 +5,16 @@
 
     "nicknames": {
       "$normalized": {
-        ".read": true,
-        ".write": "auth != null && !data.exists() && newData.exists()",
-        ".validate": "newData.hasChildren(['uid'])",
-        "uid": {
-          ".validate": "newData.isString()"
-        }
+        ".read": false,
+        ".write": "auth != null && !data.exists() && newData.exists() && newData.child('uid').val() === auth.uid",
+        ".validate": "newData.hasChildren(['uid']) && newData.child('uid').isString() && newData.child('uid').val() === auth.uid && newData.numChildren() === 1"
       }
     },
 
     "players": {
       "$uid": {
-        ".read": true,
-        ".write": "$uid === auth.uid",
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
         ".validate": "newData.hasChildren(['nickname', 'normalizedNickname', 'playerCode', 'createdAt'])",
         "nickname": {
           ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
@@ -49,7 +46,7 @@
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": "$uid === auth.uid",
+        ".write": "auth != null && auth.uid === $uid",
         ".validate": "newData.hasChildren(['uid', 'nickname', 'totalGeneral', 'updatedAt'])",
         "uid": {
           ".validate": "newData.isString() && newData.val() === $uid"
@@ -74,9 +71,9 @@
 
     "gameHistory": {
       "$uid": {
-        ".read": "$uid === auth.uid",
+        ".read": "auth != null && auth.uid === $uid",
         "$entry": {
-          ".write": "$uid === auth.uid && !data.exists() && newData.exists()",
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && newData.exists()",
           ".validate": "newData.hasChildren(['uid', 'name', 'score', 'generalPoints', 'category', 'mode', 'date'])",
           "uid": {
             ".validate": "newData.isString() && newData.val() === $uid"
