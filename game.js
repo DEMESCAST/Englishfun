@@ -195,8 +195,19 @@ function playBgMusic() {
 function stopBgMusic() {
     if (bgMusic) {
         bgMusic.pause();
-        bgMusic.currentTime = 0;
         bgMusic = null;
+    }
+}
+
+function pauseMenuMusic() {
+    if (bgMusic && !bgMusic.paused) {
+        bgMusic.pause();
+    }
+}
+
+function resumeMenuMusic() {
+    if (bgMusic && bgMusic.paused && audioEnabled) {
+        bgMusic.play().catch(() => {});
     }
 }
 
@@ -213,7 +224,7 @@ function shuffle(array) {
 function startGame(category) {
     initAudio();
     playSound('click');
-    stopBgMusic();
+    pauseMenuMusic();
     
     currentCategory = category;
     isReviewSession = false;
@@ -615,7 +626,7 @@ function normalizeRankingEntry(entry) {
 function showWelcomeScreen() {
     hideAllScreens();
     document.getElementById('welcome-screen').style.display = 'flex';
-    playBgMusic();
+    resumeMenuMusic();
 }
 
 function showLoginScreen() {
@@ -707,6 +718,7 @@ function startPlaying() {
     document.getElementById('start-screen').style.display = 'block';
     updatePlayerBar();
     displayHomeRanking();
+    resumeMenuMusic();
 }
 
 async function handleLogin() {
@@ -750,6 +762,7 @@ async function handleLogin() {
         document.getElementById('start-screen').style.display = 'block';
         updatePlayerBar();
         displayHomeRanking();
+        resumeMenuMusic();
     } catch(e) {
         console.error('Erro ao entrar:', e);
         errorEl.textContent = 'APELIDO OU PIN INCORRETO. TENTE NOVAMENTE.';
@@ -767,7 +780,7 @@ async function handleLogout() {
     localStorage.removeItem('englishFunPlayerNickname');
     hideAllScreens();
     document.getElementById('welcome-screen').style.display = 'flex';
-    playBgMusic();
+    resumeMenuMusic();
 }
 
 function updatePlayerBar() {
@@ -1136,6 +1149,7 @@ function goToMenu() {
     document.getElementById('learn-complete-card').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
     displayHomeRanking();
+    resumeMenuMusic();
 }
 
 // ==================== SELEÇÃO DE MODO E CATEGORIA ====================
@@ -1179,11 +1193,12 @@ function goToModeSelect() {
     playSound('click');
     document.getElementById('category-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
+    resumeMenuMusic();
 }
 
 function startModeWithCategory(category) {
     playSound('click');
-    stopBgMusic();
+    pauseMenuMusic();
     currentCategory = category;
     isReviewSession = false;
     document.getElementById('category-screen').style.display = 'none';
@@ -1360,7 +1375,7 @@ function startQuizFromLearn() {
 
 function startReviewMode() {
     loadWordStats();
-    stopBgMusic();
+    pauseMenuMusic();
     currentMode = 'review';
     isReviewSession = true;
     
@@ -1378,6 +1393,7 @@ function startReviewMode() {
     if (allWords.length === 0) {
         document.getElementById('start-screen').style.display = 'block';
         showFeedback('Nenhum erro registrado ainda! Jogue primeiro para poder revisar.', '#ffd700');
+        resumeMenuMusic();
         return;
     }
     
@@ -1695,7 +1711,7 @@ let canFlip = true;
 
 function startMemoryGame() {
     playSound('click');
-    stopBgMusic();
+    pauseMenuMusic();
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('memory-screen').style.display = 'block';
     document.getElementById('memory-category-select').style.display = 'grid';
@@ -1982,6 +1998,7 @@ function confirmProgressNickname() {
 function closeProgressNicknameModal() {
     document.getElementById('progress-nickname-modal').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
+    resumeMenuMusic();
 }
 
 function showProgressScreen() {
@@ -1997,6 +2014,7 @@ function showProgressScreen() {
 function closeProgress() {
     document.getElementById('progress-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
+    resumeMenuMusic();
 }
 
 async function loadProgressDashboard() {
