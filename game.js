@@ -15,6 +15,7 @@ let totalQuestions = DEFAULT_TOTAL_QUESTIONS;
 let difficulty = 'medium';
 let audioEnabled = true;
 let audioCtx = null;
+let bgMusic = null;
 let achievements = [];
 let wordStats = {};
 let isReviewSession = false;
@@ -171,6 +172,26 @@ function playTone(freq, dur) {
 function toggleAudio() {
     audioEnabled = !audioEnabled;
     document.getElementById('audio-btn').textContent = audioEnabled ? '🔊' : '🔇';
+    if (bgMusic) {
+        bgMusic.muted = !audioEnabled;
+    }
+}
+
+function playBgMusic() {
+    if (bgMusic) return;
+    bgMusic = new Audio('bg-music.wav');
+    bgMusic.loop = true;
+    bgMusic.volume = 0.3;
+    bgMusic.muted = !audioEnabled;
+    bgMusic.play().catch(() => {});
+}
+
+function stopBgMusic() {
+    if (bgMusic) {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+        bgMusic = null;
+    }
 }
 
 function shuffle(array) {
@@ -186,6 +207,7 @@ function shuffle(array) {
 function startGame(category) {
     initAudio();
     playSound('click');
+    stopBgMusic();
     
     currentCategory = category;
     isReviewSession = false;
@@ -587,6 +609,7 @@ function normalizeRankingEntry(entry) {
 function showWelcomeScreen() {
     hideAllScreens();
     document.getElementById('welcome-screen').style.display = 'flex';
+    playBgMusic();
 }
 
 function showLoginScreen() {
@@ -738,6 +761,7 @@ async function handleLogout() {
     localStorage.removeItem('englishFunPlayerNickname');
     hideAllScreens();
     document.getElementById('welcome-screen').style.display = 'flex';
+    playBgMusic();
 }
 
 function updatePlayerBar() {
@@ -1153,6 +1177,7 @@ function goToModeSelect() {
 
 function startModeWithCategory(category) {
     playSound('click');
+    stopBgMusic();
     currentCategory = category;
     isReviewSession = false;
     document.getElementById('category-screen').style.display = 'none';
@@ -1329,6 +1354,7 @@ function startQuizFromLearn() {
 
 function startReviewMode() {
     loadWordStats();
+    stopBgMusic();
     currentMode = 'review';
     isReviewSession = true;
     
@@ -1663,6 +1689,7 @@ let canFlip = true;
 
 function startMemoryGame() {
     playSound('click');
+    stopBgMusic();
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('memory-screen').style.display = 'block';
     document.getElementById('memory-category-select').style.display = 'grid';
@@ -2496,6 +2523,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             showWelcomeScreen();
         }
+        playBgMusic();
     });
 });
 
