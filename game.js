@@ -23,7 +23,7 @@ let playerUid = null;
 
 // ==================== FIREBASE CONFIG ====================
 const firebaseConfig = {
-    apiKey: "AIzaSyDlaI77a3nbonR7ixl_BgePCiXWgz5coAA",
+    apiKey: "AIzaSyDlaI77a3nbonR7ixl_BgePCiXWgzScoAA",
     authDomain: "englishfun-ranking.firebaseapp.com",
     databaseURL: "https://englishfun-ranking-default-rtdb.firebaseio.com",
     projectId: "englishfun-ranking",
