@@ -16,6 +16,7 @@ let difficulty = 'medium';
 let audioEnabled = true;
 let audioCtx = null;
 let bgMusic = null;
+let bgMusicReady = false;
 let achievements = [];
 let wordStats = {};
 let isReviewSession = false;
@@ -178,12 +179,17 @@ function toggleAudio() {
 }
 
 function playBgMusic() {
-    if (bgMusic) return;
-    bgMusic = new Audio('bg-music.wav');
-    bgMusic.loop = true;
-    bgMusic.volume = 0.3;
-    bgMusic.muted = !audioEnabled;
-    bgMusic.play().catch(() => {});
+    if (!bgMusic) {
+        bgMusic = new Audio('bg-music.wav');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.3;
+        bgMusic.muted = !audioEnabled;
+    }
+    if (!bgMusicReady) {
+        bgMusic.play().then(() => {
+            bgMusicReady = true;
+        }).catch(() => {});
+    }
 }
 
 function stopBgMusic() {
@@ -2524,6 +2530,15 @@ document.addEventListener('DOMContentLoaded', () => {
             showWelcomeScreen();
         }
         playBgMusic();
+    });
+
+    document.addEventListener('click', function firstClick() {
+        if (bgMusic && !bgMusicReady) {
+            bgMusic.play().then(() => {
+                bgMusicReady = true;
+            }).catch(() => {});
+        }
+        document.removeEventListener('click', firstClick);
     });
 });
 
