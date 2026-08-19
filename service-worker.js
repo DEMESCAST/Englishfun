@@ -1,8 +1,10 @@
-const CACHE_NAME = 'english-fun-v13';
+const CACHE_NAME = 'english-fun-v14';
 const urlsToCache = [
     './',
     './index.html',
-    './game.js?v=20260818-7',
+    './auth.js',
+    './player.js',
+    './game.js?v=20260818-8',
     './vocab.js?v=20260818-1',
     './manifest.json',
     './arthur.png',

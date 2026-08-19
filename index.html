@@ -1735,6 +1735,150 @@
             .mode-progress { font-size: 13px; padding: 12px 16px; }
         }
 
+        /* ==================== AUTH SCREENS ==================== */
+        #welcome-screen, #create-screen, #created-screen, #login-screen {
+            position: fixed;
+            inset: 0;
+            background: #060d1f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1600;
+            padding: 20px;
+        }
+        .auth-card {
+            background: linear-gradient(145deg, #0d1b3e, #1a2d5a);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 24px;
+            padding: 36px 32px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .auth-logo { font-size: 48px; margin-bottom: 8px; }
+        .auth-card h1 { margin: 0 0 4px; font-size: 28px; color: #fff; letter-spacing: 2px; }
+        .auth-card h2 { margin: 0 0 20px; font-size: 20px; color: #00d4ff; }
+        .auth-subtitle { margin: 0 0 32px; font-size: 14px; color: rgba(255,255,255,0.5); }
+        .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .auth-btn {
+            padding: 14px 24px;
+            border-radius: 14px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            letter-spacing: 1px;
+        }
+        .auth-btn:hover { transform: scale(1.03); }
+        .auth-btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0ea5e9);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+        }
+        .auth-btn-secondary {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .auth-field { margin-bottom: 16px; text-align: left; }
+        .auth-field label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .auth-field input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,212,255,0.2);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .auth-field input:focus { border-color: #00d4ff; box-shadow: 0 0 12px rgba(0,212,255,0.2); }
+        .auth-field input::placeholder { color: rgba(255,255,255,0.25); }
+        .auth-error {
+            color: #f87171;
+            font-size: 13px;
+            min-height: 20px;
+            margin-bottom: 8px;
+        }
+        .auth-back-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 16px;
+            padding: 8px;
+            transition: color 0.2s;
+        }
+        .auth-back-btn:hover { color: #fff; }
+        .auth-success-icon { font-size: 48px; margin-bottom: 12px; }
+        .auth-player-info { margin: 12px 0; }
+        .auth-info-label { font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+        .auth-info-value { font-size: 18px; font-weight: 700; color: #fff; }
+        .auth-info-code {
+            font-size: 22px;
+            font-weight: 900;
+            color: #00d4ff;
+            letter-spacing: 2px;
+            background: rgba(0,212,255,0.1);
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .auth-warning {
+            font-size: 12px;
+            color: #f59e0b;
+            margin: 16px 0;
+            line-height: 1.5;
+        }
+        .auth-loading {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        #player-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        #player-bar-name {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            font-weight: 600;
+        }
+        .player-bar-logout {
+            background: rgba(248,113,113,0.15);
+            color: #f87171;
+            border: 1px solid rgba(248,113,113,0.3);
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .player-bar-logout:hover { background: rgba(248,113,113,0.25); }
+
         @media (prefers-reduced-motion: reduce) {
             #progress-screen,
             #progress-screen *,
@@ -1777,6 +1921,83 @@
     </div>
     
     <div id="game-container">
+        <!-- Tela: Boas-vindas (não autenticado) -->
+        <div id="welcome-screen" style="display: none;">
+            <div class="auth-card">
+                <div class="auth-logo">🎮</div>
+                <h1>ENGLISH FUN</h1>
+                <p class="auth-subtitle">APRENDA INGLÊS BRINCANDO!</p>
+                <div class="auth-buttons">
+                    <button class="auth-btn auth-btn-primary" onclick="showLoginScreen()" aria-label="Entrar com jogador existente">
+                        ENTRAR
+                    </button>
+                    <button class="auth-btn auth-btn-secondary" onclick="showCreateScreen()" aria-label="Criar novo jogador">
+                        CRIAR JOGADOR
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela: Criar Jogador -->
+        <div id="create-screen" style="display: none;">
+            <div class="auth-card">
+                <h2>CRIAR JOGADOR</h2>
+                <div class="auth-field">
+                    <label for="create-nickname">ESCOLHA SEU APELIDO</label>
+                    <input type="text" id="create-nickname" placeholder="Ex.: TIGRINHO" maxlength="16" autocomplete="off">
+                </div>
+                <div class="auth-field">
+                    <label for="create-pin">CRIE UM PIN DE 6 NÚMEROS</label>
+                    <input type="password" id="create-pin" placeholder="••••••" maxlength="6" inputmode="numeric" autocomplete="new-password">
+                </div>
+                <div id="create-error" class="auth-error" aria-live="polite"></div>
+                <button class="auth-btn auth-btn-primary" onclick="handleCreatePlayer()" aria-label="Criar jogador">
+                    CRIAR JOGADOR
+                </button>
+                <button class="auth-back-btn" onclick="showWelcomeScreen()" aria-label="Voltar">← Voltar</button>
+            </div>
+        </div>
+
+        <!-- Tela: Jogador Criado -->
+        <div id="created-screen" style="display: none;">
+            <div class="auth-card">
+                <div class="auth-success-icon">🎉</div>
+                <h2>SEU JOGADOR FOI CRIADO!</h2>
+                <div class="auth-player-info">
+                    <div class="auth-info-label">Jogador</div>
+                    <div id="created-nickname" class="auth-info-value"></div>
+                </div>
+                <div class="auth-player-info">
+                    <div class="auth-info-label">Seu Código</div>
+                    <div id="created-code" class="auth-info-code"></div>
+                </div>
+                <p class="auth-warning">GUARDE SEU CÓDIGO E SEU PIN. VOCÊ VAI PRECISAR DELES PARA JOGAR EM OUTRO APARELHO.</p>
+                <button class="auth-btn auth-btn-primary" onclick="startPlaying()" aria-label="Começar a jogar">
+                    COMEÇAR A JOGAR
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela: Entrar -->
+        <div id="login-screen" style="display: none;">
+            <div class="auth-card">
+                <h2>QUE BOM VER VOCÊ DE NOVO!</h2>
+                <div class="auth-field">
+                    <label for="login-code">CÓDIGO DO JOGADOR</label>
+                    <input type="text" id="login-code" placeholder="EF-XXXX-XXXX" maxlength="14" autocomplete="off" style="text-transform: uppercase;">
+                </div>
+                <div class="auth-field">
+                    <label for="login-pin">PIN</label>
+                    <input type="password" id="login-pin" placeholder="••••••" maxlength="6" inputmode="numeric" autocomplete="current-password">
+                </div>
+                <div id="login-error" class="auth-error" aria-live="polite"></div>
+                <button class="auth-btn auth-btn-primary" onclick="handleLogin()" aria-label="Entrar">
+                    ENTRAR
+                </button>
+                <button class="auth-back-btn" onclick="showWelcomeScreen()" aria-label="Voltar">← Voltar</button>
+            </div>
+        </div>
+
         <!-- Tela Inicial -->
         <div id="start-screen">
             <!-- Personagem Esquerda -->
@@ -1813,6 +2034,11 @@
                         <button class="mode-btn mode-progress" onclick="openProgress()" aria-label="Ver meu progresso">
                             <span>📊</span> MEU PROGRESSO
                         </button>
+                    </div>
+                    
+                    <div id="player-bar" style="display: none;">
+                        <span id="player-bar-name"></span>
+                        <button class="player-bar-logout" onclick="handleLogout()" aria-label="Sair da conta">Sair</button>
                     </div>
                     
                     <!-- Ranking Desktop -->
@@ -2037,13 +2263,16 @@
     
     <script src="vocab.js?v=20260818-1"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="game.js?v=20260818-7"></script>
+    <script src="auth.js"></script>
+    <script src="player.js"></script>
+    <script src="game.js?v=20260818-8"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=11')
+                navigator.serviceWorker.register('./service-worker.js?v=12')
                     .then(reg => console.log('Service Worker registrado:', reg.scope))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });

@@ -19,6 +19,7 @@ let achievements = [];
 let wordStats = {};
 let isReviewSession = false;
 let playerName = '';
+let playerUid = null;
 
 // ==================== FIREBASE CONFIG ====================
 const firebaseConfig = {
@@ -36,6 +37,7 @@ let db = null;
 try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.database();
+    EFAuth.init();
 } catch(e) {
     console.log('Firebase não configurado, usando ranking local');
 }
@@ -581,6 +583,165 @@ function normalizeRankingEntry(entry) {
     };
 }
 
+// ==================== AUTH FLOW ====================
+function showWelcomeScreen() {
+    hideAllScreens();
+    document.getElementById('welcome-screen').style.display = 'flex';
+}
+
+function showLoginScreen() {
+    hideAllScreens();
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('login-code').value = '';
+    document.getElementById('login-pin').value = '';
+    document.getElementById('login-error').textContent = '';
+    document.getElementById('login-code').focus();
+}
+
+function showCreateScreen() {
+    hideAllScreens();
+    document.getElementById('create-screen').style.display = 'flex';
+    document.getElementById('create-nickname').value = '';
+    document.getElementById('create-pin').value = '';
+    document.getElementById('create-error').textContent = '';
+    document.getElementById('create-nickname').focus();
+}
+
+function hideAllScreens() {
+    const screens = ['welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen'];
+    screens.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+}
+
+async function handleCreatePlayer() {
+    const nickInput = document.getElementById('create-nickname');
+    const pinInput = document.getElementById('create-pin');
+    const errorEl = document.getElementById('create-error');
+
+    const nickResult = EFPlayer.validateNickname(nickInput.value);
+    if (!nickResult.valid) {
+        errorEl.textContent = nickResult.error;
+        nickInput.focus();
+        return;
+    }
+
+    const pinResult = EFPlayer.validatePin(pinInput.value);
+    if (!pinResult.valid) {
+        errorEl.textContent = pinResult.error;
+        pinInput.focus();
+        return;
+    }
+
+    errorEl.textContent = '';
+    const loadingEl = document.createElement('div');
+    loadingEl.className = 'auth-loading';
+    loadingEl.textContent = 'Criando jogador...';
+    errorEl.parentNode.insertBefore(loadingEl, errorEl.nextSibling);
+
+    try {
+        const tempCode = 'EF-TEMP-' + Date.now().toString(36).toUpperCase();
+        const user = await EFAuth.createAccount(tempCode, pinInput.value);
+        const result = await EFPlayer.createPlayer(user.uid, nickResult.value, pinInput.value, db);
+
+        playerUid = user.uid;
+        playerName = nickResult.value;
+
+        document.getElementById('created-nickname').textContent = nickResult.value;
+        document.getElementById('created-code').textContent = result.code;
+
+        hideAllScreens();
+        document.getElementById('created-screen').style.display = 'flex';
+    } catch(e) {
+        console.error('Erro ao criar jogador:', e);
+        if (e.code === 'auth/email-already-in-use') {
+            errorEl.textContent = 'Já existe um jogador com esses dados. Tente novamente.';
+        } else {
+            errorEl.textContent = 'Erro ao criar jogador. Tente novamente.';
+        }
+    } finally {
+        loadingEl.remove();
+    }
+}
+
+function startPlaying() {
+    hideAllScreens();
+    document.getElementById('start-screen').style.display = 'block';
+    updatePlayerBar();
+    displayHomeRanking();
+}
+
+async function handleLogin() {
+    const codeInput = document.getElementById('login-code');
+    const pinInput = document.getElementById('login-pin');
+    const errorEl = document.getElementById('login-error');
+
+    const code = codeInput.value.trim().toUpperCase();
+    if (!code || !code.startsWith('EF-')) {
+        errorEl.textContent = 'Código inválido. Use o formato EF-XXXX-XXXX.';
+        codeInput.focus();
+        return;
+    }
+
+    const pinResult = EFPlayer.validatePin(pinInput.value);
+    if (!pinResult.valid) {
+        errorEl.textContent = pinResult.error;
+        pinInput.focus();
+        return;
+    }
+
+    errorEl.textContent = '';
+    const loadingEl = document.createElement('div');
+    loadingEl.className = 'auth-loading';
+    loadingEl.textContent = 'Entrando...';
+    errorEl.parentNode.insertBefore(loadingEl, errorEl.nextSibling);
+
+    try {
+        const user = await EFAuth.signIn(code, pinInput.value);
+        playerUid = user.uid;
+
+        const profile = await EFPlayer.getProfile(playerUid, db);
+        if (profile) {
+            playerName = profile.nickname;
+        } else {
+            playerName = 'Jogador';
+        }
+
+        hideAllScreens();
+        document.getElementById('start-screen').style.display = 'block';
+        updatePlayerBar();
+        displayHomeRanking();
+    } catch(e) {
+        console.error('Erro ao entrar:', e);
+        errorEl.textContent = 'CÓDIGO OU PIN INCORRETO. TENTE NOVAMENTE.';
+    } finally {
+        loadingEl.remove();
+    }
+}
+
+async function handleLogout() {
+    try {
+        await EFAuth.signOut();
+    } catch(e) {}
+    playerUid = null;
+    playerName = '';
+    localStorage.removeItem('englishFunPlayerNickname');
+    hideAllScreens();
+    document.getElementById('welcome-screen').style.display = 'flex';
+}
+
+function updatePlayerBar() {
+    const bar = document.getElementById('player-bar');
+    const nameEl = document.getElementById('player-bar-name');
+    if (bar && nameEl && playerName) {
+        nameEl.textContent = playerName;
+        bar.style.display = 'flex';
+    } else if (bar) {
+        bar.style.display = 'none';
+    }
+}
+
 // Validar apelido do jogador
 function validateNickname(value) {
     if (typeof value !== 'string') return { valid: false, error: 'Escolha um apelido de 2 a 16 caracteres.' };
@@ -607,7 +768,6 @@ function validateNickname(value) {
 async function saveRanking() {
     const correctCount = totalQuestions - wrongAnswersList.length;
     
-    // Calcular generalPoints
     let generalPoints = 0;
     if (currentMode === 'quiz' || currentMode === 'dictation') {
         generalPoints = Math.round((correctCount / totalQuestions) * 400);
@@ -615,6 +775,7 @@ async function saveRanking() {
     }
     
     const entry = {
+        uid: playerUid,
         name: playerName,
         score: score,
         generalPoints: generalPoints,
@@ -626,34 +787,59 @@ async function saveRanking() {
         date: new Date().toISOString()
     };
     
-    console.log('Entrada enviada ao ranking:', entry);
-    
     let firebaseSaved = false;
 
-    // Salvar no Firebase
-    if (db) {
+    if (db && playerUid) {
         try {
-            await db.ref('ranking').push(entry);
+            await db.ref('gameHistory/' + playerUid).push(entry);
+            await updatePlayerRankingData(playerUid, entry);
             firebaseSaved = true;
-            console.log('Ranking salvo no Firebase:', entry);
         } catch (error) {
-            console.error('Erro ao salvar ranking no Firebase:', error.code, error.message);
+            console.error('Erro ao salvar ranking:', error.code, error.message);
         }
     }
     
-    // Sempre salvar localmente como backup
     try {
         const key = 'englishFunRanking';
         const data = JSON.parse(localStorage.getItem(key) || '[]');
         data.push(entry);
         data.sort((a, b) => b.score - a.score);
         localStorage.setItem(key, JSON.stringify(data.slice(0, 50)));
-        console.log('Ranking salvo localmente');
-    } catch(e) {
-        console.error('Erro ao salvar ranking local:', e);
-    }
+    } catch(e) {}
     
     return firebaseSaved;
+}
+
+async function updatePlayerRankingData(uid, entry) {
+    try {
+        const profile = await EFPlayer.getProfile(uid, db);
+        if (!profile) return;
+
+        const rankRef = db.ref('ranking/' + uid);
+        const snap = await rankRef.once('value');
+        const existing = snap.val() || {};
+
+        const comboKey = entry.mode + '_' + entry.category;
+        if (!existing.bestPerCombo) existing.bestPerCombo = {};
+        const prev = existing.bestPerCombo[comboKey] || 0;
+        if (entry.generalPoints > prev) {
+            existing.bestPerCombo[comboKey] = entry.generalPoints;
+        }
+
+        let totalGeneral = 0;
+        Object.values(existing.bestPerCombo).forEach(pts => { totalGeneral += pts; });
+
+        await rankRef.set({
+            uid: uid,
+            nickname: profile.nickname,
+            totalScore: existing.totalScore || 0,
+            totalGeneral: totalGeneral,
+            bestPerCombo: existing.bestPerCombo,
+            updatedAt: Date.now()
+        });
+    } catch(e) {
+        console.error('Erro ao atualizar ranking do jogador:', e);
+    }
 }
 
 async function displayRanking() {
@@ -665,15 +851,21 @@ async function displayRanking() {
             const snapshot = await db.ref('ranking').once('value');
             const rawData = [];
             snapshot.forEach((child) => {
-                rawData.push(child.val());
+                const val = child.val();
+                if (val && val.nickname) {
+                    rawData.push({
+                        uid: child.key,
+                        name: val.nickname,
+                        generalPoints: val.totalGeneral || 0,
+                        bestPerCombo: val.bestPerCombo || {},
+                        updatedAt: val.updatedAt || 0
+                    });
+                }
             });
             
-            const generalRanking = buildGeneralRanking(rawData);
-            console.log('Ranking geral calculado:', generalRanking);
-            
-            renderRankingTable(generalRanking.slice(0, 10), table, section);
+            rawData.sort((a, b) => b.generalPoints - a.generalPoints);
+            renderRankingTable(rawData.slice(0, 10), table, section);
         } catch (error) {
-            console.error('Erro ao ler ranking do Firebase:', error.code, error.message);
             renderRankingLocal(table, section);
         }
     } else {
@@ -697,9 +889,7 @@ function renderRankingTable(data, table, section) {
     data.forEach((entry, i) => {
         const name = entry.name || 'Jogador';
         const gp = entry.generalPoints || 0;
-        const key = normalizeNicknameKey(name);
-        const playerKey = normalizeNicknameKey(playerName);
-        const isYou = key === playerKey && key !== '';
+        const isYou = entry.uid && entry.uid === playerUid;
         
         const pos = i + 1;
         const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
@@ -759,37 +949,44 @@ async function showResult() {
     const comboKey = `${currentMode}_${currentCategory}`;
     
     try {
-        let entries = [];
-        if (db) {
+        if (db && playerUid) {
             try {
-                const snapshot = await db.ref('ranking').once('value');
-                snapshot.forEach(child => {
-                    entries.push(child.val());
-                });
+                const rankSnap = await db.ref('ranking/' + playerUid).once('value');
+                const rankData = rankSnap.val();
+                if (rankData) {
+                    previousGeneral = rankData.totalGeneral || 0;
+                    if (rankData.bestPerCombo && rankData.bestPerCombo[comboKey]) {
+                        previousBestForCombo = rankData.bestPerCombo[comboKey];
+                    }
+                }
             } catch(e) {
-                // Firebase falhou, usar localStorage
-                entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+                const entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+                const generalRanking = buildGeneralRanking(entries);
+                const currentPlayer = generalRanking.find(p => p.uid === playerUid);
+                previousGeneral = currentPlayer ? currentPlayer.generalPoints : 0;
+                entries.forEach(entry => {
+                    if (entry.uid === playerUid) {
+                        const ek = entry.mode + '_' + entry.category;
+                        if (ek === comboKey) {
+                            previousBestForCombo = Math.max(previousBestForCombo, getGeneralPoints(entry));
+                        }
+                    }
+                });
             }
         } else {
-            entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
-        }
-        
-        // Usar buildGeneralRanking para calcular pontuação geral correta
-        const generalRanking = buildGeneralRanking(entries);
-        const playerKey = normalizeNicknameKey(playerName);
-        const currentPlayer = generalRanking.find(p => normalizeNicknameKey(p.name) === playerKey);
-        previousGeneral = currentPlayer ? currentPlayer.generalPoints : 0;
-        
-        // Encontrar melhor resultado anterior para esta combinação
-        entries.forEach(entry => {
-            if (normalizeNicknameKey(entry.name) === playerKey) {
-                const ek = `${entry.mode}_${entry.category}`;
-                if (ek === comboKey) {
-                    const gp = getGeneralPoints(entry);
-                    previousBestForCombo = Math.max(previousBestForCombo, gp);
+            const entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+            const generalRanking = buildGeneralRanking(entries);
+            const currentPlayer = generalRanking.find(p => p.uid === playerUid);
+            previousGeneral = currentPlayer ? currentPlayer.generalPoints : 0;
+            entries.forEach(entry => {
+                if (entry.uid === playerUid) {
+                    const ek = entry.mode + '_' + entry.category;
+                    if (ek === comboKey) {
+                        previousBestForCombo = Math.max(previousBestForCombo, getGeneralPoints(entry));
+                    }
                 }
-            }
-        });
+            });
+        }
     } catch(e) {}
     
     const newBest = matchGeneralPoints > previousBestForCombo;
@@ -964,38 +1161,11 @@ function startModeWithCategory(category) {
     currentLearnIndex = 0;
     currentQuizIndex = 0;
     
-    // Salvar nome do último jogador (migrar se necessário)
-    const savedName = localStorage.getItem('englishFunPlayerNickname') || localStorage.getItem('englishFunPlayerName') || '';
-    document.getElementById('player-name-input').value = savedName;
-    document.getElementById('name-error').textContent = '';
-    
-    // Mostrar tela de nome
-    document.getElementById('name-screen').style.display = 'flex';
-    document.getElementById('player-name-input').focus();
-}
-
-function confirmName() {
-    const input = document.getElementById('player-name-input');
-    const errorEl = document.getElementById('name-error');
-    const result = validateNickname(input.value);
-    
-    if (!result.valid) {
-        errorEl.textContent = result.error;
-        input.focus();
+    if (!playerUid) {
+        showWelcomeScreen();
         return;
     }
     
-    errorEl.textContent = '';
-    playerName = result.value;
-    
-    // Salvar com nova chave e migrar se necessário
-    localStorage.setItem('englishFunPlayerNickname', playerName);
-    if (localStorage.getItem('englishFunPlayerName')) {
-        localStorage.removeItem('englishFunPlayerName');
-    }
-    
-    playSound('click');
-    document.getElementById('name-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
     document.getElementById('category-title').textContent = vocabulary[currentCategory].title;
@@ -1017,6 +1187,10 @@ function confirmName() {
             showQuizMode();
             break;
     }
+}
+
+function confirmName() {
+    // Legacy function - no longer used with auth system
 }
 
 function goBackFromName() {
@@ -1050,34 +1224,28 @@ function showLearnComplete() {
 
 // Salvar bonus de Learn (50 pontos, uma vez por categoria)
 async function saveLearnBonus() {
-    if (!playerName || !currentCategory) return;
+    if (!playerUid || !currentCategory) return;
     
-    // Verificar se já existe learn + categoria para este jogador
-    const key = normalizeNicknameKey(playerName);
-    const comboKey = `learn_${currentCategory}`;
+    const comboKey = 'learn_' + currentCategory;
     
     if (db) {
         try {
-            const snapshot = await db.ref('ranking').once('value');
-            let alreadyHas = false;
-            snapshot.forEach(child => {
-                const entry = child.val();
-                if (normalizeNicknameKey(entry.name) === key && entry.mode === 'learn' && entry.category === currentCategory) {
-                    alreadyHas = true;
-                }
-            });
-            if (alreadyHas) return;
+            const rankSnap = await db.ref('ranking/' + playerUid).once('value');
+            const rankData = rankSnap.val();
+            if (rankData && rankData.bestPerCombo && rankData.bestPerCombo[comboKey]) {
+                return;
+            }
         } catch(e) {}
     }
     
-    // Verificar localmente também
     try {
         const localData = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
-        const alreadyHasLocal = localData.some(e => normalizeNicknameKey(e.name) === key && e.mode === 'learn' && e.category === currentCategory);
+        const alreadyHasLocal = localData.some(e => e.uid === playerUid && e.mode === 'learn' && e.category === currentCategory);
         if (alreadyHasLocal) return;
     } catch(e) {}
     
     const entry = {
+        uid: playerUid,
         name: playerName,
         score: 0,
         generalPoints: 50,
@@ -1089,8 +1257,11 @@ async function saveLearnBonus() {
         date: new Date().toISOString()
     };
     
-    if (db) {
-        try { await db.ref('ranking').push(entry); } catch(e) {}
+    if (db && playerUid) {
+        try {
+            await db.ref('gameHistory/' + playerUid).push(entry);
+            await updatePlayerRankingData(playerUid, entry);
+        } catch(e) {}
     }
     
     try {
@@ -1100,13 +1271,13 @@ async function saveLearnBonus() {
     } catch(e) {}
 }
 
-// Salvar resultado da memória no ranking
 async function saveMemoryRanking() {
-    if (!playerName || !memoryCategory) return;
+    if (!playerUid || !memoryCategory) return;
     
     const generalPoints = calculateMemoryGeneralPoints(memoryScore);
     
     const entry = {
+        uid: playerUid,
         name: playerName,
         score: memoryScore,
         generalPoints: generalPoints,
@@ -1119,13 +1290,12 @@ async function saveMemoryRanking() {
     };
     
     let firebaseSaved = false;
-    if (db) {
+    if (db && playerUid) {
         try {
-            await db.ref('ranking').push(entry);
+            await db.ref('gameHistory/' + playerUid).push(entry);
+            await updatePlayerRankingData(playerUid, entry);
             firebaseSaved = true;
-        } catch(e) {
-            console.error('Erro ao salvar ranking memória:', e.code, e.message);
-        }
+        } catch(e) {}
     }
     
     try {
@@ -1199,14 +1369,8 @@ function startReviewMode() {
 
 // ==================== PER-PLAYER STORAGE ====================
 function getPlayerStorageKey(baseKey) {
-    const nickname =
-        playerName ||
-        localStorage.getItem('englishFunPlayerNickname') ||
-        '';
-
-    const key = normalizeNicknameKey(nickname);
-
-    return key ? `${baseKey}:${key}` : baseKey;
+    if (playerUid) return baseKey + ':' + playerUid;
+    return baseKey;
 }
 
 function migrateOldProgressData() {
@@ -1736,12 +1900,10 @@ function openProgress() {
     playSound('click');
     initAudio();
 
-    const nick = playerName || localStorage.getItem('englishFunPlayerNickname') || '';
-    if (nick && validateNickname(nick).valid) {
-        playerName = playerName || validateNickname(nick).value;
+    if (playerUid) {
         showProgressScreen();
     } else {
-        showProgressNicknameModal();
+        showWelcomeScreen();
     }
 }
 
@@ -1800,17 +1962,46 @@ async function loadProgressDashboard() {
     container.innerHTML = '<div class="progress-loading" aria-live="polite">Carregando seu progresso...</div>';
 
     let entries = [];
-    if (db) {
+    let generalPoints = 0;
+    let rankingPosition = 0;
+    let totalPlayers = 0;
+
+    if (db && playerUid) {
         try {
-            const snapshot = await db.ref('ranking').once('value');
-            snapshot.forEach(child => {
+            const histSnap = await db.ref('gameHistory/' + playerUid).once('value');
+            histSnap.forEach(child => {
                 entries.push(child.val());
             });
+
+            const rankSnap = await db.ref('ranking').once('value');
+            const allRankings = [];
+            rankSnap.forEach(child => {
+                const val = child.val();
+                if (val && val.nickname) {
+                    allRankings.push({
+                        uid: child.key,
+                        name: val.nickname,
+                        generalPoints: val.totalGeneral || 0
+                    });
+                    if (child.key === playerUid) {
+                        generalPoints = val.totalGeneral || 0;
+                    }
+                }
+            });
+            allRankings.sort((a, b) => b.generalPoints - a.generalPoints);
+            totalPlayers = allRankings.length;
+            const pos = allRankings.findIndex(r => r.uid === playerUid);
+            rankingPosition = pos >= 0 ? pos + 1 : 0;
         } catch(e) {
             entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
         }
     } else {
         entries = JSON.parse(localStorage.getItem('englishFunRanking') || '[]');
+        const generalRanking = buildGeneralRanking(entries);
+        totalPlayers = generalRanking.length;
+        const currentPlayer = generalRanking.find(p => p.uid === playerUid);
+        generalPoints = currentPlayer ? currentPlayer.generalPoints : 0;
+        rankingPosition = currentPlayer ? generalRanking.indexOf(currentPlayer) + 1 : 0;
     }
 
     const progressKey = getPlayerStorageKey('englishFunProgress');
@@ -1819,12 +2010,6 @@ async function loadProgressDashboard() {
 
     const wordStatsKey = getPlayerStorageKey('englishFunWordStats');
     const allWordStats = JSON.parse(localStorage.getItem(wordStatsKey) || '{}');
-
-    const generalRanking = buildGeneralRanking(entries);
-    const playerKey = normalizeNicknameKey(playerName);
-    const currentPlayer = generalRanking.find(p => normalizeNicknameKey(p.name) === playerKey);
-    const generalPoints = currentPlayer ? currentPlayer.generalPoints : 0;
-    const rankingPosition = currentPlayer ? generalRanking.indexOf(currentPlayer) + 1 : 0;
 
     const totalCorrectAll = progressData.totalCorrectAll || 0;
     const totalWrongAll = progressData.totalWrongAll || 0;
@@ -1858,7 +2043,7 @@ async function loadProgressDashboard() {
     });
 
     allVocab.forEach(w => {
-        const key = `${w.catKey}_${w.english}`;
+        const key = w.catKey + '_' + w.english;
         const stat = allWordStats[key];
         if (!stat || (stat.correct === 0 && stat.wrong === 0)) {
             wordsNotPracticed++;
@@ -1895,7 +2080,6 @@ async function loadProgressDashboard() {
     });
 
     entries.forEach(entry => {
-        if (normalizeNicknameKey(entry.name) !== playerKey) return;
         if (entry.mode === 'review') return;
         const cat = entry.category;
         if (!categoryProgress[cat]) return;
@@ -1915,7 +2099,6 @@ async function loadProgressDashboard() {
 
     let recentActivities = [];
     entries.forEach(entry => {
-        if (normalizeNicknameKey(entry.name) !== playerKey) return;
         if (entry.mode === 'review') return;
         recentActivities.push(entry);
     });
@@ -1931,12 +2114,12 @@ async function loadProgressDashboard() {
         }
     });
 
-    const hasAnyData = totalPlays > 0 || entries.some(e => normalizeNicknameKey(e.name) === playerKey);
+    const hasAnyData = totalPlays > 0 || entries.length > 0;
 
     renderProgressDashboard({
         generalPoints,
         rankingPosition,
-        totalPlayers: generalRanking.length,
+        totalPlayers,
         accuracy,
         dailyStreak,
         totalPlays,
@@ -2270,17 +2453,41 @@ function formatDateRelative(dateStr) {
 
 // ==================== DOMContentLoaded ====================
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('start-screen').style.display = 'block';
     initConfetti();
     migrateOldProgressData();
-    
-    // Enter key no input de nome
-    document.getElementById('player-name-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') confirmName();
+
+    // Enter key nos inputs de auth
+    document.getElementById('create-nickname').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('create-pin').focus();
     });
-    
-    // Carregar ranking na tela inicial
-    displayHomeRanking();
+    document.getElementById('create-pin').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleCreatePlayer();
+    });
+    document.getElementById('login-code').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('login-pin').focus();
+    });
+    document.getElementById('login-pin').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+
+    // Verificar sessão existente
+    EFAuth.onAuthStateChanged(async (user) => {
+        if (user) {
+            playerUid = user.uid;
+            const profile = await EFPlayer.getProfile(playerUid, db);
+            if (profile) {
+                playerName = profile.nickname;
+            } else {
+                playerName = 'Jogador';
+            }
+            hideAllScreens();
+            document.getElementById('start-screen').style.display = 'block';
+            updatePlayerBar();
+            displayHomeRanking();
+        } else {
+            showWelcomeScreen();
+        }
+    });
 });
 
 async function displayHomeRanking() {
@@ -2292,15 +2499,20 @@ async function displayHomeRanking() {
             const snapshot = await db.ref('ranking').once('value');
             const rawData = [];
             snapshot.forEach((child) => {
-                rawData.push(child.val());
+                const val = child.val();
+                if (val && val.nickname) {
+                    rawData.push({
+                        uid: child.key,
+                        name: val.nickname,
+                        generalPoints: val.totalGeneral || 0,
+                        updatedAt: val.updatedAt || 0
+                    });
+                }
             });
             
-            const generalRanking = buildGeneralRanking(rawData);
-            console.log('Ranking inicial geral:', generalRanking);
-            
-            renderHomeRanking(generalRanking.slice(0, 5), list);
+            rawData.sort((a, b) => b.generalPoints - a.generalPoints);
+            renderHomeRanking(rawData.slice(0, 5), list);
         } catch (error) {
-            console.error('Erro ao ler ranking inicial:', error.code, error.message);
             renderHomeRankingLocal(list);
         }
     } else {

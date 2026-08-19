@@ -2,38 +2,94 @@
   "rules": {
     ".read": false,
     ".write": false,
+
+    "players": {
+      "$uid": {
+        ".read": true,
+        ".write": "$uid === auth.uid",
+        ".validate": "newData.hasChildren(['nickname', 'playerCode', 'createdAt'])",
+        "nickname": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
+        },
+        "playerCode": {
+          ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 14"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
+
+    "playerCodes": {
+      "$code": {
+        ".read": false,
+        ".write": false
+      }
+    },
+
     "ranking": {
       ".read": true,
-      ".indexOn": ["score"],
-      "$entry": {
-        ".write": "!data.exists() && newData.exists()",
-        ".validate": "newData.hasChildren(['name', 'score', 'generalPoints', 'correct', 'total', 'maxCombo', 'category', 'mode', 'date'])",
-        "name": {
-          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16 && !newData.val().matches(/.*<.*>.*/)"
+      "$uid": {
+        ".read": true,
+        ".write": "$uid === auth.uid",
+        ".validate": "newData.hasChildren(['uid', 'nickname', 'totalGeneral', 'updatedAt'])",
+        "uid": {
+          ".validate": "newData.isString() && newData.val() === $uid"
         },
-        "score": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
+        "nickname": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
         },
-        "generalPoints": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 400"
+        "totalGeneral": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5000"
         },
-        "correct": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+        "totalScore": {
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
         },
-        "total": {
-          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100"
+        "bestPerCombo": {
+          ".validate": "!newData.exists() || newData.isMap()"
         },
-        "maxCombo": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
-        },
-        "category": {
-          ".validate": "newData.isString() && newData.val().matches(/^(animals|food|colors|numbers|body|objects|family|clothes|weather|actions|sentences|review)$/)"
-        },
-        "mode": {
-          ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review|memory)$/)"
-        },
-        "date": {
-          ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 30"
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
+
+    "gameHistory": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        "$entry": {
+          ".write": "$uid === auth.uid && !data.exists() && newData.exists()",
+          ".validate": "newData.hasChildren(['uid', 'name', 'score', 'generalPoints', 'category', 'mode', 'date'])",
+          "uid": {
+            ".validate": "newData.isString() && newData.val() === $uid"
+          },
+          "name": {
+            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 16"
+          },
+          "score": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
+          },
+          "generalPoints": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 400"
+          },
+          "correct": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 100)"
+          },
+          "total": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 1 && newData.val() <= 100)"
+          },
+          "maxCombo": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 100)"
+          },
+          "category": {
+            ".validate": "newData.isString() && newData.val().matches(/^(animals|food|colors|numbers|body|objects|family|clothes|weather|actions|sentences|review)$/)"
+          },
+          "mode": {
+            ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review|memory)$/)"
+          },
+          "date": {
+            ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 30"
+          }
         }
       }
     }
