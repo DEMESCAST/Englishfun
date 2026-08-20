@@ -2022,6 +2022,7 @@ function closeProgress() {
 }
 
 function openAbout() {
+    document.getElementById('welcome-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('about-screen').style.display = 'block';
     pauseMenuMusic();
