@@ -2360,66 +2360,6 @@
             </div>
             <div id="progress-content" aria-live="polite"></div>
         </div>
-
-        <!-- Tela QUEM SOMOS -->
-        <div id="about-screen" style="display: none;">
-            <div class="about-header">
-                <button class="back-mode-btn" onclick="closeAbout()" aria-label="Voltar ao menu">← VOLTAR</button>
-                <h1>QUEM SOMOS</h1>
-                <p>Conheça as pessoas por trás do EnglishFun</p>
-            </div>
-
-            <div class="about-intro about-animate about-animate-delay-1">
-                Somos Henrique Demes e Arthur Rodrigues, criadores do EnglishFun, um projeto que nasceu da união entre educação, tecnologia, criatividade e comunicação.<br><br>
-                Acreditamos que aprender inglês pode ser uma experiência mais leve, divertida e acessível para todas as idades. Por isso, desenvolvemos uma plataforma com quizzes, desafios e uma experiência visual inspirada no universo gamer.
-            </div>
-
-            <div class="about-photo-container about-animate about-animate-delay-2">
-                <img src="foto-criadores.jpg" alt="Henrique e Arthur - Criadores do EnglishFun" class="about-photo" loading="lazy">
-            </div>
-
-            <div class="about-creators">
-                <div class="about-creator-card about-animate about-animate-delay-3">
-                    <div class="about-creator-icon">🎙️</div>
-                    <div class="about-creator-name">HENRIQUE DEMES</div>
-                    <div class="about-creator-desc">
-                        Responsável pela comunicação, criatividade e produção de conteúdo do projeto.<br><br>
-                        Com experiência na criação de conteúdos e comunicação através do Demescast, Henrique busca tornar o aprendizado mais próximo das pessoas, trazendo ideias e experiências que ajudam a transformar o EnglishFun em uma ferramenta de aprendizagem.
-                    </div>
-                </div>
-                <div class="about-creator-card about-animate about-animate-delay-4">
-                    <div class="about-creator-icon">💻</div>
-                    <div class="about-creator-name">ARTHUR RODRIGUES</div>
-                    <div class="about-creator-desc">
-                        Responsável pela área de tecnologia, desenvolvimento e inovação do EnglishFun.<br><br>
-                        Apaixonado por criar soluções digitais, Arthur participa da construção da plataforma, buscando unir programação, criatividade e educação para proporcionar uma experiência simples e divertida aos usuários.
-                    </div>
-                </div>
-            </div>
-
-            <div class="about-mission about-animate about-animate-delay-4">
-                <h2>NOSSA MISSÃO</h2>
-                <p>Levar o inglês básico para todos os lares, mostrando que aprender um novo idioma pode ser divertido, interativo e acessível.</p>
-                <div class="about-icons">
-                    <div class="about-icon-item">
-                        <span>💻</span>
-                        <span>Tecnologia</span>
-                    </div>
-                    <div class="about-icon-item">
-                        <span>📚</span>
-                        <span>Educação</span>
-                    </div>
-                    <div class="about-icon-item">
-                        <span>🎙️</span>
-                        <span>Comunicação</span>
-                    </div>
-                    <div class="about-icon-item">
-                        <span>🚀</span>
-                        <span>Criatividade</span>
-                    </div>
-                </div>
-            </div>
-        </div>
         
         <!-- Tela de Resultado -->
         <div id="result-screen">
@@ -2472,6 +2412,66 @@
                 <div id="modal-translation"></div>
                 <div id="modal-sentence"></div>
                 <button id="modal-continue" onclick="closeModal()" aria-label="Continuar para próxima pergunta">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela QUEM SOMOS (fora do game-container) -->
+    <div id="about-screen" style="display: none;">
+        <div class="about-header">
+            <button class="back-mode-btn" onclick="closeAbout()" aria-label="Voltar ao menu">← VOLTAR</button>
+            <h1>QUEM SOMOS</h1>
+            <p>Conheça as pessoas por trás do EnglishFun</p>
+        </div>
+
+        <div class="about-intro about-animate about-animate-delay-1">
+            Somos Henrique Demes e Arthur Rodrigues, criadores do EnglishFun, um projeto que nasceu da união entre educação, tecnologia, criatividade e comunicação.<br><br>
+            Acreditamos que aprender inglês pode ser uma experiência mais leve, divertida e acessível para todas as idades. Por isso, desenvolvemos uma plataforma com quizzes, desafios e uma experiência visual inspirada no universo gamer.
+        </div>
+
+        <div class="about-photo-container about-animate about-animate-delay-2">
+            <img src="foto-criadores.jpg" alt="Henrique e Arthur - Criadores do EnglishFun" class="about-photo" loading="lazy">
+        </div>
+
+        <div class="about-creators">
+            <div class="about-creator-card about-animate about-animate-delay-3">
+                <div class="about-creator-icon">🎙️</div>
+                <div class="about-creator-name">HENRIQUE DEMES</div>
+                <div class="about-creator-desc">
+                    Responsável pela comunicação, criatividade e produção de conteúdo do projeto.<br><br>
+                    Com experiência na criação de conteúdos e comunicação através do Demescast, Henrique busca tornar o aprendizado mais próximo das pessoas, trazendo ideias e experiências que ajudam a transformar o EnglishFun em uma ferramenta de aprendizagem.
+                </div>
+            </div>
+            <div class="about-creator-card about-animate about-animate-delay-4">
+                <div class="about-creator-icon">💻</div>
+                <div class="about-creator-name">ARTHUR RODRIGUES</div>
+                <div class="about-creator-desc">
+                    Responsável pela área de tecnologia, desenvolvimento e inovação do EnglishFun.<br><br>
+                    Apaixonado por criar soluções digitais, Arthur participa da construção da plataforma, buscando unir programação, criatividade e educação para proporcionar uma experiência simples e divertida aos usuários.
+                </div>
+            </div>
+        </div>
+
+        <div class="about-mission about-animate about-animate-delay-4">
+            <h2>NOSSA MISSÃO</h2>
+            <p>Levar o inglês básico para todos os lares, mostrando que aprender um novo idioma pode ser divertido, interativo e acessível.</p>
+            <div class="about-icons">
+                <div class="about-icon-item">
+                    <span>💻</span>
+                    <span>Tecnologia</span>
+                </div>
+                <div class="about-icon-item">
+                    <span>📚</span>
+                    <span>Educação</span>
+                </div>
+                <div class="about-icon-item">
+                    <span>🎙️</span>
+                    <span>Comunicação</span>
+                </div>
+                <div class="about-icon-item">
+                    <span>🚀</span>
+                    <span>Criatividade</span>
+                </div>
             </div>
         </div>
     </div>
