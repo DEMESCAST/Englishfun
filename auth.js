@@ -1,4 +1,5 @@
 // ==================== ENGLISH FUN - FIREBASE AUTHENTICATION ====================
+// Copyright (c) 2026 DEMESCAST. Todos os direitos reservados.
 
 const EFAuth = {
     currentUser: null,

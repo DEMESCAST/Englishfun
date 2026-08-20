@@ -1,3 +1,6 @@
+// English Fun - Vocabulary Data
+// Copyright (c) 2026 DEMESCAST. Todos os direitos reservados.
+
 const vocabulary = {
     animals: {
         title: 'Animais', icon: '🐾',

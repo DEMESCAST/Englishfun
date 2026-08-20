@@ -1,10 +1,20 @@
 <!DOCTYPE html>
+<!-- English Fun - Aprenda Inglês brincando! -->
+<!-- Copyright (c) 2026 DEMESCAST. Todos os direitos reservados. -->
+<!-- Autor: DEMESCAST - https://github.com/DEMESCAST -->
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="theme-color" content="#00d4ff">
     <meta name="description" content="Aprenda Inglês brincando! Jogo educativo para crianças.">
+    <meta name="author" content="DEMESCAST">
+    <meta name="copyright" content="© 2026 DEMESCAST. Todos os direitos reservados.">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="English Fun - Aprenda Inglês brincando!">
+    <meta property="og:description" content="Jogo educativo de inglês para crianças. Aprenda vocabulário, pronúncia e muito mais!">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="English Fun">
@@ -1997,7 +2007,7 @@
         <div id="start-screen">
             <!-- Personagem Esquerda -->
             <div class="character-left">
-                <img src="arthur.png" alt="Arthur" class="character-img">
+                <img src="arthur.png" alt="Arthur" class="character-img" loading="lazy">
             </div>
             
             <!-- Conteúdo Central -->
@@ -2046,7 +2056,7 @@
             
             <!-- Personagem Direita -->
             <div class="character-right">
-                <img src="henrique.png" alt="Henrique" class="character-img">
+                <img src="henrique.png" alt="Henrique" class="character-img" loading="lazy">
             </div>
         </div>
 
@@ -2262,7 +2272,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="auth.js"></script>
     <script src="player.js"></script>
-    <script src="game.js?v=20260819-3"></script>
+    <script src="game.js?v=20260819-4"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
@@ -2308,6 +2318,15 @@
                     modeButtons[currentFocusIndex].click();
                 }
             });
+        });
+    </script>
+    <!-- Proteção básica contra cópia -->
+    <script>
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+            }
         });
     </script>
 </body>

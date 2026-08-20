@@ -1,4 +1,5 @@
 // ==================== ENGLISH FUN - PLAYER MANAGEMENT ====================
+// Copyright (c) 2026 DEMESCAST. Todos os direitos reservados.
 
 const EFPlayer = {
     CHARS: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',

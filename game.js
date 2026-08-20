@@ -1,3 +1,7 @@
+// ==================== ENGLISH FUN - GAME LOGIC ====================
+// Copyright (c) 2026 DEMESCAST. Todos os direitos reservados.
+// Autor: DEMESCAST - https://github.com/DEMESCAST
+
 // Estado do jogo
 let currentCategory = null;
 let currentMode = null;
