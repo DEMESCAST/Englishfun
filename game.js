@@ -2029,7 +2029,12 @@ function openAbout() {
 
 function closeAbout() {
     document.getElementById('about-screen').style.display = 'none';
-    document.getElementById('start-screen').style.display = 'block';
+    const startScreen = document.getElementById('start-screen');
+    if (startScreen.style.display !== 'none') {
+        startScreen.style.display = 'block';
+    } else {
+        document.getElementById('welcome-screen').style.display = 'block';
+    }
     resumeMenuMusic();
 }
 
