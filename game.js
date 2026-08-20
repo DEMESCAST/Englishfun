@@ -2021,6 +2021,18 @@ function closeProgress() {
     resumeMenuMusic();
 }
 
+function openAbout() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('about-screen').style.display = 'block';
+    pauseMenuMusic();
+}
+
+function closeAbout() {
+    document.getElementById('about-screen').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
 async function loadProgressDashboard() {
     const container = document.getElementById('progress-content');
     container.innerHTML = '<div class="progress-loading" aria-live="polite">Carregando seu progresso...</div>';

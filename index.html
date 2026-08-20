@@ -1893,7 +1893,9 @@
             #progress-screen,
             #progress-screen *,
             #progress-nickname-modal,
-            #progress-nickname-modal * {
+            #progress-nickname-modal *,
+            #about-screen,
+            #about-screen * {
                 animation: none !important;
                 transition: none !important;
                 scroll-behavior: auto !important;
@@ -1901,6 +1903,154 @@
             .progress-bar-inner { transition: none !important; }
             .mode-progress:hover { transform: none !important; }
             .progress-nickname-btn:hover { transform: none !important; }
+            .mode-about:hover { transform: none !important; }
+        }
+
+        /* ==================== QUEM SOMOS ==================== */
+        .mode-about {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .mode-about:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4); }
+
+        #about-screen {
+            position: fixed;
+            inset: 0;
+            background: #060d1f;
+            z-index: 1500;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 40px;
+        }
+        .about-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .about-header .back-mode-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .about-header .back-mode-btn:hover { background: rgba(255,255,255,0.2); }
+        .about-header h1 { margin: 0 0 8px; font-size: 32px; color: #fff; letter-spacing: 2px; }
+        .about-header p { margin: 0; font-size: 16px; color: rgba(255,255,255,0.6); }
+
+        .about-intro {
+            max-width: 700px;
+            margin: 0 auto 30px;
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-size: 16px;
+            line-height: 1.7;
+            padding: 0 20px;
+        }
+
+        .about-photo-container {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+        .about-photo {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(0,212,255,0.2);
+            border: 3px solid rgba(0,212,255,0.3);
+            transition: transform 0.3s;
+        }
+        .about-photo:hover { transform: scale(1.02); }
+
+        .about-creators {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        .about-creator-card {
+            background: linear-gradient(145deg, #0d1b3e, #1a2d5a);
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .about-creator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .about-creator-icon { font-size: 48px; margin-bottom: 12px; }
+        .about-creator-name { font-size: 18px; font-weight: 800; color: #00d4ff; margin-bottom: 8px; letter-spacing: 1px; }
+        .about-creator-desc { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+        .about-mission {
+            max-width: 700px;
+            margin: 0 auto 30px;
+            background: linear-gradient(145deg, #0d1b3e, #1a2d5a);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+        .about-mission h2 { font-size: 22px; color: #ffd700; margin-bottom: 12px; letter-spacing: 2px; }
+        .about-mission p { font-size: 16px; color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 20px; }
+        .about-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .about-icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .about-icon-item span:first-child { font-size: 36px; }
+        .about-icon-item span:last-child { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; }
+
+        @keyframes aboutFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .about-animate { animation: aboutFadeIn 0.6s ease-out forwards; }
+        .about-animate-delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .about-animate-delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .about-animate-delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .about-animate-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+        @media (max-width: 600px) {
+            .about-header h1 { font-size: 24px; }
+            .about-intro { font-size: 14px; }
+            .about-creators { grid-template-columns: 1fr; }
+            .about-creator-card { padding: 20px; }
+            .about-mission { padding: 20px; }
+            .about-mission h2 { font-size: 18px; }
+            .about-mission p { font-size: 14px; }
+            .about-icons { gap: 20px; }
+            .about-icon-item span:first-child { font-size: 28px; }
         }
     </style>
 </head>
@@ -2038,6 +2188,9 @@
                         </button>
                         <button class="mode-btn mode-progress" onclick="openProgress()" aria-label="Ver meu progresso">
                             <span>📊</span> MEU PROGRESSO
+                        </button>
+                        <button class="mode-btn mode-about" onclick="openAbout()" aria-label="Quem Somos">
+                            <span>👥</span> QUEM SOMOS
                         </button>
                     </div>
                     
@@ -2207,6 +2360,66 @@
             </div>
             <div id="progress-content" aria-live="polite"></div>
         </div>
+
+        <!-- Tela QUEM SOMOS -->
+        <div id="about-screen" style="display: none;">
+            <div class="about-header">
+                <button class="back-mode-btn" onclick="closeAbout()" aria-label="Voltar ao menu">← VOLTAR</button>
+                <h1>QUEM SOMOS</h1>
+                <p>Conheça as pessoas por trás do EnglishFun</p>
+            </div>
+
+            <div class="about-intro about-animate about-animate-delay-1">
+                Somos Henrique Demes e Arthur Rodrigues, criadores do EnglishFun, um projeto que nasceu da união entre educação, tecnologia, criatividade e comunicação.<br><br>
+                Acreditamos que aprender inglês pode ser uma experiência mais leve, divertida e acessível para todas as idades. Por isso, desenvolvemos uma plataforma com quizzes, desafios e uma experiência visual inspirada no universo gamer.
+            </div>
+
+            <div class="about-photo-container about-animate about-animate-delay-2">
+                <img src="foto-criadores.jpg" alt="Henrique e Arthur - Criadores do EnglishFun" class="about-photo" loading="lazy">
+            </div>
+
+            <div class="about-creators">
+                <div class="about-creator-card about-animate about-animate-delay-3">
+                    <div class="about-creator-icon">💻</div>
+                    <div class="about-creator-name">HENRIQUE DEMES</div>
+                    <div class="about-creator-desc">
+                        Responsável pela área de tecnologia, desenvolvimento e inovação do EnglishFun.<br><br>
+                        Apaixonado por criar soluções digitais, Henrique participa da construção da plataforma, buscando unir programação, criatividade e educação para proporcionar uma experiência simples e divertida aos usuários.
+                    </div>
+                </div>
+                <div class="about-creator-card about-animate about-animate-delay-4">
+                    <div class="about-creator-icon">🎙️</div>
+                    <div class="about-creator-name">ARTHUR RODRIGUES</div>
+                    <div class="about-creator-desc">
+                        Responsável pela comunicação, criatividade e produção de conteúdo do projeto.<br><br>
+                        Com experiência na criação de conteúdos e comunicação através do Demescast, Arthur busca tornar o aprendizado mais próximo das pessoas, trazendo ideias e experiências que ajudam a transformar o EnglishFun em uma ferramenta de aprendizagem.
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-mission about-animate about-animate-delay-4">
+                <h2>NOSSA MISSÃO</h2>
+                <p>Levar o inglês básico para todos os lares, mostrando que aprender um novo idioma pode ser divertido, interativo e acessível.</p>
+                <div class="about-icons">
+                    <div class="about-icon-item">
+                        <span>💻</span>
+                        <span>Tecnologia</span>
+                    </div>
+                    <div class="about-icon-item">
+                        <span>📚</span>
+                        <span>Educação</span>
+                    </div>
+                    <div class="about-icon-item">
+                        <span>🎙️</span>
+                        <span>Comunicação</span>
+                    </div>
+                    <div class="about-icon-item">
+                        <span>🚀</span>
+                        <span>Criatividade</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Tela de Resultado -->
         <div id="result-screen">
@@ -2272,12 +2485,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="auth.js"></script>
     <script src="player.js"></script>
-    <script src="game.js?v=20260819-4"></script>
+    <script src="game.js?v=20260820-1"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=12')
+                navigator.serviceWorker.register('./service-worker.js?v=13')
                     .then(reg => console.log('Service Worker registrado:', reg.scope))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
