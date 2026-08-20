@@ -1,4 +1,4 @@
-const CACHE_NAME = 'english-fun-v18';
+const CACHE_NAME = 'english-fun-v19';
 const urlsToCache = [
     './',
     './index.html',
@@ -9,7 +9,7 @@ const urlsToCache = [
     './manifest.json',
     './arthur.png',
     './henrique.png',
-    './bg-music.wav'
+    './bg-music.mp3'
 ];
 
 self.addEventListener('install', event => {

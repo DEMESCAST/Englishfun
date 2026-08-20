@@ -184,7 +184,7 @@ function toggleAudio() {
 
 function playBgMusic() {
     if (!bgMusic) {
-        bgMusic = new Audio('bg-music.wav');
+        bgMusic = new Audio('bg-music.mp3');
         bgMusic.loop = true;
         bgMusic.volume = 0.3;
         bgMusic.muted = !audioEnabled;
