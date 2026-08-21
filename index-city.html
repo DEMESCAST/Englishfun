@@ -3079,6 +3079,7 @@
 
         // Navegação por teclado no menu principal
         document.addEventListener('DOMContentLoaded', () => {
+            if (typeof CityCanvas !== 'undefined') CityCanvas.init();
             const modeButtons = document.querySelectorAll('.mode-btn');
             let currentFocusIndex = 0;
 
