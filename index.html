@@ -1914,6 +1914,188 @@
             .mode-about:hover { transform: none !important; }
         }
 
+        /* ==================== CONVERSE EM INGLÊS ==================== */
+        .mode-conversation {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important;
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+        }
+        .mode-conversation:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(139, 92, 246, 0.6); }
+
+        #conversation-screen {
+            display: none;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        #conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #conversation-header h2 { font-size: 24px; }
+
+        .conversation-category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .conversation-category-btn {
+            padding: 20px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+        }
+        .conversation-category-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+        .conversation-category-btn span:first-child { font-size: 36px; }
+        .conversation-category-btn span:last-child { font-size: 12px; }
+        .conv-cat-1 { background: linear-gradient(135deg, #f472b6, #ec4899); }
+        .conv-cat-2 { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+        .conv-cat-3 { background: linear-gradient(135deg, #34d399, #10b981); }
+        .conv-cat-4 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .conv-cat-5 { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+
+        .conversation-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            animation: slideUp 0.4s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+        .conversation-character {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border-radius: 16px;
+            color: white;
+            text-align: left;
+        }
+        .conversation-character-emoji { font-size: 50px; }
+        .conversation-character-text {
+            flex: 1;
+        }
+        .conversation-character-speech {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .conversation-character-translation {
+            font-size: 13px;
+            opacity: 0.8;
+            font-style: italic;
+        }
+        .conversation-listen-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .conversation-listen-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+
+        .conversation-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .conversation-option-btn {
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .conversation-option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-color: #8b5cf6;
+        }
+        .conversation-option-btn:disabled { cursor: not-allowed; opacity: 0.8; }
+        .conversation-option-btn.correct {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border-color: #11998e;
+            animation: correctPop 0.4s;
+        }
+        .conversation-option-btn.wrong {
+            background: linear-gradient(135deg, #eb3349, #f45c43);
+            color: white;
+            border-color: #eb3349;
+            animation: shake 0.4s;
+        }
+
+        .conversation-level-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .conversation-category-grid { grid-template-columns: 1fr; gap: 12px; }
+            .conversation-category-btn { padding: 16px 12px; flex-direction: row; }
+            .conversation-character { flex-direction: column; text-align: center; }
+            .conversation-character-speech { font-size: 17px; }
+        }
+
         /* ==================== QUEM SOMOS ==================== */
         .mode-about {
             background: linear-gradient(135deg, #f59e0b, #d97706) !important;
@@ -2189,7 +2371,10 @@
                             <span>🎯</span> QUIZ
                         </button>
                         <button class="mode-btn mode-dictation" onclick="selectMode('dictation')" aria-label="Modo Ouvir e Escrever">
-                            <span>🔊</span> OUVIR E ESCREVER
+                            <span>🎧</span> OUVIR E ESCREVER
+                        </button>
+                        <button class="mode-btn mode-conversation" onclick="openConversation()" aria-label="Modo Conversação">
+                            <span>🗣️</span> CONVERSE EM INGLÊS
                         </button>
                         <button class="mode-btn mode-memory" onclick="startMemoryGame()" aria-label="Jogo da Memória">
                             <span>🧠</span> MEMÓRIA
@@ -2424,6 +2609,18 @@
         </div>
     </div>
 
+    <!-- Tela CONVERSE EM INGLÊS -->
+    <div id="conversation-screen" style="display: none;">
+        <div id="conversation-header">
+            <button class="back-mode-btn" onclick="closeConversation()" aria-label="Voltar ao menu">← Voltar</button>
+            <h2>🗣️ CONVERSE EM INGLÊS</h2>
+            <div class="header-info">
+                <div class="score-box">⭐ <span id="conv-score">0</span></div>
+            </div>
+        </div>
+        <div id="conversation-content"></div>
+    </div>
+
     <!-- Tela QUEM SOMOS (fora do game-container) -->
     <div id="about-screen" style="display: none;">
         <div class="about-header">
@@ -2494,11 +2691,12 @@
     <script src="auth.js"></script>
     <script src="player.js"></script>
     <script src="game.js?v=20260820-1"></script>
+    <script src="conversation.js"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=13')
+                navigator.serviceWorker.register('./service-worker.js?v=14')
                     .then(reg => console.log('Service Worker registrado:', reg.scope))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
