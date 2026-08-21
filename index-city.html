@@ -2108,29 +2108,31 @@
             .conversation-character-speech { font-size: 17px; }
         }
 
-        /* ==================== CITY THEME ==================== */
+        /* ==================== CITY THEME v2 ==================== */
         .city-bg {
             position: fixed;
             inset: 0;
-            background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 30%, #2d1b69 60%, #1a3a5c 100%);
+            background: linear-gradient(180deg, #050520 0%, #0a0a3a 25%, #151550 50%, #1a3040 75%, #0d2818 100%);
             z-index: 0;
         }
         .stars {
             position: absolute;
             width: 100%;
-            height: 100%;
+            height: 50%;
             background-image:
                 radial-gradient(2px 2px at 20px 30px, #fff, transparent),
                 radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
                 radial-gradient(1px 1px at 90px 40px, #fff, transparent),
                 radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
                 radial-gradient(2px 2px at 160px 30px, #fff, transparent),
-                radial-gradient(1px 1px at 180px 60px, rgba(255,255,255,0.7), transparent);
-            background-size: 250px 100px;
+                radial-gradient(1px 1px at 180px 60px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(2px 2px at 300px 50px, #fff, transparent),
+                radial-gradient(1px 1px at 350px 90px, rgba(255,255,255,0.5), transparent);
+            background-size: 400px 120px;
             animation: twinkle 4s ease-in-out infinite;
         }
         @keyframes twinkle {
-            0%, 100% { opacity: 0.7; }
+            0%, 100% { opacity: 0.6; }
             50% { opacity: 1; }
         }
 
@@ -2141,7 +2143,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 15px;
+            padding: 10px 15px;
             overflow-x: hidden;
         }
 
@@ -2149,257 +2151,407 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.4);
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.5);
             border-radius: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
+            z-index: 10;
         }
-        .city-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .city-logo .logo-emoji { font-size: 40px; }
+        .city-logo { display: flex; align-items: center; gap: 10px; }
+        .city-logo .logo-emoji { font-size: 32px; }
         .city-logo h1 {
-            font-size: 26px;
+            font-size: 22px;
             color: #fff;
             text-shadow: 0 0 20px rgba(0,212,255,0.8);
             margin: 0;
             letter-spacing: 3px;
         }
         .city-logo p {
-            font-size: 10px;
+            font-size: 9px;
             color: #00e87b;
             margin: 0;
             letter-spacing: 2px;
-            text-transform: uppercase;
         }
         .city-player-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: rgba(255,255,255,0.1);
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 30px;
             border: 1px solid rgba(255,255,255,0.2);
         }
         .player-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, #00d4ff, #0ea5e9);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
         }
-        .player-details {
-            display: flex;
-            flex-direction: column;
-        }
-        .player-greeting {
-            color: #fff;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .player-level {
-            color: #ffd700;
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
+        .player-details { display: flex; flex-direction: column; }
+        .player-greeting { color: #fff; font-weight: bold; font-size: 13px; }
+        .player-level { color: #ffd700; font-size: 10px; letter-spacing: 1px; }
 
+        /* CIDADE - MAPA */
         .city-map {
             flex: 1;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: auto auto auto;
-            gap: 12px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px;
             position: relative;
             width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            min-height: 70vh;
         }
 
+        /* CHÃO DA CIDADE */
+        .city-ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(180deg, transparent 0%, rgba(15,40,25,0.6) 20%, rgba(20,50,30,0.8) 100%);
+            border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+        }
+
+        /* RUAS */
+        .city-road {
+            position: absolute;
+            background: rgba(60,60,80,0.5);
+            border-radius: 4px;
+        }
+        .city-road::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, #ffd700 0px, #ffd700 15px, transparent 15px, transparent 30px);
+            transform: translateY(-50%);
+            opacity: 0.4;
+        }
+        .road-horizontal {
+            height: 8px;
+            left: 5%;
+            right: 5%;
+        }
+        .road-horizontal-1 { bottom: 35%; }
+        .road-horizontal-2 { bottom: 15%; }
+        .road-vertical {
+            width: 8px;
+            top: 20%;
+            bottom: 10%;
+        }
+        .road-vertical::after {
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: repeating-linear-gradient(180deg, #ffd700 0px, #ffd700 15px, transparent 15px, transparent 30px);
+            transform: translateX(-50%);
+        }
+        .road-vertical-1 { left: 25%; }
+        .road-vertical-2 { left: 50%; }
+        .road-vertical-3 { left: 75%; }
+
+        /* PRAÇA CENTRAL */
+        .city-plaza {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(0,180,255,0.15) 0%, rgba(0,100,200,0.05) 60%, transparent 100%);
+            border-radius: 50%;
+            border: 2px solid rgba(0,180,255,0.2);
+            z-index: 2;
+        }
+        .city-plaza::before {
+            content: '⛲';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            filter: drop-shadow(0 0 15px rgba(0,180,255,0.6));
+            animation: fountainPulse 2s ease-in-out infinite;
+        }
+        @keyframes fountainPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* PRÉDIOS */
         .city-building {
-            position: relative;
-            background: linear-gradient(145deg, rgba(20,20,60,0.9), rgba(10,10,40,0.95));
-            border-radius: 20px;
-            padding: 18px 12px;
-            text-align: center;
+            position: absolute;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.1);
-            overflow: hidden;
-            min-height: 130px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
+            text-align: center;
+        }
+        .city-building:hover {
+            transform: translateY(-10px) scale(1.05);
+            z-index: 20;
+        }
+        .city-building:active {
+            transform: translateY(-3px) scale(0.98);
+        }
+
+        .building-body {
+            position: relative;
+            border-radius: 12px 12px 4px 4px;
+            padding: 15px 10px 10px;
+            min-width: 100px;
+            min-height: 110px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            border: 2px solid rgba(255,255,255,0.15);
+            overflow: hidden;
         }
-        .city-building:hover {
-            transform: translateY(-8px) scale(1.03);
-            border-color: rgba(0,212,255,0.5);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,212,255,0.3);
-        }
-        .city-building:active {
-            transform: translateY(-2px) scale(0.98);
-        }
-        .building-glow {
+        .building-body::before {
+            content: '';
             position: absolute;
-            inset: 0;
-            opacity: 0;
-            transition: opacity 0.3s;
-            border-radius: 18px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            border-radius: 10px 10px 0 0;
         }
-        .city-building:hover .building-glow {
-            opacity: 1;
+
+        .building-roof {
+            width: 110%;
+            height: 12px;
+            border-radius: 6px 6px 0 0;
+            margin-bottom: -2px;
+            position: relative;
         }
+        .building-roof::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0 0 4px 4px;
+        }
+
         .building-icon {
-            font-size: 42px;
-            margin-bottom: 6px;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+            font-size: 38px;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 0 12px rgba(255,255,255,0.5));
             transition: transform 0.3s;
+            position: relative;
+            z-index: 1;
         }
         .city-building:hover .building-icon {
-            transform: scale(1.2) translateY(-5px);
+            transform: scale(1.25) translateY(-3px);
         }
-        .building-number {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 26px;
-            height: 26px;
-            background: linear-gradient(135deg, #00d4ff, #0ea5e9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
+
+        .building-sign {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            padding: 3px 8px;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
         }
         .building-name {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 800;
             color: #fff;
             letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 3px;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+            white-space: nowrap;
         }
         .building-desc {
-            font-size: 9px;
+            font-size: 8px;
             color: rgba(255,255,255,0.6);
             font-style: italic;
+            margin-top: 2px;
         }
 
-        .building-learn { border-color: rgba(59,130,246,0.4); }
-        .building-learn .building-glow { background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%); }
-        .building-learn:hover { border-color: #3b82f6; }
+        /* JANELAS */
+        .building-windows {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 6px;
+        }
+        .building-window {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: windowGlow 3s ease-in-out infinite;
+        }
+        @keyframes windowGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
 
-        .building-quiz { border-color: rgba(168,85,247,0.4); }
-        .building-quiz .building-glow { background: radial-gradient(circle, rgba(168,85,247,0.25) 0%, transparent 70%); }
-        .building-quiz:hover { border-color: #a855f7; }
+        /* POSIÇÕES DOS PRÉDIOS */
+        .building-pos-learn { left: 2%; top: 8%; }
+        .building-pos-quiz { left: 38%; top: 2%; }
+        .building-pos-dictation { right: 2%; top: 8%; }
+        .building-pos-conversation { left: 0%; top: 48%; }
+        .building-pos-memory { right: 0%; top: 48%; }
+        .building-pos-review { left: 10%; bottom: 5%; }
+        .building-pos-progress { right: 10%; bottom: 5%; }
 
-        .building-dictation { border-color: rgba(34,211,238,0.4); }
-        .building-dictation .building-glow { background: radial-gradient(circle, rgba(34,211,238,0.25) 0%, transparent 70%); }
-        .building-dictation:hover { border-color: #22d3ee; }
-
-        .building-conversation { border-color: rgba(139,92,246,0.4); }
-        .building-conversation .building-glow { background: radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%); }
-        .building-conversation:hover { border-color: #8b5cf6; }
-
-        .building-memory { border-color: rgba(74,222,128,0.4); }
-        .building-memory .building-glow { background: radial-gradient(circle, rgba(74,222,128,0.25) 0%, transparent 70%); }
-        .building-memory:hover { border-color: #4ade80; }
-
-        .building-review { border-color: rgba(249,115,22,0.4); }
-        .building-review .building-glow { background: radial-gradient(circle, rgba(249,115,22,0.25) 0%, transparent 70%); }
-        .building-review:hover { border-color: #f97316; }
-
-        .building-progress { border-color: rgba(255,215,0,0.4); }
-        .building-progress .building-glow { background: radial-gradient(circle, rgba(255,215,0,0.25) 0%, transparent 70%); }
-        .building-progress:hover { border-color: #ffd700; }
-
+        /* PERSONAGENS */
         .city-characters {
-            position: relative;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
-            justify-content: center;
             align-items: flex-end;
-            gap: 15px;
-            grid-column: 2 / 4;
-            min-height: 160px;
-            padding: 10px 0;
+            gap: 10px;
+            z-index: 10;
         }
         .city-character {
-            height: 160px;
+            height: 200px;
             width: auto;
             object-fit: contain;
-            filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6));
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.7)) drop-shadow(0 0 20px rgba(0,212,255,0.3));
             animation: charFloat 3s ease-in-out infinite;
         }
-        .city-char-left { animation-delay: 0s; }
-        .city-char-right { animation-delay: 1.5s; }
+        .city-char-left { animation-delay: 0s; height: 190px; }
+        .city-char-right { animation-delay: 1.5s; height: 210px; }
         @keyframes charFloat {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-10px); }
         }
 
+        /* ÁRVORES */
+        .city-tree {
+            position: absolute;
+            font-size: 28px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+            z-index: 3;
+            animation: treeSway 4s ease-in-out infinite;
+        }
+        @keyframes treeSway {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        /* LÂMPADAS DE RUA */
+        .city-lamp {
+            position: absolute;
+            font-size: 20px;
+            z-index: 4;
+            filter: drop-shadow(0 0 10px rgba(255,200,50,0.8));
+        }
+
+        /* CORES DOS PRÉDIOS */
+        .building-learn .building-body { background: linear-gradient(180deg, #1e40af, #1e3a8a); border-color: rgba(59,130,246,0.5); }
+        .building-learn .building-roof { background: #3b82f6; }
+        .building-learn .building-window { background: rgba(255,220,100,0.8); }
+        .building-learn:hover .building-body { box-shadow: 0 0 40px rgba(59,130,246,0.5); }
+
+        .building-quiz .building-body { background: linear-gradient(180deg, #6b21a8, #581c87); border-color: rgba(168,85,247,0.5); }
+        .building-quiz .building-roof { background: #a855f7; }
+        .building-quiz .building-window { background: rgba(200,150,255,0.8); }
+        .building-quiz:hover .building-body { box-shadow: 0 0 40px rgba(168,85,247,0.5); }
+
+        .building-dictation .building-body { background: linear-gradient(180deg, #0e7490, #155e75); border-color: rgba(34,211,238,0.5); }
+        .building-dictation .building-roof { background: #22d3ee; }
+        .building-dictation .building-window { background: rgba(100,255,255,0.8); }
+        .building-dictation:hover .building-body { box-shadow: 0 0 40px rgba(34,211,238,0.5); }
+
+        .building-conversation .building-body { background: linear-gradient(180deg, #5b21b6, #4c1d95); border-color: rgba(139,92,246,0.5); }
+        .building-conversation .building-roof { background: #8b5cf6; }
+        .building-conversation .building-window { background: rgba(180,140,255,0.8); }
+        .building-conversation:hover .building-body { box-shadow: 0 0 40px rgba(139,92,246,0.5); }
+
+        .building-memory .building-body { background: linear-gradient(180deg, #166534, #14532d); border-color: rgba(74,222,128,0.5); }
+        .building-memory .building-roof { background: #4ade80; }
+        .building-memory .building-window { background: rgba(150,255,150,0.8); }
+        .building-memory:hover .building-body { box-shadow: 0 0 40px rgba(74,222,128,0.5); }
+
+        .building-review .building-body { background: linear-gradient(180deg, #9a3412, #7c2d12); border-color: rgba(249,115,22,0.5); }
+        .building-review .building-roof { background: #f97316; }
+        .building-review .building-window { background: rgba(255,180,100,0.8); }
+        .building-review:hover .building-body { box-shadow: 0 0 40px rgba(249,115,22,0.5); }
+
+        .building-progress .building-body { background: linear-gradient(180deg, #854d0e, #713f12); border-color: rgba(255,215,0,0.5); }
+        .building-progress .building-roof { background: #ffd700; }
+        .building-progress .building-window { background: rgba(255,230,100,0.8); }
+        .building-progress:hover .building-body { box-shadow: 0 0 40px rgba(255,215,0,0.5); }
+
+        /* BOTTOM BAR */
         .city-bottom-bar {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
             padding: 10px 20px;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             border-radius: 16px;
-            margin-top: 10px;
+            margin-top: 8px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
             flex-wrap: wrap;
+            z-index: 10;
         }
-        .bottom-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #fff;
-            font-size: 12px;
-        }
+        .bottom-item { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 12px; }
         .bottom-icon { font-size: 16px; }
-        .bottom-label {
-            color: rgba(255,255,255,0.5);
-            font-size: 9px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .bottom-value {
-            font-weight: bold;
-            color: #00d4ff;
-        }
+        .bottom-label { color: rgba(255,255,255,0.5); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+        .bottom-value { font-weight: bold; color: #00d4ff; }
 
+        /* RESPONSIVO */
         @media (max-width: 900px) {
-            .city-map { grid-template-columns: repeat(2, 1fr); }
-            .city-characters { grid-column: 1 / -1; min-height: 120px; }
-            .city-character { height: 120px; }
-            .city-logo h1 { font-size: 20px; }
-            .building-icon { font-size: 36px; }
+            .city-map { min-height: 80vh; }
+            .city-character { height: 150px; }
+            .city-char-left { height: 140px; }
+            .city-char-right { height: 160px; }
+            .building-icon { font-size: 30px; }
+            .building-body { min-width: 80px; min-height: 90px; padding: 12px 8px 8px; }
+            .building-name { font-size: 9px; }
+            .building-desc { font-size: 7px; }
+            .city-plaza { width: 120px; height: 120px; }
+            .city-logo h1 { font-size: 18px; }
         }
 
-        @media (max-width: 500px) {
-            .city-map { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .city-building { min-height: 110px; padding: 12px 8px; }
-            .building-icon { font-size: 30px; }
-            .building-name { font-size: 10px; }
-            .building-desc { font-size: 8px; }
-            .city-characters { min-height: 100px; }
-            .city-character { height: 100px; }
-            .city-top-bar { padding: 8px 12px; }
-            .city-logo .logo-emoji { font-size: 30px; }
-            .city-logo h1 { font-size: 16px; }
-            .city-logo p { font-size: 8px; }
-            .city-bottom-bar { gap: 8px; padding: 8px 12px; }
+        @media (max-width: 600px) {
+            .city-map {
+                min-height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding-bottom: 80px;
+            }
+            .city-character { height: 120px; }
+            .city-char-left { height: 110px; }
+            .city-char-right { height: 130px; }
+            .building-body { min-width: 70px; min-height: 80px; padding: 10px 6px 6px; border-radius: 8px 8px 4px 4px; }
+            .building-icon { font-size: 24px; }
+            .building-name { font-size: 8px; }
+            .building-desc { display: none; }
+            .building-sign { padding: 2px 5px; }
+            .building-windows { display: none; }
+            .building-roof { height: 8px; }
+            .city-plaza { width: 80px; height: 80px; }
+            .city-plaza::before { font-size: 28px; }
+            .city-tree { font-size: 20px; }
+            .city-lamp { font-size: 14px; }
+            .city-top-bar { padding: 6px 10px; }
+            .city-logo .logo-emoji { font-size: 24px; }
+            .city-logo h1 { font-size: 14px; letter-spacing: 1px; }
+            .city-logo p { font-size: 7px; }
+            .city-bottom-bar { gap: 10px; padding: 8px 12px; }
             .bottom-item { font-size: 10px; }
+            .road-vertical, .road-horizontal { display: none; }
         }
 
         /* ==================== QUEM SOMOS ==================== */
@@ -2674,28 +2826,70 @@
             </div>
 
             <div class="city-map">
-                <div class="city-building building-learn" onclick="selectMode('learn')">
-                    <div class="building-icon">📚</div>
-                    <div class="building-number">1</div>
-                    <div class="building-name">APRENDER</div>
-                    <div class="building-desc">Novas palavras te esperam!</div>
-                    <div class="building-glow"></div>
+                <div class="city-ground"></div>
+
+                <div class="city-road road-horizontal road-horizontal-1"></div>
+                <div class="city-road road-horizontal road-horizontal-2"></div>
+                <div class="city-road road-vertical road-vertical-1"></div>
+                <div class="city-road road-vertical road-vertical-2"></div>
+                <div class="city-road road-vertical road-vertical-3"></div>
+
+                <div class="city-tree" style="left:18%;top:15%;">🌳</div>
+                <div class="city-tree" style="left:82%;top:15%;">🌲</div>
+                <div class="city-tree" style="left:12%;top:55%;">🌳</div>
+                <div class="city-tree" style="right:12%;top:55%;">🌲</div>
+                <div class="city-tree" style="left:35%;bottom:8%;">🌳</div>
+                <div class="city-tree" style="right:35%;bottom:8%;">🌲</div>
+
+                <div class="city-lamp" style="left:23%;bottom:33%;">💡</div>
+                <div class="city-lamp" style="right:23%;bottom:33%;">💡</div>
+                <div class="city-lamp" style="left:48%;bottom:13%;">💡</div>
+
+                <div class="city-plaza"></div>
+
+                <div class="city-building building-learn building-pos-learn" onclick="selectMode('learn')">
+                    <div class="building-roof"></div>
+                    <div class="building-body">
+                        <div class="building-icon">🏫</div>
+                        <div class="building-sign">
+                            <div class="building-name">APRENDER</div>
+                            <div class="building-desc">Novas palavras!</div>
+                        </div>
+                        <div class="building-windows">
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="city-building building-quiz" onclick="selectMode('quiz')">
-                    <div class="building-icon">🎯</div>
-                    <div class="building-number">2</div>
-                    <div class="building-name">QUIZ</div>
-                    <div class="building-desc">Desafie seu conhecimento!</div>
-                    <div class="building-glow"></div>
+                <div class="city-building building-quiz building-pos-quiz" onclick="selectMode('quiz')">
+                    <div class="building-roof"></div>
+                    <div class="building-body">
+                        <div class="building-icon">🎯</div>
+                        <div class="building-sign">
+                            <div class="building-name">QUIZ</div>
+                            <div class="building-desc">Desafie-se!</div>
+                        </div>
+                        <div class="building-windows">
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="city-building building-dictation" onclick="selectMode('dictation')">
-                    <div class="building-icon">🎧</div>
-                    <div class="building-number">3</div>
-                    <div class="building-name">OUVIR E DIGITAR</div>
-                    <div class="building-desc">Ouça e escreva em inglês!</div>
-                    <div class="building-glow"></div>
+                <div class="city-building building-dictation building-pos-dictation" onclick="selectMode('dictation')">
+                    <div class="building-roof"></div>
+                    <div class="building-body">
+                        <div class="building-icon">🎤</div>
+                        <div class="building-sign">
+                            <div class="building-name">OUVIR E DIGITAR</div>
+                            <div class="building-desc">Escute e escreva!</div>
+                        </div>
+                        <div class="building-windows">
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="city-characters">
@@ -2703,36 +2897,60 @@
                     <img src="henrique.png" alt="Henrique" class="city-character city-char-right" loading="lazy">
                 </div>
 
-                <div class="city-building building-conversation" onclick="openConversation()">
-                    <div class="building-icon">🗣️</div>
-                    <div class="building-number">4</div>
-                    <div class="building-name">CONVERSE EM INGLÊS</div>
-                    <div class="building-desc">Pratique conversando!</div>
-                    <div class="building-glow"></div>
+                <div class="city-building building-conversation building-pos-conversation" onclick="openConversation()">
+                    <div class="building-roof"></div>
+                    <div class="building-body">
+                        <div class="building-icon">☕</div>
+                        <div class="building-sign">
+                            <div class="building-name">CONVERSE</div>
+                            <div class="building-desc">Pratique!</div>
+                        </div>
+                        <div class="building-windows">
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="city-building building-memory" onclick="startMemoryGame()">
-                    <div class="building-icon">🧠</div>
-                    <div class="building-number">5</div>
-                    <div class="building-name">MEMÓRIA</div>
-                    <div class="building-desc">Treine sua memória!</div>
-                    <div class="building-glow"></div>
+                <div class="city-building building-memory building-pos-memory" onclick="startMemoryGame()">
+                    <div class="building-roof"></div>
+                    <div class="building-body">
+                        <div class="building-icon">🧠</div>
+                        <div class="building-sign">
+                            <div class="building-name">MEMÓRIA</div>
+                            <div class="building-desc">Treine!</div>
+                        </div>
+                        <div class="building-windows">
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="city-building building-review" onclick="selectMode('review')">
-                    <div class="building-icon">🔧</div>
-                    <div class="building-number">6</div>
-                    <div class="building-name">REVISAR ERROS</div>
-                    <div class="building-desc">Corrija e evolua sempre!</div>
-                    <div class="building-glow"></div>
+                <div class="city-building building-review building-pos-review" onclick="selectMode('review')">
+                    <div class="building-roof"></div>
+                    <div class="building-body">
+                        <div class="building-icon">🔧</div>
+                        <div class="building-sign">
+                            <div class="building-name">REVISAR ERROS</div>
+                            <div class="building-desc">Corrija!</div>
+                        </div>
+                        <div class="building-windows">
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="city-building building-progress" onclick="openProgress()">
-                    <div class="building-icon">📊</div>
-                    <div class="building-number">7</div>
-                    <div class="building-name">MEU PROGRESSO</div>
-                    <div class="building-desc">Acompanhe suas conquistas!</div>
-                    <div class="building-glow"></div>
+                <div class="city-building building-progress building-pos-progress" onclick="openProgress()">
+                    <div class="building-roof"></div>
+                    <div class="building-body">
+                        <div class="building-icon">🏆</div>
+                        <div class="building-sign">
+                            <div class="building-name">MEU PROGRESSO</div>
+                            <div class="building-desc">Evolua!</div>
+                        </div>
+                        <div class="building-windows">
+                            <div class="building-window"></div><div class="building-window"></div><div class="building-window"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
