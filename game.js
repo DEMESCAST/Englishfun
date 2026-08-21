@@ -636,10 +636,10 @@ function showWelcomeScreen() {
 function showLoginScreen() {
     hideAllScreens();
     document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('login-code').value = '';
+    document.getElementById('login-nickname').value = '';
     document.getElementById('login-pin').value = '';
     document.getElementById('login-error').textContent = '';
-    document.getElementById('login-code').focus();
+    document.getElementById('login-nickname').focus();
 }
 
 function showCreateScreen() {

@@ -2176,7 +2176,6 @@
         }
 
         /* HOTSPOT GLOW EFFECTS PER BUILDING */
-        .hotspot-learn::after { background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(59,130,246,0.4); }
         .hotspot-quiz::after { background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(168,85,247,0.4); }
         .hotspot-dictation::after { background: radial-gradient(circle, rgba(34,211,238,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(34,211,238,0.4); }
         .hotspot-conversation::after { background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(139,92,246,0.4); }
@@ -2358,7 +2357,6 @@
         .sign-learn { left: 7%; top: 16%; }
 
 /* HOTSPOT POSITIONS */
-        .hotspot-learn { left: 5%; top: 22%; width: 20%; height: 22%; }
         .hotspot-quiz { left: 35%; top: 10%; width: 22%; height: 22%; }
         .hotspot-dictation { right: 3%; top: 15%; width: 22%; height: 25%; }
         .hotspot-conversation { left: 3%; top: 48%; width: 20%; height: 20%; }
@@ -2447,15 +2445,11 @@
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .city-guide-char { /* base */ height: 120px; }
-            .guide-bubble { font-size: 10px; padding: 6px 12px; max-width: 180px; }
             .hud-item { font-size: 10px; padding: 4px 8px; }
             .city-hud { gap: 6px; top: 8px; right: 8px; }
             .city-player-bar { top: 8px; left: 8px; }
         }
         @media (max-width: 480px) {
-            .city-guide-char { /* base */ height: 90px; }
-            .guide-bubble { font-size: 9px; max-width: 150px; }
             .city-hud { flex-direction: column; gap: 4px; }
         }
 /* ==================== QUEM SOMOS ==================== */
@@ -2770,7 +2764,7 @@
             <!-- PLAYER BAR -->
             <div class="city-player-bar" id="city-player-bar" style="display: none;">
                 <span class="player-name" id="city-player-name"></span>
-                <button class="logout-btn" onclick="handleLogout()">sair</button>
+                <button class="logout-btn" onclick="handleLogout()" aria-label="Sair da conta">sair</button>
             </div>
 
             <!-- AUDIO -->
