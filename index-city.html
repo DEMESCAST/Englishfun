@@ -2159,28 +2159,6 @@
         .hotspot-review { left: 8%; bottom: 10%; width: 22%; height: 20%; }
         .hotspot-progress { right: 5%; bottom: 8%; width: 22%; height: 20%; }
 
-        /* TOOLTIP */
-        .hotspot-tooltip {
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.85);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: bold;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            letter-spacing: 1px;
-        }
-        .city-hotspot:hover .hotspot-tooltip {
-            opacity: 1;
-        }
-
         /* BOTTOM BAR */
         .city-bottom-bar {
             position: fixed;
@@ -2543,32 +2521,25 @@
 
                 <div class="city-hotspot hotspot-learn" onclick="selectMode('learn')">
                     <div class="hotspot-pulse"></div>
-                    <div class="hotspot-tooltip">APRENDER</div>
-                </div>
+                    </div>
                 <div class="city-hotspot hotspot-quiz" onclick="selectMode('quiz')">
                     <div class="hotspot-pulse"></div>
-                    <div class="hotspot-tooltip">QUIZ</div>
-                </div>
+                    </div>
                 <div class="city-hotspot hotspot-dictation" onclick="selectMode('dictation')">
                     <div class="hotspot-pulse"></div>
-                    <div class="hotspot-tooltip">OUVIR E DIGITAR</div>
-                </div>
+                    </div>
                 <div class="city-hotspot hotspot-conversation" onclick="openConversation()">
                     <div class="hotspot-pulse"></div>
-                    <div class="hotspot-tooltip">CONVERSE</div>
-                </div>
+                    </div>
                 <div class="city-hotspot hotspot-memory" onclick="startMemoryGame()">
                     <div class="hotspot-pulse"></div>
-                    <div class="hotspot-tooltip">MEMORIA</div>
-                </div>
+                    </div>
                 <div class="city-hotspot hotspot-review" onclick="selectMode('review')">
                     <div class="hotspot-pulse"></div>
-                    <div class="hotspot-tooltip">REVISAR ERROS</div>
-                </div>
+                    </div>
                 <div class="city-hotspot hotspot-progress" onclick="openProgress()">
                     <div class="hotspot-pulse"></div>
-                    <div class="hotspot-tooltip">MEU PROGRESSO</div>
-                </div>
+                    </div>
             </div>
 <div class="city-bottom-bar">
                 <div class="bottom-item">
