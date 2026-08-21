@@ -2207,77 +2207,6 @@
         .hotspot-review { left: 8%; bottom: 10%; width: 22%; height: 20%; }
         .hotspot-progress { right: 5%; bottom: 8%; width: 22%; height: 20%; }
 
-        /* CHARACTER GUIDE - CENTRO */
-        .city-guide {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: none;
-        }
-        .city-guide-chars {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-        }
-        .city-guide-char { /* base */
-            height: 225px;
-            width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
-        }
-        .char-arthur { animation: idleBreathe 3s ease-in-out infinite; }
-        .char-henrique { animation: idleBreathe 3s ease-in-out infinite 1.5s; }
-        @keyframes idleBreathe {
-            0%, 100% { transform: translateY(0); }
-            25% { transform: translateY(-3px) rotate(-0.5deg); }
-            50% { transform: translateY(-6px); }
-            75% { transform: translateY(-3px) rotate(0.5deg); }
-        }
-        @keyframes idleBlink {
-            0%, 96%, 100% { opacity: 1; }
-            97% { opacity: 0.8; }
-            98% { opacity: 1; }
-            99% { opacity: 0.8; }
-        }
-
-        /* SPEECH BUBBLE */
-        .guide-bubble {
-            background: rgba(255,255,255,0.95);
-            color: #1a1a2e;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 10px;
-            position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            animation: bubbleFloat 3s ease-in-out infinite;
-            max-width: 220px;
-            letter-spacing: 0.5px;
-        }
-        .guide-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid rgba(255,255,255,0.95);
-        }
-        @keyframes bubbleFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
         /* GAME HUD - TRANSPARENT */
         .city-hud {
             position: fixed;
@@ -2648,14 +2577,7 @@
                     <div class="hotspot-pulse"></div>
                 </div>
 
-                <!-- CHARACTER GUIDES -->
-                <div class="city-guide">
-                    <div class="guide-bubble">Escolha um lugar e vamos aprender juntos!</div>
-                    <div class="city-guide-chars">
-                        <img src="arthur.png" alt="Arthur" class="city-guide-char char-arthur" loading="lazy">
-                        <img src="henrique.png" alt="Henrique" class="city-guide-char char-henrique" loading="lazy">
-                    </div>
-                </div>
+
             </div>
 
             <!-- GAME HUD -->
