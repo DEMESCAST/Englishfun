@@ -1,4 +1,4 @@
-const CACHE_NAME = 'english-fun-v43';
+const CACHE_NAME = 'english-fun-v41';
 const urlsToCache = [
     './',
     './index.html',
@@ -11,7 +11,6 @@ const urlsToCache = [
     './manifest.json',
     './arthur.png',
     './henrique.png',
-    './city-canvas.js',
     './bg-music.mp3',
     './foto-criadores.jpg',
     './city-map.png'

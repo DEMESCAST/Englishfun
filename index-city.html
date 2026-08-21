@@ -2153,7 +2153,7 @@
         }
 
         /* HOTSPOTS - INVISIBLE CLICKABLE AREAS */
-        .city-hotspot { pointer-events: none !important; display: none;
+        .city-hotspot {
             position: absolute;
             cursor: pointer;
             z-index: 10;
@@ -2712,7 +2712,6 @@
         <div id="start-screen">
             <div class="city-game">
                 <img src="city-map.png?v=3" alt="EnglishFun City" class="city-background" loading="eager">
-                <canvas id="city-canvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:auto;"></canvas>
 
                 <!-- HOTSPOTS -->
                 <div class="city-sign sign-learn" onclick="selectMode('learn')">
@@ -3064,7 +3063,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="auth.js"></script>
     <script src="player.js"></script>
-    <script src="city-canvas.js"></script>
     <script src="game.js?v=20260820-1"></script>
     <script src="conversation.js"></script>
     <script>
@@ -3079,7 +3077,6 @@
 
         // Navegação por teclado no menu principal
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof CityCanvas !== 'undefined') CityCanvas.init();
             const modeButtons = document.querySelectorAll('.mode-btn');
             let currentFocusIndex = 0;
 
