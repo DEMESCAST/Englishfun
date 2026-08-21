@@ -2109,7 +2109,24 @@
             .conversation-character-speech { font-size: 17px; }
         }
 
-                        /* ==================== CITY GAME MAP ==================== */
+                        /* OVERRIDES FOR FULLSCREEN CITY */
+        #start-screen {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            z-index: 100 !important;
+            overflow: hidden !important;
+            display: block !important;
+        }
+        #game-container::before, #game-container::after {
+            display: none !important;
+        }
+
+        /* ==================== CITY GAME MAP ==================== */
         .city-game {
             position: fixed;
             inset: 0;
@@ -2207,8 +2224,8 @@
             align-items: flex-end;
             gap: 8px;
         }
-        .city-guide-char {
-            height: 180px;
+        .city-guide-char { /* base */
+            height: 225px;
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
@@ -2217,7 +2234,15 @@
         .char-henrique { animation: idleBreathe 3s ease-in-out infinite 1.5s; }
         @keyframes idleBreathe {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
+            25% { transform: translateY(-3px) rotate(-0.5deg); }
+            50% { transform: translateY(-6px); }
+            75% { transform: translateY(-3px) rotate(0.5deg); }
+        }
+        @keyframes idleBlink {
+            0%, 96%, 100% { opacity: 1; }
+            97% { opacity: 0.8; }
+            98% { opacity: 1; }
+            99% { opacity: 0.8; }
         }
 
         /* SPEECH BUBBLE */
@@ -2267,11 +2292,11 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.25);
             backdrop-filter: blur(8px);
             padding: 5px 12px;
             border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.08);
             color: #fff;
             font-size: 12px;
             font-weight: 700;
@@ -2280,12 +2305,12 @@
         .hud-value { color: #00d4ff; }
 
         /* AUDIO BUTTON - MINIMAL */
-        .city-audio-btn {
+        .city-audio-btn { opacity: 0.6;
             position: fixed;
             bottom: 12px;
             right: 12px;
             z-index: 20;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.25);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.15);
             color: #fff;
@@ -2299,7 +2324,7 @@
             justify-content: center;
             transition: all 0.2s;
         }
-        .city-audio-btn:hover { background: rgba(0,0,0,0.6); transform: scale(1.1); }
+        .city-audio-btn:hover { opacity: 1; background: rgba(0,0,0,0.6); transform: scale(1.1); }
 
         /* PLAYER BAR - MINIMAL */
         .city-player-bar {
@@ -2310,11 +2335,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.25);
             backdrop-filter: blur(8px);
             padding: 5px 12px;
             border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.08);
         }
         .city-player-bar .player-name {
             color: #fff;
@@ -2334,14 +2359,14 @@
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .city-guide-char { height: 120px; }
+            .city-guide-char { /* base */ height: 120px; }
             .guide-bubble { font-size: 10px; padding: 6px 12px; max-width: 180px; }
             .hud-item { font-size: 10px; padding: 4px 8px; }
             .city-hud { gap: 6px; top: 8px; right: 8px; }
             .city-player-bar { top: 8px; left: 8px; }
         }
         @media (max-width: 480px) {
-            .city-guide-char { height: 90px; }
+            .city-guide-char { /* base */ height: 90px; }
             .guide-bubble { font-size: 9px; max-width: 150px; }
             .city-hud { flex-direction: column; gap: 4px; }
         }
