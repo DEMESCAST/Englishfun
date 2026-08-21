@@ -2110,47 +2110,23 @@
         }
 
                 /* ==================== CITY MAP IMAGE ==================== */
-        .city-game {
-            position: fixed;
-            inset: 0;
+        .city-map-screen {
+            position: absolute;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: #05091f;
-            z-index: 1;
-        }
-        .city-background {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            height: 100vh;
-            width: auto;
-            transform: translate(-50%, -50%);
-        }
-
-        /* PERSONAGENS */
-        .city-characters {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
             display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            z-index: 10;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            background: #050520;
         }
-        .city-character {
-            height: 200px;
+        .city-map-bg {
+            position: absolute;
             width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.7)) drop-shadow(0 0 20px rgba(0,212,255,0.3));
-            animation: charFloat 3s ease-in-out infinite;
-        }
-        .city-char-left { animation-delay: 0s; height: 190px; }
-        .city-char-right { animation-delay: 1.5s; height: 210px; }
-        @keyframes charFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            height: 100%;
+            min-width: 100%;
+            object-fit: fill;
         }
 
         /* HOTSPOTS */
@@ -2547,12 +2523,8 @@
                 </div>
             </div>
 
-            <div class="city-game">
-                <img src="city-map.png?v=2" alt="Mapa da Cidade" class="city-background" loading="eager">
-                <div class="city-characters">
-                    <img src="arthur.png" alt="Arthur" class="city-character city-char-left" loading="lazy">
-                    <img src="henrique.png" alt="Henrique" class="city-character city-char-right" loading="lazy">
-                </div>
+            <div class="city-map-screen">
+                <img src="city-map.png?v=2" alt="Mapa da Cidade" class="city-map-bg" loading="eager">
 
                 <div class="city-hotspot hotspot-learn" onclick="selectMode('learn')">
                     <div class="hotspot-pulse"></div>
