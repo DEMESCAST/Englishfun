@@ -2109,7 +2109,7 @@
             .conversation-character-speech { font-size: 17px; }
         }
 
-                /* ==================== CITY MAP IMAGE ==================== */
+                        /* ==================== CITY GAME MAP ==================== */
         .city-game {
             position: fixed;
             inset: 0;
@@ -2126,6 +2126,7 @@
             height: 100vh;
             width: auto;
             transform: translate(-50%, -50%);
+            pointer-events: none;
         }
         @media (min-aspect-ratio: 16/9) {
             .city-background {
@@ -2134,36 +2135,50 @@
             }
         }
 
-        
-            50% { transform: translateY(-10px); }
-        }
-
-        /* HOTSPOTS */
+        /* HOTSPOTS - INVISIBLE CLICKABLE AREAS */
         .city-hotspot {
             position: absolute;
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
-            border-radius: 12px;
+            border-radius: 8px;
         }
-        .city-hotspot:hover {
-            transform: scale(1.08);
-            filter: brightness(1.3);
+        .city-hotspot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .city-hotspot:hover::after {
+            opacity: 1;
         }
         .city-hotspot:active {
-            transform: scale(0.97);
+            transform: scale(0.95);
         }
+
+        /* HOTSPOT GLOW EFFECTS PER BUILDING */
+        .hotspot-learn::after { background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(59,130,246,0.4); }
+        .hotspot-quiz::after { background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(168,85,247,0.4); }
+        .hotspot-dictation::after { background: radial-gradient(circle, rgba(34,211,238,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(34,211,238,0.4); }
+        .hotspot-conversation::after { background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(139,92,246,0.4); }
+        .hotspot-memory::after { background: radial-gradient(circle, rgba(74,222,128,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(74,222,128,0.4); }
+        .hotspot-review::after { background: radial-gradient(circle, rgba(249,115,22,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(249,115,22,0.4); }
+        .hotspot-progress::after { background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(255,215,0,0.4); }
+
+        /* HOTSPOT PULSE ANIMATION */
         .hotspot-pulse {
             position: absolute;
-            inset: -6px;
-            border: 3px solid rgba(255,255,255,0.4);
-            border-radius: 16px;
-            animation: hotspotPulse 2s ease-in-out infinite;
+            inset: -4px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            animation: hotspotPulse 2.5s ease-in-out infinite;
             pointer-events: none;
         }
         @keyframes hotspotPulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.05); }
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.03); }
         }
 
         /* HOTSPOT POSITIONS */
@@ -2175,91 +2190,160 @@
         .hotspot-review { left: 8%; bottom: 10%; width: 22%; height: 20%; }
         .hotspot-progress { right: 5%; bottom: 8%; width: 22%; height: 20%; }
 
-        /* BOTTOM BAR */
-        .city-bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+        /* CHARACTER GUIDE - CENTRO */
+        .city-guide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 15;
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            flex-wrap: wrap;
-            z-index: 20;
-        }
-        .bottom-item { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 12px; }
-        .bottom-icon { font-size: 16px; }
-        .bottom-label { color: rgba(255,255,255,0.5); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
-        .bottom-value { font-weight: bold; color: #00d4ff; }
-
-        /* TOP BAR */
-        .city-top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
+            pointer-events: none;
+        }
+        .city-guide-chars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+        .city-guide-char {
+            height: 180px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+        }
+        .char-arthur { animation: idleBreathe 3s ease-in-out infinite; }
+        .char-henrique { animation: idleBreathe 3s ease-in-out infinite 1.5s; }
+        @keyframes idleBreathe {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        /* SPEECH BUBBLE */
+        .guide-bubble {
+            background: rgba(255,255,255,0.95);
+            color: #1a1a2e;
             padding: 8px 16px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: bubbleFloat 3s ease-in-out infinite;
+            max-width: 220px;
+            letter-spacing: 0.5px;
+        }
+        .guide-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid rgba(255,255,255,0.95);
+        }
+        @keyframes bubbleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* GAME HUD - TRANSPARENT */
+        .city-hud {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 12px;
             z-index: 20;
+            pointer-events: none;
         }
-        .city-logo { display: flex; align-items: center; gap: 10px; }
-        .city-logo .logo-emoji { font-size: 32px; }
-        .city-logo h1 {
-            font-size: 20px;
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
-            text-shadow: 0 0 15px rgba(0,212,255,0.8);
-            margin: 0;
-            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: 700;
         }
-        .city-logo p {
-            font-size: 9px;
-            color: #00e87b;
-            margin: 0;
-            letter-spacing: 2px;
+        .hud-icon { font-size: 14px; }
+        .hud-value { color: #00d4ff; }
+
+        /* AUDIO BUTTON - MINIMAL */
+        .city-audio-btn {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            z-index: 20;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
-        .city-player-info {
+        .city-audio-btn:hover { background: rgba(0,0,0,0.6); transform: scale(1.1); }
+
+        /* PLAYER BAR - MINIMAL */
+        .city-player-bar {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 20;
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255,255,255,0.1);
-            padding: 6px 14px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .player-avatar {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #00d4ff, #0ea5e9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
+        .city-player-bar .player-name {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
         }
-        .player-details { display: flex; flex-direction: column; }
-        .player-greeting { color: #fff; font-weight: bold; font-size: 12px; }
-        .player-level { color: #ffd700; font-size: 10px; }
+        .city-player-bar .logout-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-size: 10px;
+            padding: 2px 6px;
+            transition: color 0.2s;
+        }
+        .city-player-bar .logout-btn:hover { color: #ff6b6b; }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .city-bottom-bar { gap: 10px; padding: 8px 10px; }
-            .bottom-item { font-size: 10px; }
-            .bottom-label { font-size: 7px; }
-            .city-top-bar { padding: 6px 10px; }
-            .city-logo h1 { font-size: 14px; }
-            .city-logo .logo-emoji { font-size: 24px; }
-            .city-logo p { font-size: 7px; }
-            .city-hotspot { border-radius: 8px; }
-            .hotspot-tooltip { font-size: 8px; }
+            .city-guide-char { height: 120px; }
+            .guide-bubble { font-size: 10px; padding: 6px 12px; max-width: 180px; }
+            .hud-item { font-size: 10px; padding: 4px 8px; }
+            .city-hud { gap: 6px; top: 8px; right: 8px; }
+            .city-player-bar { top: 8px; left: 8px; }
+        }
+        @media (max-width: 480px) {
+            .city-guide-char { height: 90px; }
+            .guide-bubble { font-size: 9px; max-width: 150px; }
+            .city-hud { flex-direction: column; gap: 4px; }
         }
 /* ==================== QUEM SOMOS ==================== */
         .mode-about {
@@ -2511,78 +2595,75 @@
             </div>
         </div>
 
-        <!-- Tela Inicial - CIDADE -->
+                <!-- Tela Inicial - CIDADE -->
         <div id="start-screen">
-            
-
-            <div class="city-top-bar">
-                <div class="city-logo">
-                    <span class="logo-emoji">🎮</span>
-                    <div>
-                        <h1>ENGLISH FUN</h1>
-                        <p>APRENDA INGLES BRINCANDO!</p>
-                    </div>
-                </div>
-                <div class="city-player-info" id="city-player-info" style="display: none;">
-                    <div class="player-avatar">👤</div>
-                    <div class="player-details">
-                        <span class="player-greeting" id="city-player-name">Ola!</span>
-                        <span class="player-level">Nivel 1</span>
-                    </div>
-                </div>
-            </div>
-
             <div class="city-game">
-                <img src="city-map.png?v=2" alt="Mapa da Cidade" class="city-background" loading="eager">
+                <img src="city-map.png?v=3" alt="EnglishFun City" class="city-background" loading="eager">
 
-
+                <!-- HOTSPOTS -->
                 <div class="city-hotspot hotspot-learn" onclick="selectMode('learn')">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-quiz" onclick="selectMode('quiz')">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-dictation" onclick="selectMode('dictation')">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-conversation" onclick="openConversation()">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-memory" onclick="startMemoryGame()">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-review" onclick="selectMode('review')">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-progress" onclick="openProgress()">
                     <div class="hotspot-pulse"></div>
+                </div>
+
+                <!-- CHARACTER GUIDES -->
+                <div class="city-guide">
+                    <div class="guide-bubble">Escolha um lugar e vamos aprender juntos!</div>
+                    <div class="city-guide-chars">
+                        <img src="arthur.png" alt="Arthur" class="city-guide-char char-arthur" loading="lazy">
+                        <img src="henrique.png" alt="Henrique" class="city-guide-char char-henrique" loading="lazy">
                     </div>
-            </div>
-<div class="city-bottom-bar">
-                <div class="bottom-item">
-                    <span class="bottom-icon">⭐</span>
-                    <span class="bottom-label">NÍVEL</span>
-                    <span class="bottom-value" id="city-level">1</span>
-                </div>
-                <div class="bottom-item">
-                    <span class="bottom-icon">🏆</span>
-                    <span class="bottom-label">PONTOS</span>
-                    <span class="bottom-value" id="city-points">0</span>
-                </div>
-                <div class="bottom-item">
-                    <span class="bottom-icon">🔥</span>
-                    <span class="bottom-label">SEQUÊNCIA</span>
-                    <span class="bottom-value">7 DIAS</span>
                 </div>
             </div>
+
+            <!-- GAME HUD -->
+            <div class="city-hud">
+                <div class="hud-item">
+                    <span class="hud-icon">⭐</span>
+                    <span class="hud-value" id="city-level">1</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-icon">🏆</span>
+                    <span class="hud-value" id="city-points">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-icon">🔥</span>
+                    <span class="hud-value">7</span>
+                </div>
+            </div>
+
+            <!-- PLAYER BAR -->
+            <div class="city-player-bar" id="city-player-bar" style="display: none;">
+                <span class="player-name" id="city-player-name"></span>
+                <button class="logout-btn" onclick="handleLogout()">sair</button>
+            </div>
+
+            <!-- AUDIO -->
+            <button class="city-audio-btn" onclick="toggleAudio()" id="city-audio-btn" aria-label="Audio">🔊</button>
 
             <div id="player-bar" style="display: none;">
                 <span id="player-bar-name"></span>
                 <button class="player-bar-logout" onclick="handleLogout()" aria-label="Sair da conta">Sair</button>
             </div>
         </div>
-
-        <!-- Tela de Seleção de Categoria -->
+<!-- Tela de Seleção de Categoria -->
         <div id="category-screen">
             <button class="back-mode-btn" onclick="goToModeSelect()" aria-label="Voltar aos modos de jogo">← Voltar</button>
             <h2 id="category-title-mode"></h2>
