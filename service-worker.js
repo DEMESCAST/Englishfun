@@ -1,7 +1,8 @@
-const CACHE_NAME = 'english-fun-v23';
+const CACHE_NAME = 'english-fun-v24';
 const urlsToCache = [
     './',
     './index.html',
+    './index-city.html',
     './auth.js',
     './player.js',
     './game.js?v=20260820-1',
@@ -11,7 +12,8 @@ const urlsToCache = [
     './arthur.png',
     './henrique.png',
     './bg-music.mp3',
-    './foto-criadores.jpg'
+    './foto-criadores.jpg',
+    './city-map.png'
 ];
 
 self.addEventListener('install', event => {
