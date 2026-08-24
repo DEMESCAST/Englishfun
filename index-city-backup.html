@@ -2109,56 +2109,254 @@
             .conversation-character-speech { font-size: 17px; }
         }
 
-                /* ==================== CITY MAP IMAGE ==================== */
-        .city-map-screen {
-            position: absolute;
+                        /* OVERRIDES FOR FULLSCREEN CITY */
+        #start-screen {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            z-index: 100 !important;
+            overflow: hidden !important;
+            display: block !important;
+        }
+        #game-container::before, #game-container::after {
+            display: none !important;
+        }
+
+        /* ==================== CITY GAME MAP ==================== */
+        .city-game {
+            position: fixed;
+            inset: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: #05091f;
             z-index: 1;
-            background: #050520;
         }
-        .city-map-bg {
+        .city-background {
             position: absolute;
+            left: 50%;
+            top: 50%;
+            height: 100vh;
             width: auto;
-            height: 100%;
-            min-width: 100%;
-            object-fit: fill;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        @media (min-aspect-ratio: 16/9) {
+            .city-background {
+                height: auto;
+                width: 100vw;
+            }
         }
 
-        /* HOTSPOTS */
+        /* HOTSPOTS - INVISIBLE CLICKABLE AREAS */
         .city-hotspot {
             position: absolute;
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
-            border-radius: 12px;
+            border-radius: 8px;
         }
-        .city-hotspot:hover {
-            transform: scale(1.08);
-            filter: brightness(1.3);
+        .city-hotspot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .city-hotspot:hover::after {
+            opacity: 1;
         }
         .city-hotspot:active {
-            transform: scale(0.97);
+            transform: scale(0.95);
         }
+
+        /* HOTSPOT GLOW EFFECTS PER BUILDING */
+        .hotspot-quiz::after { background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(168,85,247,0.4); }
+        .hotspot-dictation::after { background: radial-gradient(circle, rgba(34,211,238,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(34,211,238,0.4); }
+        .hotspot-conversation::after { background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(139,92,246,0.4); }
+        .hotspot-memory::after { background: radial-gradient(circle, rgba(74,222,128,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(74,222,128,0.4); }
+        .hotspot-review::after { background: radial-gradient(circle, rgba(249,115,22,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(249,115,22,0.4); }
+        .hotspot-progress::after { background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%); box-shadow: 0 0 20px rgba(255,215,0,0.4); }
+
+        /* HOTSPOT PULSE ANIMATION */
         .hotspot-pulse {
             position: absolute;
-            inset: -6px;
-            border: 3px solid rgba(255,255,255,0.4);
-            border-radius: 16px;
-            animation: hotspotPulse 2s ease-in-out infinite;
+            inset: -4px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            animation: hotspotPulse 2.5s ease-in-out infinite;
             pointer-events: none;
         }
         @keyframes hotspotPulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.05); }
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.03); }
         }
 
-        /* HOTSPOT POSITIONS */
-        .hotspot-learn { left: 5%; top: 22%; width: 20%; height: 22%; }
+                        /* ==================== 3D GAME SIGNS ==================== */
+        .city-sign {
+            position: absolute;
+            z-index: 12;
+            cursor: pointer;
+        }
+        .city-sign:hover {
+            transform: scale(1.12) translateY(-10px) rotate(-1.5deg);
+            z-index: 20;
+        }
+        .city-sign:active {
+            transform: scale(0.95) translateY(-4px);
+            transition: transform 0.1s;
+        }
+        .sign-facade {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .sign-chains {
+            display: flex;
+            justify-content: space-between;
+            width: 75%;
+            margin-bottom: -3px;
+            z-index: 2;
+        }
+        .sign-chain {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #a0b0c8 0%, #6a7a95 40%, #4a5a75 100%);
+            border-radius: 2px;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+        }
+        .sign-body {
+            position: relative;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.015) 3px, rgba(255,255,255,0.015) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(255,255,255,0.015) 3px, rgba(255,255,255,0.015) 4px),
+                linear-gradient(170deg, #1a3570 0%, #122855 25%, #0c1d40 50%, #081530 75%, #050e22 100%);
+            border: 2.5px solid rgba(80,150,240,0.6);
+            border-radius: 14px;
+            padding: 14px 24px 12px;
+            text-align: center;
+            min-width: 150px;
+            transform: perspective(500px) rotateX(3deg);
+            transform-style: preserve-3d;
+            box-shadow:
+                0 0 30px rgba(50,120,220,0.35),
+                0 0 60px rgba(50,120,220,0.15),
+                0 0 90px rgba(50,120,220,0.05),
+                0 2px 0 #0b1a35,
+                0 4px 0 #091630,
+                0 6px 0 #071228,
+                0 8px 0 #050e20,
+                0 10px 0 #030a18,
+                0 12px 20px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.4),
+                inset 1px 0 0 rgba(255,255,255,0.05),
+                inset -1px 0 0 rgba(0,0,0,0.2);
+        }
+        .sign-body::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(100,180,255,0.5) 0%, rgba(60,140,240,0.2) 25%, transparent 50%, rgba(60,140,240,0.15) 75%, rgba(100,180,255,0.4) 100%);
+            z-index: -1;
+            opacity: 0.7;
+            transition: opacity 0.35s;
+        }
+        .city-sign:hover .sign-body::before {
+            opacity: 1;
+        }
+        .sign-body::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 45%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
+            border-radius: 12px 12px 0 0;
+            pointer-events: none;
+        }
+        .sign-icon {
+            font-size: 34px;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 0 12px rgba(80,160,255,0.8));
+            transition: all 0.35s;
+            display: block;
+        }
+        .city-sign:hover .sign-icon {
+            transform: scale(1.25) rotate(-10deg);
+            filter: drop-shadow(0 0 20px rgba(120,190,255,1));
+        }
+        .sign-title {
+            font-size: 14px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(80,160,255,1), 0 0 25px rgba(60,130,240,0.6), 0 0 40px rgba(50,110,220,0.3), 0 2px 3px rgba(0,0,0,0.9);
+            margin-bottom: 3px;
+        }
+        .sign-subtitle {
+            font-size: 7.5px;
+            color: rgba(140,200,255,0.85);
+            font-style: italic;
+            letter-spacing: 0.8px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+        }
+        .sign-glow-line {
+            width: 65%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(80,160,255,0.9), transparent);
+            margin-top: 5px;
+            border-radius: 1px;
+            box-shadow: 0 0 10px rgba(80,160,255,0.7), 0 0 20px rgba(80,160,255,0.3);
+        }
+        .sign-shadow {
+            width: 55%;
+            height: 8px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.45) 0%, transparent 70%);
+            margin-top: 10px;
+            border-radius: 50%;
+            filter: blur(3px);
+        }
+        .city-sign:hover .sign-body {
+            box-shadow:
+                0 0 40px rgba(80,160,255,0.5),
+                0 0 80px rgba(80,160,255,0.2),
+                0 0 120px rgba(80,160,255,0.08),
+                0 2px 0 #0b1a35,
+                0 4px 0 #091630,
+                0 6px 0 #071228,
+                0 8px 0 #050e20,
+                0 10px 0 #030a18,
+                0 12px 25px rgba(0,0,0,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.25),
+                inset 0 -1px 0 rgba(0,0,0,0.4);
+            border-color: rgba(120,190,255,0.9);
+        }
+        .city-sign:hover .sign-glow-line {
+            width: 85%;
+            box-shadow: 0 0 15px rgba(120,190,255,1), 0 0 30px rgba(80,160,255,0.5);
+        }
+        .city-sign {
+            animation: signFloat 4.5s ease-in-out infinite;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes signFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .city-sign:hover {
+            animation: none;
+        }
+        .sign-learn { left: 7%; top: 16%; }
+
+/* HOTSPOT POSITIONS */
         .hotspot-quiz { left: 35%; top: 10%; width: 22%; height: 22%; }
         .hotspot-dictation { right: 3%; top: 15%; width: 22%; height: 25%; }
         .hotspot-conversation { left: 3%; top: 48%; width: 20%; height: 20%; }
@@ -2166,91 +2364,93 @@
         .hotspot-review { left: 8%; bottom: 10%; width: 22%; height: 20%; }
         .hotspot-progress { right: 5%; bottom: 8%; width: 22%; height: 20%; }
 
-        /* BOTTOM BAR */
-        .city-bottom-bar {
+        /* GAME HUD - TRANSPARENT */
+        .city-hud {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            top: 12px;
+            right: 12px;
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            flex-wrap: wrap;
+            gap: 12px;
             z-index: 20;
+            pointer-events: none;
         }
-        .bottom-item { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 12px; }
-        .bottom-icon { font-size: 16px; }
-        .bottom-label { color: rgba(255,255,255,0.5); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
-        .bottom-value { font-weight: bold; color: #00d4ff; }
-
-        /* TOP BAR */
-        .city-top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+        .hud-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 16px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            z-index: 20;
-        }
-        .city-logo { display: flex; align-items: center; gap: 10px; }
-        .city-logo .logo-emoji { font-size: 32px; }
-        .city-logo h1 {
-            font-size: 20px;
+            gap: 5px;
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(8px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
             color: #fff;
-            text-shadow: 0 0 15px rgba(0,212,255,0.8);
-            margin: 0;
-            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: 700;
         }
-        .city-logo p {
-            font-size: 9px;
-            color: #00e87b;
-            margin: 0;
-            letter-spacing: 2px;
+        .hud-icon { font-size: 14px; }
+        .hud-value { color: #00d4ff; }
+
+        /* AUDIO BUTTON - MINIMAL */
+        .city-audio-btn { opacity: 0.6;
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            z-index: 20;
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
-        .city-player-info {
+        .city-audio-btn:hover { opacity: 1; background: rgba(0,0,0,0.6); transform: scale(1.1); }
+
+        /* PLAYER BAR - MINIMAL */
+        .city-player-bar {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 20;
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255,255,255,0.1);
-            padding: 6px 14px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(8px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
         }
-        .player-avatar {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #00d4ff, #0ea5e9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
+        .city-player-bar .player-name {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
         }
-        .player-details { display: flex; flex-direction: column; }
-        .player-greeting { color: #fff; font-weight: bold; font-size: 12px; }
-        .player-level { color: #ffd700; font-size: 10px; }
+        .city-player-bar .logout-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-size: 10px;
+            padding: 2px 6px;
+            transition: color 0.2s;
+        }
+        .city-player-bar .logout-btn:hover { color: #ff6b6b; }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .city-bottom-bar { gap: 10px; padding: 8px 10px; }
-            .bottom-item { font-size: 10px; }
-            .bottom-label { font-size: 7px; }
-            .city-top-bar { padding: 6px 10px; }
-            .city-logo h1 { font-size: 14px; }
-            .city-logo .logo-emoji { font-size: 24px; }
-            .city-logo p { font-size: 7px; }
-            .city-hotspot { border-radius: 8px; }
-            .hotspot-tooltip { font-size: 8px; }
+            .hud-item { font-size: 10px; padding: 4px 8px; }
+            .city-hud { gap: 6px; top: 8px; right: 8px; }
+            .city-player-bar { top: 8px; left: 8px; }
+        }
+        @media (max-width: 480px) {
+            .city-hud { flex-direction: column; gap: 4px; }
         }
 /* ==================== QUEM SOMOS ==================== */
         .mode-about {
@@ -2502,77 +2702,80 @@
             </div>
         </div>
 
-        <!-- Tela Inicial - CIDADE -->
+                <!-- Tela Inicial - CIDADE -->
         <div id="start-screen">
-            
+            <div class="city-game">
+                <img src="city-map.png?v=3" alt="EnglishFun City" class="city-background" loading="eager">
 
-            <div class="city-top-bar">
-                <div class="city-logo">
-                    <span class="logo-emoji">🎮</span>
-                    <div>
-                        <h1>ENGLISH FUN</h1>
-                        <p>APRENDA INGLES BRINCANDO!</p>
+                <!-- HOTSPOTS -->
+                <div class="city-sign sign-learn" onclick="selectMode('learn')">
+                    <div class="sign-facade">
+                        <div class="sign-chains">
+                            <div class="sign-chain"></div>
+                            <div class="sign-chain"></div>
+                        </div>
+                        <div class="sign-body">
+                            <div class="sign-icon">📚</div>
+                            <div class="sign-title">APRENDER</div>
+                            <div class="sign-subtitle">Novas palavras te esperam!</div>
+                        </div>
+                        <div class="sign-glow-line"></div>
+                        <div class="sign-shadow"></div>
                     </div>
                 </div>
-                <div class="city-player-info" id="city-player-info" style="display: none;">
-                    <div class="player-avatar">👤</div>
-                    <div class="player-details">
-                        <span class="player-greeting" id="city-player-name">Ola!</span>
-                        <span class="player-level">Nivel 1</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="city-map-screen">
-                <img src="city-map.png?v=2" alt="Mapa da Cidade" class="city-map-bg" loading="eager">
-
-                <div class="city-hotspot hotspot-learn" onclick="selectMode('learn')">
-                    <div class="hotspot-pulse"></div>
-                    </div>
                 <div class="city-hotspot hotspot-quiz" onclick="selectMode('quiz')">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-dictation" onclick="selectMode('dictation')">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-conversation" onclick="openConversation()">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-memory" onclick="startMemoryGame()">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-review" onclick="selectMode('review')">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
                 <div class="city-hotspot hotspot-progress" onclick="openProgress()">
                     <div class="hotspot-pulse"></div>
-                    </div>
+                </div>
+
+
             </div>
-<div class="city-bottom-bar">
-                <div class="bottom-item">
-                    <span class="bottom-icon">⭐</span>
-                    <span class="bottom-label">NÍVEL</span>
-                    <span class="bottom-value" id="city-level">1</span>
+
+            <!-- GAME HUD -->
+            <div class="city-hud">
+                <div class="hud-item">
+                    <span class="hud-icon">⭐</span>
+                    <span class="hud-value" id="city-level">1</span>
                 </div>
-                <div class="bottom-item">
-                    <span class="bottom-icon">🏆</span>
-                    <span class="bottom-label">PONTOS</span>
-                    <span class="bottom-value" id="city-points">0</span>
+                <div class="hud-item">
+                    <span class="hud-icon">🏆</span>
+                    <span class="hud-value" id="city-points">0</span>
                 </div>
-                <div class="bottom-item">
-                    <span class="bottom-icon">🔥</span>
-                    <span class="bottom-label">SEQUÊNCIA</span>
-                    <span class="bottom-value">7 DIAS</span>
+                <div class="hud-item">
+                    <span class="hud-icon">🔥</span>
+                    <span class="hud-value">7</span>
                 </div>
             </div>
+
+            <!-- PLAYER BAR -->
+            <div class="city-player-bar" id="city-player-bar" style="display: none;">
+                <span class="player-name" id="city-player-name"></span>
+                <button class="logout-btn" onclick="handleLogout()" aria-label="Sair da conta">sair</button>
+            </div>
+
+            <!-- AUDIO -->
+            <button class="city-audio-btn" onclick="toggleAudio()" id="city-audio-btn" aria-label="Audio">🔊</button>
 
             <div id="player-bar" style="display: none;">
                 <span id="player-bar-name"></span>
                 <button class="player-bar-logout" onclick="handleLogout()" aria-label="Sair da conta">Sair</button>
             </div>
         </div>
-
-        <!-- Tela de Seleção de Categoria -->
+<!-- Tela de Seleção de Categoria -->
         <div id="category-screen">
             <button class="back-mode-btn" onclick="goToModeSelect()" aria-label="Voltar aos modos de jogo">← Voltar</button>
             <h2 id="category-title-mode"></h2>
@@ -2914,3 +3117,4 @@
     </script>
 </body>
 </html>
+

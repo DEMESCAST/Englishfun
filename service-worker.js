@@ -1,4 +1,4 @@
-const CACHE_NAME = 'english-fun-v43';
+﻿const CACHE_NAME = 'english-fun-v44';
 const urlsToCache = [
     './',
     './index.html',
@@ -42,7 +42,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
     
-    // Network-first para arquivos críticos (HTML, JS)
+    // Network-first para arquivos crÃ­ticos (HTML, JS)
     if (event.request.method === 'GET' && 
         (url.pathname.endsWith('.html') || 
          url.pathname.endsWith('.js') || 
