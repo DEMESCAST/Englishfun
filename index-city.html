@@ -2516,39 +2516,7 @@
 </head>
 <body>
 
-  <main class="game">
-    <div class="stars" aria-hidden="true"></div>
-    <header class="logo" aria-label="English Fun">
-      <h1><span>ENGLISH</span><b>FUN</b></h1>
-      <p>APRENDA INGLÃŠS BRINCANDO!</p>
-    </header>
-
-    <section class="map" aria-label="Escolha uma Ã¡rea de aprendizagem">
-      <div class="city" aria-hidden="true"></div>
-      <div class="presenters" aria-hidden="true">
-        <img class="presenter presenter-arthur" src="arthur.png" alt="">
-        <img class="presenter presenter-henrique" src="henrique.png" alt="">
-      </div>
-
-      <button class="area a0 blue" data-title="APRENDER" onclick="selectMode('learn')" data-text="Novas palavras te esperam!" data-icon="ðŸŽ“" data-route="" aria-label="Aprender. Novas palavras te esperam!"><em>ðŸŽ“</em><strong>APRENDER</strong></button>
-      <button class="area a1 red" data-title="QUIZ" onclick="selectMode('quiz')" data-text="Teste seus conhecimentos!" data-icon="ðŸŽ¯" data-route="" aria-label="Quiz. Teste seus conhecimentos!"><em>ðŸŽ¯</em><strong>QUIZ</strong></button>
-      <button class="area a2 purple" data-title="OUVIR E ESCREVER" onclick="selectMode('dictation')" data-text="Escute, escreva e melhore seu inglÃªs!" data-icon="ðŸŽ™ï¸" data-route="" aria-label="Ouvir e escrever. Escute, escreva e melhore seu inglÃªs!"><em>ðŸŽ™ï¸</em><strong>OUVIR E ESCREVER</strong></button>
-      <button class="area a3 violet" data-title="CONVERSACAO" onclick="openConversation()" data-text="Converse em ingles e faca amigos!" data-icon="💬" data-route="" aria-label="Conversacao. Converse em ingles e faca amigos!"><em>💬</em><strong>CONVERSACAO</strong></button>
-      <button class="area a4 green" data-title="MEMORIA" onclick="startMemoryGame()" data-text="Treine sua mente e memorize!" data-icon="🧠" data-route="" aria-label="Memoria. Treine sua mente e memorize!"><em>🧠</em><strong>MEMORIA</strong></button>
-      <button class="area a5 orange" data-title="REVISAR ERROS" onclick="selectMode('review')" data-text="Corrija, aprenda e evolua!" data-icon="âœ“" data-route="" aria-label="Revisar erros. Corrija, aprenda e evolua!"><em>âœ“</em><strong>REVISAR ERROS</strong></button>
-      <button class="area a6 cyan" data-title="MEU PROGRESSO" onclick="openProgress()" data-text="Acompanhe suas conquistas!" data-icon="â˜…" data-route="" aria-label="Meu progresso. Acompanhe suas conquistas!"><em>â˜…</em><strong>MEU PROGRESSO</strong></button>
-    </section>
-
-    <div class="overlay" id="overlay" hidden>
-      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
-        <button class="close" type="button" aria-label="Fechar">Ã—</button>
-        <div class="bigicon" aria-hidden="true"></div>
-        <h2 id="dialog-title"></h2>
-        <p id="dialog-text"></p>
-        <a class="start" id="start-link" href="#">COMEÃ‡AR</a>
-      </section>
-    </div>
-  </main>
+  
   <!-- Tela: Boas-vindas (não autenticado) -->
         <div id="welcome-screen" style="display: none;">
             <div class="auth-card">
@@ -2626,48 +2594,40 @@
 
                 <!-- Tela Inicial - CIDADE -->
         <div id="start-screen">
-            <div class="city-game">
-                <img src="city-map.png?v=3" alt="EnglishFun City" class="city-background" loading="eager">
+    <div class="stars" aria-hidden="true"></div>
+    <header class="logo" aria-label="English Fun">
+      <h1><span>ENGLISH</span><b>FUN</b></h1>
+      <p>APRENDA INGLÃŠS BRINCANDO!</p>
+    </header>
 
-                <!-- HOTSPOTS -->
-                <div class="city-sign sign-learn" onclick="selectMode('learn')">
-                    <div class="sign-facade">
-                        <div class="sign-chains">
-                            <div class="sign-chain"></div>
-                            <div class="sign-chain"></div>
-                        </div>
-                        <div class="sign-body">
-                            <div class="sign-icon">📚</div>
-                            <div class="sign-title">APRENDER</div>
-                            <div class="sign-subtitle">Novas palavras te esperam!</div>
-                        </div>
-                        <div class="sign-glow-line"></div>
-                        <div class="sign-shadow"></div>
-                    </div>
-                </div>
-                <div class="city-hotspot hotspot-quiz" onclick="selectMode('quiz')">
-                    <div class="hotspot-pulse"></div>
-                </div>
-                <div class="city-hotspot hotspot-dictation" onclick="selectMode('dictation')">
-                    <div class="hotspot-pulse"></div>
-                </div>
-                <div class="city-hotspot hotspot-conversation" onclick="openConversation()">
-                    <div class="hotspot-pulse"></div>
-                </div>
-                <div class="city-hotspot hotspot-memory" onclick="startMemoryGame()">
-                    <div class="hotspot-pulse"></div>
-                </div>
-                <div class="city-hotspot hotspot-review" onclick="selectMode('review')">
-                    <div class="hotspot-pulse"></div>
-                </div>
-                <div class="city-hotspot hotspot-progress" onclick="openProgress()">
-                    <div class="hotspot-pulse"></div>
-                </div>
+    <section class="map" aria-label="Escolha uma Ã¡rea de aprendizagem">
+      <div class="city" aria-hidden="true"></div>
+      <div class="presenters" aria-hidden="true">
+        <img class="presenter presenter-arthur" src="arthur.png" alt="">
+        <img class="presenter presenter-henrique" src="henrique.png" alt="">
+      </div>
 
+      <button class="area a0 blue" data-title="APRENDER" onclick="selectMode('learn')" data-text="Novas palavras te esperam!" data-icon="ðŸŽ“" data-route="" aria-label="Aprender. Novas palavras te esperam!"><em>ðŸŽ“</em><strong>APRENDER</strong></button>
+      <button class="area a1 red" data-title="QUIZ" onclick="selectMode('quiz')" data-text="Teste seus conhecimentos!" data-icon="ðŸŽ¯" data-route="" aria-label="Quiz. Teste seus conhecimentos!"><em>ðŸŽ¯</em><strong>QUIZ</strong></button>
+      <button class="area a2 purple" data-title="OUVIR E ESCREVER" onclick="selectMode('dictation')" data-text="Escute, escreva e melhore seu inglÃªs!" data-icon="ðŸŽ™ï¸" data-route="" aria-label="Ouvir e escrever. Escute, escreva e melhore seu inglÃªs!"><em>ðŸŽ™ï¸</em><strong>OUVIR E ESCREVER</strong></button>
+      <button class="area a3 violet" data-title="CONVERSACAO" onclick="openConversation()" data-text="Converse em ingles e faca amigos!" data-icon="💬" data-route="" aria-label="Conversacao. Converse em ingles e faca amigos!"><em>💬</em><strong>CONVERSACAO</strong></button>
+      <button class="area a4 green" data-title="MEMORIA" onclick="startMemoryGame()" data-text="Treine sua mente e memorize!" data-icon="🧠" data-route="" aria-label="Memoria. Treine sua mente e memorize!"><em>🧠</em><strong>MEMORIA</strong></button>
+      <button class="area a5 orange" data-title="REVISAR ERROS" onclick="selectMode('review')" data-text="Corrija, aprenda e evolua!" data-icon="âœ“" data-route="" aria-label="Revisar erros. Corrija, aprenda e evolua!"><em>âœ“</em><strong>REVISAR ERROS</strong></button>
+      <button class="area a6 cyan" data-title="MEU PROGRESSO" onclick="openProgress()" data-text="Acompanhe suas conquistas!" data-icon="â˜…" data-route="" aria-label="Meu progresso. Acompanhe suas conquistas!"><em>â˜…</em><strong>MEU PROGRESSO</strong></button>
+    </section>
 
-            </div>
+    <div class="overlay" id="overlay" hidden>
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+        <button class="close" type="button" aria-label="Fechar">Ã—</button>
+        <div class="bigicon" aria-hidden="true"></div>
+        <h2 id="dialog-title"></h2>
+        <p id="dialog-text"></p>
+        <a class="start" id="start-link" href="#">COMEÃ‡AR</a>
+      </section>
+    </div>
+  
 
-            <!-- GAME HUD -->
+<!-- GAME HUD -->
             <div class="city-hud">
                 <div class="hud-item">
                     <span class="hud-icon">⭐</span>
