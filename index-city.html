@@ -2512,7 +2512,97 @@
             .about-icons { gap: 20px; }
             .about-icon-item span:first-child { font-size: 28px; }
         }
-    </style>
+    
+/* === TELA INICIAL - NOVA === */
+#start-screen {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8vh;
+}
+.city-bg {
+    position: absolute;
+    inset: 0;
+    background: url("./assets/tela-inicial.webp") center/cover no-repeat;
+    z-index: 0;
+}
+.start-buttons {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: min(90vw, 340px);
+}
+.start-btn {
+    width: 100%;
+    padding: 18px 24px;
+    border: none;
+    border-radius: 16px;
+    font-size: clamp(18px, 4vw, 24px);
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s, filter .2s;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    position: relative;
+    overflow: hidden;
+}
+.start-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.25), inset 0 3px 6px rgba(255,255,255,0.12);
+    pointer-events: none;
+}
+.start-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.start-btn:active {
+    transform: scale(0.97);
+    filter: brightness(0.95);
+}
+.start-btn-enter {
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9, #0284c7);
+}
+.start-btn-create {
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6, #7c3aed);
+}
+.start-btn-about {
+    background: linear-gradient(135deg, #3b82f6, #2563eb, #1d4ed8);
+}
+/* === RESPONSIVO TELA INICIAL === */
+@media (max-width: 600px) {
+    #start-screen {
+        padding-bottom: 12vh;
+    }
+    .start-buttons {
+        width: min(85vw, 300px);
+        gap: 12px;
+    }
+    .start-btn {
+        padding: 14px 20px;
+        font-size: clamp(15px, 4.5vw, 20px);
+        border-radius: 14px;
+    }
+}
+@media (min-aspect-ratio: 16/9) {
+    #start-screen {
+        padding-bottom: 6vh;
+    }
+}</style>
 </head>
 <body>
 
@@ -2592,40 +2682,15 @@
             </div>
         </div>
 
-                <!-- Tela Inicial - CIDADE -->
+                                <!-- Tela Inicial - CIDADE -->
         <div id="start-screen">
-    <div class="stars" aria-hidden="true"></div>
-    <header class="logo" aria-label="English Fun">
-      <h1><span>ENGLISH</span><b>FUN</b></h1>
-      <p>APRENDA INGLÃŠS BRINCANDO!</p>
-    </header>
-
-    <section class="map" aria-label="Escolha uma Ã¡rea de aprendizagem">
-      <div class="city" aria-hidden="true"></div>
-      <div class="presenters" aria-hidden="true">
-        <img class="presenter presenter-arthur" src="arthur.png" alt="">
-        <img class="presenter presenter-henrique" src="henrique.png" alt="">
-      </div>
-
-      <button class="area a0 blue" data-title="APRENDER" onclick="selectMode('learn')" data-text="Novas palavras te esperam!" data-icon="ðŸŽ“" data-route="" aria-label="Aprender. Novas palavras te esperam!"><em>ðŸŽ“</em><strong>APRENDER</strong></button>
-      <button class="area a1 red" data-title="QUIZ" onclick="selectMode('quiz')" data-text="Teste seus conhecimentos!" data-icon="ðŸŽ¯" data-route="" aria-label="Quiz. Teste seus conhecimentos!"><em>ðŸŽ¯</em><strong>QUIZ</strong></button>
-      <button class="area a2 purple" data-title="OUVIR E ESCREVER" onclick="selectMode('dictation')" data-text="Escute, escreva e melhore seu inglÃªs!" data-icon="ðŸŽ™ï¸" data-route="" aria-label="Ouvir e escrever. Escute, escreva e melhore seu inglÃªs!"><em>ðŸŽ™ï¸</em><strong>OUVIR E ESCREVER</strong></button>
-      <button class="area a3 violet" data-title="CONVERSACAO" onclick="openConversation()" data-text="Converse em ingles e faca amigos!" data-icon="💬" data-route="" aria-label="Conversacao. Converse em ingles e faca amigos!"><em>💬</em><strong>CONVERSACAO</strong></button>
-      <button class="area a4 green" data-title="MEMORIA" onclick="startMemoryGame()" data-text="Treine sua mente e memorize!" data-icon="🧠" data-route="" aria-label="Memoria. Treine sua mente e memorize!"><em>🧠</em><strong>MEMORIA</strong></button>
-      <button class="area a5 orange" data-title="REVISAR ERROS" onclick="selectMode('review')" data-text="Corrija, aprenda e evolua!" data-icon="âœ“" data-route="" aria-label="Revisar erros. Corrija, aprenda e evolua!"><em>âœ“</em><strong>REVISAR ERROS</strong></button>
-      <button class="area a6 cyan" data-title="MEU PROGRESSO" onclick="openProgress()" data-text="Acompanhe suas conquistas!" data-icon="â˜…" data-route="" aria-label="Meu progresso. Acompanhe suas conquistas!"><em>â˜…</em><strong>MEU PROGRESSO</strong></button>
-    </section>
-
-    <div class="overlay" id="overlay" hidden>
-      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
-        <button class="close" type="button" aria-label="Fechar">Ã—</button>
-        <div class="bigicon" aria-hidden="true"></div>
-        <h2 id="dialog-title"></h2>
-        <p id="dialog-text"></p>
-        <a class="start" id="start-link" href="#">COMEÃ‡AR</a>
-      </section>
+    <div class="city-bg" aria-hidden="true"></div>
+    <div class="start-buttons">
+      <button class="start-btn start-btn-enter" onclick="showLoginScreen()" aria-label="Entrar">ENTRAR</button>
+      <button class="start-btn start-btn-create" onclick="showCreateScreen()" aria-label="Criar Jogador">CRIAR JOGADOR</button>
+      <button class="start-btn start-btn-about" onclick="openAbout()" aria-label="Quem Somos">QUEM SOMOS</button>
     </div>
-  
+  </div>
 
 <!-- GAME HUD -->
             <div class="city-hud">
