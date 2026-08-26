@@ -127,11 +127,12 @@
             position: relative;
             z-index: 2;
             min-height: 80vh;
+            overflow: hidden;
         }
         .start-content {
             position: relative;
             z-index: 2;
-            max-width: 470px;
+            max-width: 520px;
             margin: 0 auto;
         }
         .character-left,
@@ -157,13 +158,14 @@
             gap: 15px;
             margin-bottom: 2px;
             white-space: nowrap;
+            overflow: hidden;
         }
         .logo-emoji {
             font-size: 75px;
             filter: drop-shadow(0 0 8px rgba(0,212,255,0.4));
         }
         #start-screen h1 {
-            font-size: 78px;
+            font-size: clamp(2.4rem, 5vw, 5.7rem);
             margin: 0;
             color: #fff;
             white-space: nowrap;
@@ -174,7 +176,7 @@
                 0 0 50px rgba(0,140,255,0.5),
                 0 0 80px rgba(0,140,255,0.3);
             font-weight: 900;
-            letter-spacing: 6px;
+            letter-spacing: 0.05em;
             text-transform: uppercase;
             line-height: 1;
         }
@@ -1401,7 +1403,7 @@
         
         /* Responsivo - Tablet */
         @media (min-width: 601px) and (max-width: 1024px) {
-            #start-screen h1 { font-size: 58px; letter-spacing: 4px; }
+            #start-screen h1 { font-size: clamp(2rem, 4.5vw, 3.6rem); letter-spacing: 0.04em; }
             .logo-emoji { font-size: 60px; }
             .mode-btn { padding: 0 22px; font-size: 16px; min-height: 56px; }
             .mode-btn span { font-size: 28px; }
@@ -1436,7 +1438,7 @@
             }
             .logo-container { gap: 8px; margin-bottom: 0; }
             .logo-emoji { font-size: 42px; }
-            #start-screen h1 { font-size: 32px; letter-spacing: 2px; }
+            #start-screen h1 { font-size: clamp(1.6rem, 6vw, 2rem); letter-spacing: 0.03em; }
             #start-screen h2 { font-size: 12px; margin-bottom: 12px; letter-spacing: 2px; }
             #start-screen h2::before, #start-screen h2::after { width: 20px; }
             #mode-section h3 { font-size: 11px; letter-spacing: 1px; margin-bottom: 10px; }
