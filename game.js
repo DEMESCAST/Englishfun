@@ -629,7 +629,7 @@ function normalizeRankingEntry(entry) {
 // ==================== AUTH FLOW ====================
 function showWelcomeScreen() {
     hideAllScreens();
-    document.getElementById('welcome-screen').style.display = 'flex';
+    document.getElementById('start-screen').style.display = 'flex';
     resumeMenuMusic();
 }
 
@@ -783,7 +783,7 @@ async function handleLogout() {
     playerName = '';
     localStorage.removeItem('englishFunPlayerNickname');
     hideAllScreens();
-    document.getElementById('welcome-screen').style.display = 'flex';
+    document.getElementById('start-screen').style.display = 'flex';
     resumeMenuMusic();
 }
 
@@ -2022,7 +2022,6 @@ function closeProgress() {
 }
 
 function openAbout() {
-    document.getElementById('welcome-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('about-screen').style.display = 'block';
     pauseMenuMusic();
@@ -2030,12 +2029,7 @@ function openAbout() {
 
 function closeAbout() {
     document.getElementById('about-screen').style.display = 'none';
-    const startScreen = document.getElementById('start-screen');
-    if (startScreen.style.display !== 'none') {
-        startScreen.style.display = 'block';
-    } else {
-        document.getElementById('welcome-screen').style.display = 'block';
-    }
+    document.getElementById('start-screen').style.display = 'flex';
     resumeMenuMusic();
 }
 
