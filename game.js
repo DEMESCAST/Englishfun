@@ -629,7 +629,7 @@ function normalizeRankingEntry(entry) {
 // ==================== AUTH FLOW ====================
 function showWelcomeScreen() {
     hideAllScreens();
-    document.getElementById('start-screen').style.display = 'flex';
+    document.getElementById('landing-screen').style.display = 'flex';
     resumeMenuMusic();
 }
 
@@ -652,7 +652,7 @@ function showCreateScreen() {
 }
 
 function hideAllScreens() {
-    const screens = ['welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen'];
+    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen'];
     screens.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -783,7 +783,7 @@ async function handleLogout() {
     playerName = '';
     localStorage.removeItem('englishFunPlayerNickname');
     hideAllScreens();
-    document.getElementById('start-screen').style.display = 'flex';
+    document.getElementById('landing-screen').style.display = 'flex';
     resumeMenuMusic();
 }
 
@@ -2022,6 +2022,7 @@ function closeProgress() {
 }
 
 function openAbout() {
+    document.getElementById('landing-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('about-screen').style.display = 'block';
     pauseMenuMusic();
@@ -2029,7 +2030,7 @@ function openAbout() {
 
 function closeAbout() {
     document.getElementById('about-screen').style.display = 'none';
-    document.getElementById('start-screen').style.display = 'flex';
+    document.getElementById('landing-screen').style.display = 'flex';
     resumeMenuMusic();
 }
 

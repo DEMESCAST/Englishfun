@@ -2327,8 +2327,19 @@
 }
 
 /* === RESPONSIVO TELA INICIAL === */
+#landing-screen {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8vh;
+}
 @media (max-width: 600px) {
-    #start-screen {
+    #landing-screen {
         padding-bottom: 12vh;
     }
     .start-buttons {
@@ -2342,7 +2353,7 @@
     }
 }
 @media (min-aspect-ratio: 16/9) {
-    #start-screen {
+    #landing-screen {
         padding-bottom: 6vh;
     }
 }</style>
@@ -2449,8 +2460,8 @@
             </div>
         </div>
 
-                <!-- Tela Inicial -->
-        <div id="start-screen">
+                <!-- Tela de Boas-vindas (cidade) -->
+        <div id="landing-screen">
     <div class="city-bg" aria-hidden="true"></div>
     <div class="start-buttons">
       <button class="start-btn start-btn-enter" onclick="showLoginScreen()" aria-label="Entrar">ENTRAR</button>
@@ -2458,6 +2469,57 @@
       <button class="start-btn start-btn-about" onclick="openAbout()" aria-label="Quem Somos">QUEM SOMOS</button>
     </div>
   </div>
+
+        <!-- Tela Inicial (menu de jogo) -->
+        <div id="start-screen">
+            <div class="character-left">
+                <img src="arthur.png" alt="Arthur" class="character-img" loading="lazy">
+            </div>
+            <div class="start-content">
+                <div class="logo-container">
+                    <span class="logo-emoji">🎮</span>
+                    <h1>ENGLISH FUN</h1>
+                </div>
+                <h2>APRENDA INGLÊS BRINCANDO!</h2>
+                <div id="mode-section">
+                    <h3>COMO VOCÊ QUER JOGAR?</h3>
+                    <div class="mode-grid">
+                        <button class="mode-btn mode-learn" onclick="selectMode('learn')" aria-label="Modo Aprender">
+                            <span>📚</span> APRENDER
+                        </button>
+                        <button class="mode-btn mode-quiz" onclick="selectMode('quiz')" aria-label="Modo Quiz">
+                            <span>🎯</span> QUIZ
+                        </button>
+                        <button class="mode-btn mode-dictation" onclick="selectMode('dictation')" aria-label="Modo Ouvir e Escrever">
+                            <span>🎧</span> OUVIR E ESCREVER
+                        </button>
+                        <button class="mode-btn mode-conversation" onclick="openConversation()" aria-label="Modo Conversação">
+                            <span>🗣️</span> CONVERSE EM INGLÊS
+                        </button>
+                        <button class="mode-btn mode-memory" onclick="startMemoryGame()" aria-label="Jogo da Memória">
+                            <span>🧠</span> MEMÓRIA
+                        </button>
+                        <button class="mode-btn mode-review" onclick="selectMode('review')" aria-label="Revisar meus erros">
+                            <span>⭐</span> REVISAR MEUS ERROS
+                        </button>
+                        <button class="mode-btn mode-progress" onclick="openProgress()" aria-label="Ver meu progresso">
+                            <span>📊</span> MEU PROGRESSO
+                        </button>
+                    </div>
+                    <div id="player-bar" style="display: none;">
+                        <span id="player-bar-name"></span>
+                        <button class="player-bar-logout" onclick="handleLogout()" aria-label="Sair da conta">Sair</button>
+                    </div>
+                    <div id="home-ranking">
+                        <div class="home-ranking-title">🏆 RANKING</div>
+                        <div id="home-ranking-list"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="character-right">
+                <img src="henrique.png" alt="Henrique" class="character-img" loading="lazy">
+            </div>
+        </div>
 <!-- Tela de Seleção de Categoria -->
         <div id="category-screen">
             <button class="back-mode-btn" onclick="goToModeSelect()" aria-label="Voltar aos modos de jogo">← Voltar</button>
