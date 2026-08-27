@@ -156,8 +156,8 @@
             position: relative;
             z-index: 2;
             width: min(520px, calc(100% - 32px));
-            margin: 30px auto;
-            padding: 28px;
+            margin: 145px auto 30px;
+            padding: 105px 28px 28px;
             border: 2px solid rgba(56, 189, 248, 0.85);
             border-radius: 28px;
             background: linear-gradient(180deg, rgba(8, 30, 82, 0.94), rgba(3, 15, 48, 0.96));
@@ -165,6 +165,7 @@
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             isolation: isolate;
+            overflow: visible;
             color: #ffffff;
             text-align: center;
         }
@@ -172,6 +173,21 @@
             position: relative;
             z-index: 2;
             width: 100%;
+        }
+        .game-menu-logo {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: absolute;
+            z-index: 5;
+            top: -125px;
+            left: 50%;
+            width: min(360px, 78%);
+            height: auto;
+            transform: translateX(-50%);
+            object-fit: contain;
+            pointer-events: none;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
         }
         .game-menu-title,
         .game-menu-buttons,
@@ -183,7 +199,7 @@
         .game-menu-title {
             margin: 0 0 16px;
             color: #ffffff;
-            font-size: clamp(15px, 1.4vw, 20px);
+            font-size: clamp(16px, 1.5vw, 21px);
             font-weight: 800;
             letter-spacing: 2px;
             text-align: center;
@@ -1472,14 +1488,18 @@
             }
             .game-menu-panel {
                 width: calc(100% - 18px);
-                margin: 10px auto 130px;
-                padding: 20px 16px 26px;
+                margin: 95px auto 130px;
+                padding: 75px 16px 26px;
                 border-radius: 22px;
             }
+            .game-menu-logo {
+                top: -78px;
+                width: min(260px, 72%);
+            }
             .game-menu-title {
-                font-size: clamp(13px, 4vw, 16px);
-                letter-spacing: 1.4px;
-                margin-bottom: 14px;
+                font-size: 14px;
+                letter-spacing: 1.3px;
+                margin-bottom: 13px;
             }
             .game-mode-button {
                 min-height: 52px;
@@ -2693,6 +2713,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
 
             <div class="game-menu-panel">
                 <div class="game-menu-panel-content">
+                    <img class="game-menu-logo" src="assets/game-menu/english-fun-logo-menu.png" alt="English Fun — Aprenda inglês brincando!">
                     <h3 class="game-menu-title">COMO VOCÊ QUER JOGAR?</h3>
                     <div class="game-menu-buttons">
                         <button class="game-mode-button mode-learn" onclick="selectMode('learn')" aria-label="Modo Aprender">
