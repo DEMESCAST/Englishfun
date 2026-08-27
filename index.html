@@ -131,48 +131,59 @@
         .game-menu-background {
             position: fixed;
             inset: 0;
+            width: 100vw;
+            height: 100dvh;
             z-index: 0;
             pointer-events: none;
+            overflow: hidden;
         }
         .game-menu-background::before {
             content: "";
             position: absolute;
-            inset: -20px;
-            background-image: url("assets/game-menu/game-menu-background-desktop.png");
-            background-size: cover;
-            background-position: center;
-            filter: blur(18px) brightness(0.45);
-            transform: scale(1.08);
-            z-index: 0;
+            inset: 0;
+            z-index: 2;
+            background: rgba(2, 8, 35, 0.28);
         }
-        .game-menu-background-image,
-        .game-menu-background img {
-            position: relative;
-            z-index: 1;
+        .game-menu-background-image {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
-            display: block;
             object-fit: cover;
             object-position: center;
         }
         .game-menu-panel {
             position: relative;
             z-index: 2;
-            width: min(520px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 28px 24px;
-            border: 1px solid rgba(56, 189, 248, 0.7);
-            border-radius: 26px;
-            background: rgba(4, 18, 55, 0.82);
-            box-shadow:
-                0 0 30px rgba(37, 99, 235, 0.35),
-                inset 0 1px 0 rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            width: min(540px, calc(100% - 32px));
+            min-height: 700px;
+            margin: 20px auto;
+            padding: 44px 32px;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            overflow: visible;
+            isolation: isolate;
             text-align: center;
             color: #fff;
-            padding-top: max(28px, env(safe-area-inset-top));
-            padding-bottom: max(28px, env(safe-area-inset-bottom));
+        }
+        .game-menu-panel-frame {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: fill;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+        }
+        .game-menu-panel-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
         }
         .game-menu-logo {
             display: block;
@@ -342,22 +353,20 @@
             padding: 10px;
         }
         .game-menu-character {
-            position: absolute;
-            z-index: 3;
+            position: fixed;
+            bottom: 0;
             width: auto;
+            height: clamp(360px, 48vh, 560px);
             object-fit: contain;
             pointer-events: none;
+            z-index: 3;
         }
         .game-menu-arthur {
-            left: clamp(10px, 5vw, 80px);
-            bottom: 0;
-            height: clamp(420px, 58vh, 680px);
+            left: clamp(16px, 5vw, 90px);
             animation: characterIdle 3.4s ease-in-out infinite;
         }
         .game-menu-henrique {
-            right: clamp(10px, 5vw, 80px);
-            bottom: 0;
-            height: clamp(420px, 58vh, 680px);
+            right: clamp(16px, 5vw, 90px);
             animation: characterIdle 3.7s ease-in-out infinite;
             animation-delay: -1.2s;
         }
@@ -1465,25 +1474,23 @@
         /* Responsivo - Celular */
         @media (max-width: 600px) {
             #game-container { padding: 10px; }
-            .game-menu-screen {
+            #start-screen.game-menu-screen {
                 min-height: 100dvh;
                 padding:
-                    max(16px, env(safe-area-inset-top))
-                    16px
+                    max(12px, env(safe-area-inset-top))
+                    8px
                     max(24px, env(safe-area-inset-bottom));
                 overflow-x: hidden;
-            }
-            .game-menu-background::before {
-                background-image: url("assets/game-menu/game-menu-background-mobile.png");
+                overflow-y: auto;
             }
             .game-menu-panel {
-                width: calc(100% - 28px);
-                padding: 20px 16px;
-                border-radius: 20px;
+                width: calc(100% - 12px);
+                min-height: auto;
+                margin: 8px auto 150px;
+                padding: 30px 20px 38px;
             }
             .game-menu-logo {
-                width: min(280px, 75%);
-                margin-bottom: 8px;
+                width: min(230px, 72%);
             }
             .game-menu-title {
                 font-size: 12px;
@@ -1499,17 +1506,17 @@
             }
             .game-mode-button span { font-size: 26px; }
             .game-mode-button::after { right: 12px; font-size: 22px; }
-            .game-menu-arthur {
+            .game-menu-character {
+                position: fixed;
                 height: auto;
-                width: clamp(100px, 30vw, 150px);
-                left: -10px;
-                bottom: max(0px, env(safe-area-inset-bottom));
+                width: clamp(82px, 25vw, 120px);
+                bottom: 0;
+            }
+            .game-menu-arthur {
+                left: -6px;
             }
             .game-menu-henrique {
-                height: auto;
-                width: clamp(100px, 30vw, 150px);
-                right: -10px;
-                bottom: max(0px, env(safe-area-inset-bottom));
+                right: -6px;
             }
             #audio-btn { width: 42px; height: 42px; font-size: 18px; top: 10px; right: 10px; }
             .neon-arcs { display: none; }
@@ -2692,38 +2699,41 @@ body:has(#landing-screen:not([style*="display: none"])) {
             </picture>
 
             <div class="game-menu-panel">
-                <img class="game-menu-logo" src="assets/game-menu/english-fun-logo.png" alt="English Fun">
-                <h3 class="game-menu-title">COMO VOCÊ QUER JOGAR?</h3>
-                <div class="game-menu-buttons">
-                    <button class="game-mode-button mode-learn" onclick="selectMode('learn')" aria-label="Modo Aprender">
-                        <span>📚</span> APRENDER
-                    </button>
-                    <button class="game-mode-button mode-quiz" onclick="selectMode('quiz')" aria-label="Modo Quiz">
-                        <span>🎯</span> QUIZ
-                    </button>
-                    <button class="game-mode-button mode-dictation" onclick="selectMode('dictation')" aria-label="Modo Ouvir e Escrever">
-                        <span>🎧</span> OUVIR E ESCREVER
-                    </button>
-                    <button class="game-mode-button mode-conversation" onclick="openConversation()" aria-label="Modo Conversação">
-                        <span>🗣️</span> CONVERSE EM INGLÊS
-                    </button>
-                    <button class="game-mode-button mode-memory" onclick="startMemoryGame()" aria-label="Jogo da Memória">
-                        <span>🧠</span> MEMÓRIA
-                    </button>
-                    <button class="game-mode-button mode-review" onclick="selectMode('review')" aria-label="Revisar meus erros">
-                        <span>⭐</span> REVISAR MEUS ERROS
-                    </button>
-                    <button class="game-mode-button mode-progress" onclick="openProgress()" aria-label="Ver meu progresso">
-                        <span>📊</span> MEU PROGRESSO
-                    </button>
-                </div>
-                <div id="player-bar" style="display: none;">
-                    <span id="player-bar-name"></span>
-                    <button class="player-bar-logout" onclick="handleLogout()" aria-label="Sair da conta">Sair</button>
-                </div>
-                <div id="home-ranking">
-                    <div class="home-ranking-title">🏆 RANKING</div>
-                    <div id="home-ranking-list"></div>
+                <img class="game-menu-panel-frame" src="assets/game-menu/english-fun-panel-transparent.png" alt="" aria-hidden="true">
+                <div class="game-menu-panel-content">
+                    <img class="game-menu-logo" src="assets/game-menu/english-fun-logo.png" alt="English Fun">
+                    <h3 class="game-menu-title">COMO VOCÊ QUER JOGAR?</h3>
+                    <div class="game-menu-buttons">
+                        <button class="game-mode-button mode-learn" onclick="selectMode('learn')" aria-label="Modo Aprender">
+                            <span>📚</span> APRENDER
+                        </button>
+                        <button class="game-mode-button mode-quiz" onclick="selectMode('quiz')" aria-label="Modo Quiz">
+                            <span>🎯</span> QUIZ
+                        </button>
+                        <button class="game-mode-button mode-dictation" onclick="selectMode('dictation')" aria-label="Modo Ouvir e Escrever">
+                            <span>🎧</span> OUVIR E ESCREVER
+                        </button>
+                        <button class="game-mode-button mode-conversation" onclick="openConversation()" aria-label="Modo Conversação">
+                            <span>🗣️</span> CONVERSE EM INGLÊS
+                        </button>
+                        <button class="game-mode-button mode-memory" onclick="startMemoryGame()" aria-label="Jogo da Memória">
+                            <span>🧠</span> MEMÓRIA
+                        </button>
+                        <button class="game-mode-button mode-review" onclick="selectMode('review')" aria-label="Revisar meus erros">
+                            <span>⭐</span> REVISAR MEUS ERROS
+                        </button>
+                        <button class="game-mode-button mode-progress" onclick="openProgress()" aria-label="Ver meu progresso">
+                            <span>📊</span> MEU PROGRESSO
+                        </button>
+                    </div>
+                    <div id="player-bar" style="display: none;">
+                        <span id="player-bar-name"></span>
+                        <button class="player-bar-logout" onclick="handleLogout()" aria-label="Sair da conta">Sair</button>
+                    </div>
+                    <div id="home-ranking">
+                        <div class="home-ranking-title">🏆 RANKING</div>
+                        <div id="home-ranking-list"></div>
+                    </div>
                 </div>
             </div>
 
