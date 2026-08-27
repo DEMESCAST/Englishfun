@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v58';
+﻿const CACHE_NAME = 'english-fun-v59';
 const urlsToCache = [
     './',
     './index.html',
@@ -21,7 +21,6 @@ const urlsToCache = [
     './assets/landing/henrique.png',
     './assets/game-menu/game-menu-background-desktop.png',
     './assets/game-menu/game-menu-background-mobile.png',
-    './assets/game-menu/english-fun-logo.png',
     './assets/game-menu/arthur-open-eyes.png',
     './assets/game-menu/henrique.png'
 ];
