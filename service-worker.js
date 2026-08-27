@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v51';
+﻿const CACHE_NAME = 'english-fun-v52';
 const urlsToCache = [
     './',
     './index.html',
@@ -9,7 +9,7 @@ const urlsToCache = [
     './conversation.js',
     './vocab.js?v=20260818-1',
     './manifest.json',
-    './arthur.png',
+    './assets/landing/arthur-v2.png',
     './henrique.png',
     './bg-music.mp3',
     './foto-criadores.jpg',
@@ -18,7 +18,6 @@ const urlsToCache = [
     './assets/landing/city-background-desktop-v2.png',
     './assets/landing/city-background-mobile-v2.png',
     './assets/landing/english-fun-logo.png',
-    './assets/landing/arthur.png',
     './assets/landing/henrique.png'
 ];
 
