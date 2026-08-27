@@ -155,16 +155,14 @@
         .game-menu-panel {
             position: relative;
             z-index: 2;
-            width: min(540px, calc(100% - 32px));
-            min-height: 700px;
-            margin: 20px auto;
-            padding: 44px 32px;
+            width: min(520px, calc(100% - 32px));
+            margin: 18px auto;
+            padding: 42px 34px;
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
-            overflow: visible;
             isolation: isolate;
             text-align: center;
             color: #fff;
@@ -184,6 +182,7 @@
             position: relative;
             z-index: 1;
             width: 100%;
+            padding: 8px 4px;
         }
         .game-menu-logo {
             display: block;
@@ -1484,13 +1483,21 @@
                 overflow-y: auto;
             }
             .game-menu-panel {
-                width: calc(100% - 12px);
+                width: calc(100% - 18px);
                 min-height: auto;
-                margin: 8px auto 150px;
-                padding: 30px 20px 38px;
+                margin: 10px auto 130px;
+                padding: 32px 22px 38px;
+            }
+            .game-menu-panel-frame {
+                width: 100%;
+                height: 100%;
             }
             .game-menu-logo {
-                width: min(230px, 72%);
+                width: min(220px, 70%);
+            }
+            .game-mode-button {
+                min-height: 50px;
+                font-size: clamp(13px, 3.7vw, 16px);
             }
             .game-menu-title {
                 font-size: 12px;
@@ -2699,7 +2706,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
             </picture>
 
             <div class="game-menu-panel">
-                <img class="game-menu-panel-frame" src="assets/game-menu/english-fun-panel-transparent.png" alt="" aria-hidden="true">
+                <img class="game-menu-panel-frame" src="assets/game-menu/english-fun-panel-clean.png" alt="" aria-hidden="true">
                 <div class="game-menu-panel-content">
                     <img class="game-menu-logo" src="assets/game-menu/english-fun-logo.png" alt="English Fun">
                     <h3 class="game-menu-title">COMO VOCÊ QUER JOGAR?</h3>
