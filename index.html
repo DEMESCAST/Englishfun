@@ -2275,50 +2275,27 @@ body:has(#landing-screen:not([style*="display: none"])) {
     overflow: hidden;
     isolation: isolate;
 }
-.scene-stage {
+.landing-background {
     position: absolute;
     inset: 0;
     z-index: 0;
+    display: block;
     overflow: hidden;
 }
-.scene-stage-mobile {
-    display: none;
-}
-.scene-image {
-    position: absolute;
-    inset: 0;
+.landing-background-image,
+.landing-background img {
     width: 100%;
     height: 100%;
     display: block;
     object-fit: cover;
     object-position: center;
 }
-.location-label {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    font-weight: 900;
-    font-size: clamp(13px, 1.6vw, 28px);
-    line-height: 1;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    text-align: center;
-    text-shadow: 0 3px 2px rgba(0,0,0,0.85), 0 0 8px rgba(0,0,0,0.55);
-    pointer-events: none;
-    z-index: 1;
-}
-.label-school { left: 12%; top: 31%; }
-.label-park { left: 28%; top: 42%; }
-.label-hospital { left: 70%; top: 43%; }
-.label-supermarket { left: 86%; top: 36%; }
-
 .landing-logo-wrapper {
     position: absolute;
     z-index: 3;
     top: 3vh;
     left: 50%;
-    width: min(45vw, 720px);
+    width: min(45vw, 650px);
     transform: translateX(-50%);
     animation: logoFloat 4s ease-in-out infinite;
 }
@@ -2407,20 +2384,10 @@ body:has(#landing-screen:not([style*="display: none"])) {
     50% { translate: 0 -5px; }
 }
 @media (max-width: 600px) {
-    .scene-stage-desktop {
-        display: none;
+    .landing-background-image,
+    .landing-background img {
+        object-position: center;
     }
-    .scene-stage-mobile {
-        display: block;
-    }
-    .location-label {
-        font-size: clamp(10px, 3.5vw, 16px);
-    }
-    .label-school { left: 18%; top: 38%; }
-    .label-park { left: 32%; top: 48%; }
-    .label-hospital { left: 68%; top: 48%; }
-    .label-supermarket { left: 82%; top: 42%; }
-
     .landing-logo-wrapper {
         top: max(18px, env(safe-area-inset-top));
         width: min(88vw, 420px);
@@ -2565,21 +2532,10 @@ body:has(#landing-screen:not([style*="display: none"])) {
 
         <!-- Tela de Boas-vindas (cidade) -->
         <section id="landing-screen" aria-label="Tela inicial do English Fun">
-    <div class="scene-stage scene-stage-desktop" aria-hidden="true">
-        <img class="scene-image" src="assets/landing/city-background-desktop.png" alt="">
-        <span class="location-label label-school">ESCOLA</span>
-        <span class="location-label label-park">PARQUE</span>
-        <span class="location-label label-hospital">HOSPITAL</span>
-        <span class="location-label label-supermarket">SUPERMERCADO</span>
-    </div>
-
-    <div class="scene-stage scene-stage-mobile" aria-hidden="true">
-        <img class="scene-image" src="assets/landing/city-background-mobile.png" alt="">
-        <span class="location-label label-school">ESCOLA</span>
-        <span class="location-label label-park">PARQUE</span>
-        <span class="location-label label-hospital">HOSPITAL</span>
-        <span class="location-label label-supermarket">SUPERMERCADO</span>
-    </div>
+    <picture class="landing-background" aria-hidden="true">
+        <source media="(max-width: 600px)" srcset="assets/landing/city-background-mobile-v2.png">
+        <img class="landing-background-image" src="assets/landing/city-background-desktop-v2.png" alt="" fetchpriority="high">
+    </picture>
 
     <div class="landing-logo-wrapper">
         <img class="landing-logo" src="assets/landing/english-fun-logo.png" alt="English Fun — Aprenda inglês brincando!">
@@ -2587,7 +2543,6 @@ body:has(#landing-screen:not([style*="display: none"])) {
 
     <div class="character-wrapper character-arthur-wrapper">
         <img class="landing-character character-arthur" src="assets/landing/arthur.png" alt="Arthur">
-
     </div>
 
     <nav class="start-buttons" aria-label="Opções iniciais">

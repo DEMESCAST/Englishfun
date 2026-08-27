@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v47';
+﻿const CACHE_NAME = 'english-fun-v48';
 const urlsToCache = [
     './',
     './index.html',
@@ -15,8 +15,8 @@ const urlsToCache = [
     './foto-criadores.jpg',
     './city-map.png',
     './assets/tela-inicial.webp',
-    './assets/landing/city-background-desktop.png',
-    './assets/landing/city-background-mobile.png',
+    './assets/landing/city-background-desktop-v2.png',
+    './assets/landing/city-background-mobile-v2.png',
     './assets/landing/english-fun-logo.png',
     './assets/landing/arthur.png',
     './assets/landing/henrique.png'
