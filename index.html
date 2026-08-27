@@ -2262,87 +2262,107 @@
 #landing-screen {
     position: relative;
     width: 100%;
-    height: 100vh;
     height: 100dvh;
+    min-height: 100svh;
     overflow: hidden;
+    isolation: isolate;
 }
-.city-bg {
+.landing-background {
     position: absolute;
     inset: 0;
-    background-image: url("./assets/tela-inicial.webp");
-    background-size: cover;
-    background-position: center;
     z-index: 0;
 }
-.landing-logo {
+.landing-background img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+.location-labels {
     position: absolute;
-    z-index: 3;
-    top: 3%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    pointer-events: none;
-    width: min(90vw, 600px);
-}
-.landing-logo h1 {
-    margin: 0;
-    font-size: clamp(2rem, 5vw, 5rem);
-    font-weight: 1000;
-    color: #fff;
-    text-shadow: 0 6px #b1d0ff, 0 11px #094399;
-    -webkit-text-stroke: 2px #1462c9;
-    paint-order: stroke fill;
-    letter-spacing: -0.02em;
-    line-height: 1;
-}
-.landing-logo p {
-    margin: 8px 0 0;
-    padding: 6px 20px;
-    border: 2px solid #79caff;
-    border-radius: 8px 8px 20px 20px;
-    background: linear-gradient(#228dff, #0752d7);
-    box-shadow: 0 5px #053586, 0 0 17px #1684ff;
-    font-size: clamp(0.6rem, 1.2vw, 1rem);
-    font-weight: 900;
-    color: #fff;
-    display: inline-block;
-}
-.character {
-    position: absolute;
-    bottom: 0;
+    inset: 0;
     z-index: 2;
-    height: clamp(180px, 35vh, 420px);
-    width: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
     pointer-events: none;
 }
-.character-arthur { left: 5%; }
-.character-henrique { right: 5%; }
-.start-buttons {
+.location-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-weight: 900;
+    font-size: clamp(13px, 1.6vw, 28px);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    text-align: center;
+    text-shadow: 0 3px 2px rgba(0,0,0,0.85), 0 0 8px rgba(0,0,0,0.55);
+    pointer-events: none;
+}
+.label-school { left: 12%; top: 31%; }
+.label-park { left: 28%; top: 42%; }
+.label-hospital { left: 70%; top: 43%; }
+.label-supermarket { left: 86%; top: 36%; }
+.label-toy-shop { left: 12%; top: 75%; }
+.label-bus-stop { left: 87%; top: 75%; }
+.landing-logo-wrapper {
     position: absolute;
     z-index: 4;
+    top: 3vh;
     left: 50%;
-    bottom: 8vh;
+    width: min(45vw, 720px);
     transform: translateX(-50%);
+    animation: logoFloat 4s ease-in-out infinite;
+}
+.landing-logo {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.character-wrapper {
+    position: absolute;
+    bottom: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+.character-arthur-wrapper {
+    left: clamp(20px, 5vw, 100px);
+    animation: characterIdle 3.4s ease-in-out infinite;
+}
+.character-henrique-wrapper {
+    right: clamp(20px, 5vw, 100px);
+    animation: characterIdle 3.7s ease-in-out infinite;
+    animation-delay: -1.2s;
+}
+.landing-character {
+    display: block;
+    width: auto;
+    max-height: min(48vh, 570px);
+    object-fit: contain;
+}
+.start-buttons {
+    position: absolute;
+    z-index: 6;
+    left: 50%;
+    bottom: 7vh;
+    width: min(28vw, 350px);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: min(90vw, 300px);
+    gap: 14px;
+    transform: translateX(-50%);
 }
 .start-btn {
     width: 100%;
     padding: 16px 22px;
     border: none;
     border-radius: 16px;
-    font-size: clamp(16px, 3.5vw, 22px);
+    font-size: clamp(16px, 2.5vw, 22px);
     font-weight: 800;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 2px;
     cursor: pointer;
-    transition: transform .2s, box-shadow .2s, filter .2s;
+    transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
     text-shadow: 0 2px 4px rgba(0,0,0,0.4);
     box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
     position: relative;
@@ -2357,71 +2377,80 @@
     pointer-events: none;
 }
 .start-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.15);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.25);
+    transform: translateY(-2px) scale(1.025);
+    filter: brightness(1.1);
 }
 .start-btn:active {
     transform: scale(0.97);
-    filter: brightness(0.95);
 }
-.start-btn-enter {
-    background: linear-gradient(135deg, #38bdf8, #0ea5e9, #0284c7);
+.start-btn:focus-visible {
+    outline: 4px solid #ffffff;
+    outline-offset: 4px;
 }
-.start-btn-create {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6, #7c3aed);
+.start-btn-enter { background: linear-gradient(135deg, #38bdf8, #0ea5e9, #0284c7); }
+.start-btn-create { background: linear-gradient(135deg, #a78bfa, #8b5cf6, #7c3aed); }
+.start-btn-about { background: linear-gradient(135deg, #3b82f6, #2563eb, #1d4ed8); }
+@keyframes characterIdle {
+    0%, 100% { translate: 0 0; rotate: -0.5deg; }
+    50% { translate: 0 -7px; rotate: 0.5deg; }
 }
-.start-btn-about {
-    background: linear-gradient(135deg, #3b82f6, #2563eb, #1d4ed8);
+@keyframes logoFloat {
+    0%, 100% { translate: 0 0; }
+    50% { translate: 0 -5px; }
 }
 @media (max-width: 600px) {
     #landing-screen {
-        width: 100%;
-        min-height: 100dvh;
-        overflow: hidden;
+        height: 100dvh;
+        min-height: 100svh;
     }
-    .city-bg {
-        background-position: center top;
+    .landing-background img {
+        object-position: center;
     }
-    .landing-logo {
-        top: 2%;
+    .location-label {
+        font-size: clamp(10px, 3.5vw, 16px);
     }
-    .landing-logo h1 {
-        font-size: clamp(1.6rem, 7vw, 2.4rem);
+    .label-school { left: 18%; top: 38%; }
+    .label-park { left: 32%; top: 48%; }
+    .label-hospital { left: 68%; top: 48%; }
+    .label-supermarket { left: 82%; top: 42%; }
+    .label-toy-shop { left: 18%; top: 68%; }
+    .label-bus-stop { left: 82%; top: 68%; }
+    .landing-logo-wrapper {
+        top: max(18px, env(safe-area-inset-top));
+        width: min(88vw, 420px);
     }
-    .landing-logo p {
-        font-size: 0.65rem;
-        padding: 4px 14px;
-    }
-    .character {
-        position: absolute;
-        bottom: 0;
-        width: clamp(90px, 28vw, 140px);
+    .landing-character {
+        max-height: none;
+        width: clamp(105px, 31vw, 145px);
         height: auto;
     }
-    .character-arthur {
-        left: -5px;
+    .character-arthur-wrapper {
+        left: -8px;
+        bottom: max(0px, env(safe-area-inset-bottom));
     }
-    .character-henrique {
-        right: -5px;
+    .character-henrique-wrapper {
+        right: -8px;
+        bottom: max(0px, env(safe-area-inset-bottom));
     }
     .start-buttons {
-        position: absolute;
-        left: 50%;
-        bottom: max(100px, calc(80px + env(safe-area-inset-bottom)));
-        transform: translateX(-50%);
-        width: min(76vw, 280px);
-        gap: 12px;
+        top: 44%;
+        bottom: auto;
+        width: min(72vw, 290px);
+        gap: 11px;
     }
     .start-btn {
-        padding: 13px 18px;
+        min-height: 52px;
+        padding: 12px 16px;
         font-size: clamp(14px, 4vw, 18px);
-        border-radius: 14px;
     }
 }
-@media (min-aspect-ratio: 16/9) {
-    .start-buttons {
-        bottom: 6vh;
+@media (prefers-reduced-motion: reduce) {
+    .character-wrapper,
+    .landing-logo-wrapper {
+        animation: none !important;
+    }
+    .start-btn {
+        transition: none !important;
     }
 }
 </style>
@@ -2528,15 +2557,40 @@
             </div>
         </div>
 
-                <!-- Tela de Boas-vindas (cidade) -->
-        <div id="landing-screen">
-    <div class="city-bg" aria-hidden="true"></div>
-    <div class="start-buttons">
-        <button class="start-btn start-btn-enter" onclick="showLoginScreen()" aria-label="Entrar">ENTRAR</button>
-        <button class="start-btn start-btn-create" onclick="showCreateScreen()" aria-label="Criar Jogador">CRIAR JOGADOR</button>
-        <button class="start-btn start-btn-about" onclick="openAbout()" aria-label="Quem Somos">QUEM SOMOS</button>
+        <!-- Tela de Boas-vindas (cidade) -->
+        <section id="landing-screen" aria-label="Tela inicial do English Fun">
+    <picture class="landing-background" aria-hidden="true">
+        <source media="(max-width: 600px)" srcset="assets/landing/city-background-mobile.png">
+        <img src="assets/landing/city-background-desktop.png" alt="" fetchpriority="high">
+    </picture>
+
+    <div class="location-labels" aria-hidden="true">
+        <span class="location-label label-school">ESCOLA</span>
+        <span class="location-label label-park">PARQUE</span>
+        <span class="location-label label-hospital">HOSPITAL</span>
+        <span class="location-label label-supermarket">SUPERMERCADO</span>
+        <span class="location-label label-toy-shop">TOY SHOP</span>
+        <span class="location-label label-bus-stop">BUS STOP</span>
     </div>
-</div>
+
+    <div class="landing-logo-wrapper">
+        <img class="landing-logo" src="assets/landing/english-fun-logo.png" alt="English Fun — Aprenda inglês brincando!">
+    </div>
+
+    <div class="character-wrapper character-arthur-wrapper">
+        <img class="landing-character character-arthur" src="assets/landing/arthur.png" alt="Arthur">
+    </div>
+
+    <nav class="start-buttons" aria-label="Opções iniciais">
+        <button type="button" class="start-btn start-btn-enter" onclick="showLoginScreen()" aria-label="Entrar com jogador existente">ENTRAR</button>
+        <button type="button" class="start-btn start-btn-create" onclick="showCreateScreen()" aria-label="Criar novo jogador">CRIAR JOGADOR</button>
+        <button type="button" class="start-btn start-btn-about" onclick="openAbout()" aria-label="Quem Somos">QUEM SOMOS</button>
+    </nav>
+
+    <div class="character-wrapper character-henrique-wrapper">
+        <img class="landing-character character-henrique" src="assets/landing/henrique.png" alt="Henrique">
+    </div>
+</section>
 
         <!-- Tela Inicial (menu de jogo) -->
         <div id="start-screen">

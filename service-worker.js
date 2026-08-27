@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v46';
+﻿const CACHE_NAME = 'english-fun-v47';
 const urlsToCache = [
     './',
     './index.html',
@@ -14,7 +14,12 @@ const urlsToCache = [
     './bg-music.mp3',
     './foto-criadores.jpg',
     './city-map.png',
-    './assets/tela-inicial.webp'
+    './assets/tela-inicial.webp',
+    './assets/landing/city-background-desktop.png',
+    './assets/landing/city-background-mobile.png',
+    './assets/landing/english-fun-logo.png',
+    './assets/landing/arthur.png',
+    './assets/landing/henrique.png'
 ];
 
 self.addEventListener('install', event => {
