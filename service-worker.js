@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v64';
+﻿const CACHE_NAME = 'english-fun-v65';
 const urlsToCache = [
     './',
     './index.html',
@@ -8,6 +8,10 @@ const urlsToCache = [
     './conversation.js',
     './vocab.js?v=20260818-1',
     './manifest.json',
+    './assets/icons/icon-192.png',
+    './assets/icons/icon-512.png',
+    './assets/icons/icon-maskable-192.png',
+    './assets/icons/icon-maskable-512.png',
     './assets/landing/arthur-v2.png',
     './henrique.png',
     './bg-music.mp3',
