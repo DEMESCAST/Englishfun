@@ -6,7 +6,16 @@
     "public": ".",
     "ignore": [
       "firebase.json",
-      "**/.*"
+      "database.rules.json",
+      "**/.*",
+      "index-old.html",
+      "index-old-backup.html",
+      "index-city.html",
+      "index-city-backup.html",
+      "ChatGPT Image*",
+      "english-fun-tela-inicial-web.webp",
+      "city-background.png",
+      "README.md"
     ]
   }
 }

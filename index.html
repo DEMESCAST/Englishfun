@@ -1319,47 +1319,6 @@
         .ranking-score { font-weight: bold; min-width: 50px; text-align: right; }
         .ranking-you { font-size: 11px; opacity: 0.7; }
         
-        /* Ranking na Tela Inicial */
-        #home-ranking {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 12px;
-            padding: 12px 15px;
-            margin-top: 15px;
-            max-width: 460px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .home-ranking-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #ffd700;
-            text-align: center;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-        }
-        .home-ranking-row {
-            display: flex;
-            align-items: center;
-            padding: 5px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            gap: 8px;
-        }
-        .home-ranking-row:nth-child(1) { background: rgba(255,215,0,0.15); color: #ffd700; }
-        .home-ranking-row:nth-child(2) { background: rgba(192,192,192,0.1); color: #c0c0c0; }
-        .home-ranking-row:nth-child(3) { background: rgba(205,127,50,0.1); color: #cd7f32; }
-        .home-ranking-row:nth-child(n+4) { color: rgba(255,255,255,0.6); }
-        .home-ranking-pos { font-weight: bold; min-width: 22px; }
-        .home-ranking-name { flex: 1; text-align: left; }
-        .home-ranking-score { font-weight: bold; min-width: 45px; text-align: right; }
-        .home-ranking-empty {
-            text-align: center;
-            color: rgba(255,255,255,0.3);
-            font-size: 12px;
-            padding: 8px;
-        }
-        
         /* Lista de erros */
         #wrong-answers {
             background: rgba(255,255,255,0.1);
@@ -1964,35 +1923,6 @@
             font-size: 14px;
             padding: 20px;
         }
-
-        #player-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 12px;
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        #player-bar-name {
-            font-size: 13px;
-            color: rgba(255,255,255,0.7);
-            font-weight: 600;
-        }
-        .player-bar-logout {
-            background: rgba(248,113,113,0.15);
-            color: #f87171;
-            border: 1px solid rgba(248,113,113,0.3);
-            border-radius: 8px;
-            padding: 4px 12px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-        .player-bar-logout:hover { background: rgba(248,113,113,0.25); }
 
         .game-menu-panel-frame,
         img[src*="english-fun-panel-clean"],
@@ -2848,7 +2778,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
                 <div id="dictation-word"></div>
                 <div id="dictation-hint"></div>
                 <div class="dictation-input-container">
-                    <input type="text" id="dictation-input" placeholder="Digite a palavra..." autocomplete="off" spellcheck="false">
+                    <input type="text" id="dictation-input" placeholder="Digite a palavra..." autocomplete="off" spellcheck="false" aria-label="Digite a palavra em inglês">
                     <button class="dictation-submit" onclick="checkDictation()" aria-label="Verificar resposta">✓</button>
                 </div>
                 <button class="learn-btn" onclick="speakWord()" style="margin-top: 15px;" aria-label="Ouvir palavra novamente">🔊 Ouvir novamente</button>
@@ -2954,7 +2884,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
                 <div class="name-emoji">👤</div>
                 <h2>Escolha um apelido</h2>
                 <p>Use um apelido. Não coloque seu nome completo.</p>
-                <input type="text" id="player-name-input" placeholder="Ex.: SuperLeo" maxlength="16" autocomplete="off">
+                <input type="text" id="player-name-input" placeholder="Ex.: SuperLeo" maxlength="16" autocomplete="off" aria-label="Escolha um apelido">
                 <div id="name-error" class="name-error" aria-live="polite"></div>
                 <button class="name-btn" onclick="confirmName()" aria-label="Confirmar apelido">Começar! 🚀</button>
                 <button class="name-back-btn" onclick="goBackFromName()" aria-label="Voltar">← Voltar</button>
@@ -3076,7 +3006,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
 
         // Navegação por teclado no menu principal
         document.addEventListener('DOMContentLoaded', () => {
-            const modeButtons = document.querySelectorAll('.mode-btn');
+            const modeButtons = document.querySelectorAll('.game-mode-button');
             let currentFocusIndex = 0;
 
             function updateFocus() {

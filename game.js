@@ -95,7 +95,7 @@ function initAudio() {
 
 // Falar palavra
 function speakWord() {
-    if (!audioEnabled) return;
+    if (!audioEnabled || !('speechSynthesis' in window)) return;
     const word = dictationMode && currentDictationWord ? currentDictationWord : learnWords[currentLearnIndex];
     if (!word) return;
     
@@ -441,6 +441,7 @@ function checkAnswer(selected, correct) {
 function updateComboDisplay() {
     document.getElementById('combo').textContent = combo;
     const comboBox = document.querySelector('.combo-box');
+    if (!comboBox) return;
     if (combo >= 5) comboBox.style.background = 'rgba(255,100,100,0.7)';
     else if (combo >= 3) comboBox.style.background = 'rgba(255,150,0,0.6)';
     else comboBox.style.background = 'rgba(255,100,100,0.4)';
@@ -455,13 +456,15 @@ function showModal(word, showCorrection) {
     document.getElementById('answer-modal').style.display = 'flex';
     
     // Falar a palavra/frase (cancelar anterior primeiro)
-    speechSynthesis.cancel();
-    setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(word.english);
-        utterance.lang = 'en-US';
-        utterance.rate = currentCategory === 'sentences' ? 0.7 : 0.8;
-        speechSynthesis.speak(utterance);
-    }, 50);
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance(word.english);
+            utterance.lang = 'en-US';
+            utterance.rate = currentCategory === 'sentences' ? 0.7 : 0.8;
+            speechSynthesis.speak(utterance);
+        }, 50);
+    }
 }
 
 function closeModal() {
@@ -658,7 +661,14 @@ function showCreateScreen() {
 }
 
 function hideAllScreens() {
-    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen'];
+    // Cancelar confetti ao trocar de tela
+    if (confettiAnimationId) {
+        cancelAnimationFrame(confettiAnimationId);
+        confettiAnimationId = null;
+    }
+    confettiParticles = [];
+    
+    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen', 'about-screen', 'conversation-screen'];
     screens.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -1348,7 +1358,7 @@ async function saveMemoryRanking() {
         score: memoryScore,
         generalPoints: generalPoints,
         correct: matchedPairs,
-        total: 8,
+        total: memoryWordCount,
         maxCombo: matchedPairs,
         category: memoryCategory,
         mode: 'memory',
@@ -1667,8 +1677,9 @@ function showDictationQuestion() {
 
 function checkDictation() {
     const input = document.getElementById('dictation-input');
-    const userAnswer = input.value.trim().toLowerCase();
-    const correctAnswer = currentDictationWord.english.toLowerCase();
+    const normalizeText = (text) => text.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const userAnswer = normalizeText(input.value);
+    const correctAnswer = normalizeText(currentDictationWord.english);
     
     input.disabled = true;
     
@@ -1719,6 +1730,7 @@ let memoryScore = 0;
 let memoryTimer = 0;
 let memoryTimerInterval = null;
 let canFlip = true;
+let memoryWordCount = 8;
 
 function startMemoryGame() {
     playSound('click');
@@ -1744,9 +1756,10 @@ function startMemoryWithCategory(category) {
     document.getElementById('memory-pairs').textContent = '0';
     document.getElementById('memory-time').textContent = '0';
     
-    // Pegar 8 palavras aleatórias
+    // Pegar palavras aleatórias (máximo 8)
     const allWords = vocabulary[category].words;
-    const selectedWords = shuffle([...allWords]).slice(0, 8);
+    memoryWordCount = Math.min(allWords.length, 8);
+    const selectedWords = shuffle([...allWords]).slice(0, memoryWordCount);
     
     // Criar pares (cada palavra aparece 2 vezes)
     memoryCards = [];
@@ -1816,7 +1829,7 @@ function flipCard(index) {
                 flippedCards = [];
                 canFlip = true;
                 
-                if (matchedPairs === 8) {
+                if (matchedPairs === memoryWordCount) {
                     // Vitória!
                     setTimeout(() => {
                         clearInterval(memoryTimerInterval);
