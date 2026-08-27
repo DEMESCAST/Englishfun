@@ -181,9 +181,9 @@
             opacity: 1 !important;
             position: absolute;
             z-index: 5;
-            top: -165px;
+            top: -260px !important;
             left: 50%;
-            width: min(460px, 78%);
+            width: min(430px, 74%) !important;
             height: auto;
             transform: translateX(-50%);
             object-fit: contain;
@@ -199,8 +199,10 @@
         }
         .game-menu-title {
             position: relative;
-            z-index: 4;
-            display: block;
+            z-index: 6;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
             margin: 0 0 14px;
             color: #ffffff;
             font-size: clamp(17px, 1.35vw, 21px);
