@@ -156,8 +156,8 @@
             position: relative;
             z-index: 2;
             width: min(520px, calc(100% - 32px));
-            margin: 18px auto;
-            padding: 42px 34px;
+            margin: 90px auto 18px;
+            padding: 125px 34px 42px;
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
@@ -185,20 +185,32 @@
             padding: 8px 4px;
         }
         .game-menu-logo {
-            display: block;
-            width: min(380px, 80%);
+            position: absolute;
+            z-index: 4;
+            top: -105px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(430px, 82%);
             height: auto;
-            margin: 0 auto 12px;
+            display: block;
             object-fit: contain;
-            animation: logoFloat 4s ease-in-out infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
+            animation: gameLogoFloat 4s ease-in-out infinite;
+        }
+        @keyframes gameLogoFloat {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-6px); }
         }
         .game-menu-title {
-            font-size: clamp(14px, 2vw, 18px);
-            margin: 0 0 18px;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            margin: 0 0 16px;
+            color: #ffffff;
+            font-size: clamp(15px, 1.4vw, 20px);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-align: center;
         }
         .game-menu-buttons {
             display: flex;
@@ -1485,19 +1497,21 @@
             .game-menu-panel {
                 width: calc(100% - 18px);
                 min-height: auto;
-                margin: 10px auto 130px;
-                padding: 32px 22px 38px;
+                margin: 65px auto 130px;
+                padding: 88px 22px 38px;
             }
             .game-menu-panel-frame {
                 width: 100%;
                 height: 100%;
             }
             .game-menu-logo {
-                width: min(220px, 70%);
+                top: -62px;
+                width: min(280px, 78%);
             }
-            .game-mode-button {
-                min-height: 50px;
-                font-size: clamp(13px, 3.7vw, 16px);
+            .game-menu-title {
+                font-size: clamp(13px, 4vw, 16px);
+                letter-spacing: 1.4px;
+                margin-bottom: 14px;
             }
             .game-menu-title {
                 font-size: 12px;
