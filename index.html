@@ -156,43 +156,31 @@
             position: relative;
             z-index: 2;
             width: min(520px, calc(100% - 32px));
-            margin: 90px auto 18px;
-            padding: 125px 34px 42px;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
+            margin: 90px auto 30px;
+            padding: 120px 28px 28px;
+            border: 2px solid rgba(56, 189, 248, 0.85);
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(8, 30, 82, 0.94), rgba(3, 15, 48, 0.96));
+            box-shadow: 0 0 25px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             isolation: isolate;
+            color: #ffffff;
             text-align: center;
-            color: #fff;
-        }
-        .game-menu-panel-frame {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: fill;
-            pointer-events: none;
-            user-select: none;
-            z-index: 0;
         }
         .game-menu-panel-content {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             width: 100%;
-            padding: 8px 4px;
         }
         .game-menu-logo {
             position: absolute;
             z-index: 4;
-            top: -105px;
+            top: -90px;
             left: 50%;
-            transform: translateX(-50%);
-            width: min(430px, 82%);
+            width: min(400px, 82%);
             height: auto;
-            display: block;
+            transform: translateX(-50%);
             object-fit: contain;
             pointer-events: none;
             filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
@@ -202,9 +190,14 @@
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-6px); }
         }
-        .game-menu-title {
+        .game-menu-title,
+        .game-menu-buttons,
+        #player-bar,
+        #home-ranking {
             position: relative;
-            z-index: 2;
+            z-index: 3;
+        }
+        .game-menu-title {
             margin: 0 0 16px;
             color: #ffffff;
             font-size: clamp(15px, 1.4vw, 20px);
@@ -1496,17 +1489,13 @@
             }
             .game-menu-panel {
                 width: calc(100% - 18px);
-                min-height: auto;
                 margin: 65px auto 130px;
-                padding: 88px 22px 38px;
-            }
-            .game-menu-panel-frame {
-                width: 100%;
-                height: 100%;
+                padding: 85px 16px 26px;
+                border-radius: 22px;
             }
             .game-menu-logo {
-                top: -62px;
-                width: min(280px, 78%);
+                top: -55px;
+                width: min(270px, 76%);
             }
             .game-menu-title {
                 font-size: clamp(13px, 4vw, 16px);
@@ -2720,7 +2709,6 @@ body:has(#landing-screen:not([style*="display: none"])) {
             </picture>
 
             <div class="game-menu-panel">
-                <img class="game-menu-panel-frame" src="assets/game-menu/english-fun-panel-clean.png" alt="" aria-hidden="true">
                 <div class="game-menu-panel-content">
                     <img class="game-menu-logo" src="assets/game-menu/english-fun-logo.png" alt="English Fun">
                     <h3 class="game-menu-title">COMO VOCÊ QUER JOGAR?</h3>
