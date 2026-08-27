@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v52';
+﻿const CACHE_NAME = 'english-fun-v53';
 const urlsToCache = [
     './',
     './index.html',
@@ -18,7 +18,12 @@ const urlsToCache = [
     './assets/landing/city-background-desktop-v2.png',
     './assets/landing/city-background-mobile-v2.png',
     './assets/landing/english-fun-logo.png',
-    './assets/landing/henrique.png'
+    './assets/landing/henrique.png',
+    './assets/game-menu/game-menu-background-desktop.png',
+    './assets/game-menu/game-menu-background-mobile.png',
+    './assets/game-menu/english-fun-logo.png',
+    './assets/game-menu/arthur-open-eyes.png',
+    './assets/game-menu/henrique.png'
 ];
 
 self.addEventListener('install', event => {
