@@ -102,21 +102,26 @@ function speakWord() {
     speechSynthesis.cancel();
     const rate = currentCategory === 'sentences' ? 0.7 : 0.8;
     
-    // Falar a palavra primeiro
-    const utteranceWord = new SpeechSynthesisUtterance(word.english);
-    utteranceWord.lang = 'en-US';
-    utteranceWord.rate = rate;
-    speechSynthesis.speak(utteranceWord);
-    
-    // Depois falar a frase (com delay)
-    if (word.sentence && word.sentence !== word.english) {
-        setTimeout(() => {
-            const utteranceSentence = new SpeechSynthesisUtterance(word.sentence);
-            utteranceSentence.lang = 'en-US';
-            utteranceSentence.rate = 0.75;
-            speechSynthesis.speak(utteranceSentence);
-        }, 1200);
-    }
+    // Delay para evitar bug do Chrome (cancel+immediate speak)
+    setTimeout(() => {
+        // Falar a palavra primeiro
+        const utteranceWord = new SpeechSynthesisUtterance(word.english);
+        utteranceWord.lang = 'en-US';
+        utteranceWord.rate = rate;
+        speechSynthesis.speak(utteranceWord);
+        
+        // Depois falar a frase (com delay)
+        if (word.sentence && word.sentence !== word.english) {
+            utteranceWord.onend = () => {
+                setTimeout(() => {
+                    const utteranceSentence = new SpeechSynthesisUtterance(word.sentence);
+                    utteranceSentence.lang = 'en-US';
+                    utteranceSentence.rate = 0.75;
+                    speechSynthesis.speak(utteranceSentence);
+                }, 300);
+            };
+        }
+    }, 50);
 }
 
 // Tocar som
@@ -449,13 +454,14 @@ function showModal(word, showCorrection) {
     document.getElementById('modal-sentence').textContent = `"${word.sentence}"`;
     document.getElementById('answer-modal').style.display = 'flex';
     
-    // Falar a palavra/frase
+    // Falar a palavra/frase (cancelar anterior primeiro)
+    speechSynthesis.cancel();
     setTimeout(() => {
         const utterance = new SpeechSynthesisUtterance(word.english);
         utterance.lang = 'en-US';
         utterance.rate = currentCategory === 'sentences' ? 0.7 : 0.8;
         speechSynthesis.speak(utterance);
-    }, 500);
+    }, 50);
 }
 
 function closeModal() {
@@ -1254,7 +1260,8 @@ function confirmName() {
 
 function goBackFromName() {
     playSound('click');
-    document.getElementById('name-screen').style.display = 'none';
+    const nameScreen = document.getElementById('name-screen');
+    if (nameScreen) nameScreen.style.display = 'none';
     document.getElementById('category-screen').style.display = 'block';
 }
 

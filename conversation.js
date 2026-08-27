@@ -475,6 +475,7 @@ let convTotalQuestions = 0;
 let convCorrectAnswers = 0;
 
 function openConversation() {
+    window.speechSynthesis.cancel();
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('conversation-screen').style.display = 'block';
     convScore = 0;
@@ -486,6 +487,7 @@ function openConversation() {
 }
 
 function closeConversation() {
+    window.speechSynthesis.cancel();
     document.getElementById('conversation-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
     convCurrentCategory = null;
@@ -562,6 +564,7 @@ function showConversationLevel() {
 }
 
 function checkConversationAnswer(btn, isCorrect, feedback) {
+    window.speechSynthesis.cancel();
     var buttons = document.querySelectorAll('.conversation-option-btn');
     buttons.forEach(function(b) {
         b.disabled = true;
@@ -599,6 +602,7 @@ function showConversationFeedback(title, message, isCorrect) {
 }
 
 function nextConversationQuestion() {
+    window.speechSynthesis.cancel();
     convCurrentQuestion++;
     showConversationLevel();
 }
@@ -625,10 +629,12 @@ function showConversationComplete() {
 function speakText(text) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        var utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
-        window.speechSynthesis.speak(utterance);
+        setTimeout(() => {
+            var utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }, 50);
     }
 }
