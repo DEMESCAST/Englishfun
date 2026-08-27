@@ -2383,6 +2383,37 @@ body:has(#landing-screen:not([style*="display: none"])) {
     0%, 100% { translate: 0 0; }
     50% { translate: 0 -5px; }
 }
+@media (min-width: 601px) and (max-aspect-ratio: 8 / 5) {
+    .landing-background {
+        background-color: #061750;
+    }
+    .landing-background-image {
+        object-fit: contain;
+        object-position: center;
+    }
+}
+@media (min-width: 901px) {
+    .landing-character {
+        max-height: min(42vh, 500px);
+    }
+    .character-arthur-wrapper {
+        left: 19%;
+    }
+    .character-henrique-wrapper {
+        right: 19%;
+    }
+}
+@media (min-width: 601px) and (max-width: 900px) {
+    .landing-character {
+        max-height: 34vh;
+    }
+    .character-arthur-wrapper {
+        left: 13%;
+    }
+    .character-henrique-wrapper {
+        right: 13%;
+    }
+}
 @media (max-width: 600px) {
     .landing-background-image,
     .landing-background img {
