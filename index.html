@@ -2258,28 +2258,85 @@
             .about-icon-item span:first-child { font-size: 28px; }
         }
     
-/* === TELA INICIAL - NOVA === */
+/* === TELA INICIAL - CAMADAS INDEPENDENTES === */
+#landing-screen {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
 .city-bg {
     position: absolute;
     inset: 0;
-    background: url("./assets/tela-inicial.webp") center/cover no-repeat;
+    background-image: url("./assets/tela-inicial.webp");
+    background-size: cover;
+    background-position: center;
     z-index: 0;
 }
-.start-buttons {
-    position: relative;
+.landing-logo {
+    position: absolute;
+    z-index: 3;
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+    width: min(90vw, 600px);
+}
+.landing-logo h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 5rem);
+    font-weight: 1000;
+    color: #fff;
+    text-shadow: 0 6px #b1d0ff, 0 11px #094399;
+    -webkit-text-stroke: 2px #1462c9;
+    paint-order: stroke fill;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+.landing-logo p {
+    margin: 8px 0 0;
+    padding: 6px 20px;
+    border: 2px solid #79caff;
+    border-radius: 8px 8px 20px 20px;
+    background: linear-gradient(#228dff, #0752d7);
+    box-shadow: 0 5px #053586, 0 0 17px #1684ff;
+    font-size: clamp(0.6rem, 1.2vw, 1rem);
+    font-weight: 900;
+    color: #fff;
+    display: inline-block;
+}
+.character {
+    position: absolute;
+    bottom: 0;
     z-index: 2;
+    height: clamp(180px, 35vh, 420px);
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
+    pointer-events: none;
+}
+.character-arthur { left: 5%; }
+.character-henrique { right: 5%; }
+.start-buttons {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 8vh;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    width: min(90vw, 340px);
+    width: min(90vw, 300px);
 }
 .start-btn {
     width: 100%;
-    padding: 18px 24px;
+    padding: 16px 22px;
     border: none;
     border-radius: 16px;
-    font-size: clamp(18px, 4vw, 24px);
+    font-size: clamp(16px, 3.5vw, 22px);
     font-weight: 800;
     color: #fff;
     text-transform: uppercase;
@@ -2317,38 +2374,57 @@
 .start-btn-about {
     background: linear-gradient(135deg, #3b82f6, #2563eb, #1d4ed8);
 }
-
-/* === RESPONSIVO TELA INICIAL === */
-#landing-screen {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 8vh;
-}
 @media (max-width: 600px) {
     #landing-screen {
-        padding-bottom: 12vh;
+        width: 100%;
+        min-height: 100dvh;
+        overflow: hidden;
+    }
+    .city-bg {
+        background-position: center top;
+    }
+    .landing-logo {
+        top: 2%;
+    }
+    .landing-logo h1 {
+        font-size: clamp(1.6rem, 7vw, 2.4rem);
+    }
+    .landing-logo p {
+        font-size: 0.65rem;
+        padding: 4px 14px;
+    }
+    .character {
+        position: absolute;
+        bottom: 0;
+        width: clamp(90px, 28vw, 140px);
+        height: auto;
+    }
+    .character-arthur {
+        left: -5px;
+    }
+    .character-henrique {
+        right: -5px;
     }
     .start-buttons {
-        width: min(85vw, 300px);
+        position: absolute;
+        left: 50%;
+        bottom: max(100px, calc(80px + env(safe-area-inset-bottom)));
+        transform: translateX(-50%);
+        width: min(76vw, 280px);
         gap: 12px;
     }
     .start-btn {
-        padding: 14px 20px;
-        font-size: clamp(15px, 4.5vw, 20px);
+        padding: 13px 18px;
+        font-size: clamp(14px, 4vw, 18px);
         border-radius: 14px;
     }
 }
 @media (min-aspect-ratio: 16/9) {
-    #landing-screen {
-        padding-bottom: 6vh;
+    .start-buttons {
+        bottom: 6vh;
     }
-}</style>
+}
+</style>
 </head>
 <body>
     <button id="audio-btn" onclick="toggleAudio()" aria-label="Alternar áudio">🔊</button>
@@ -2455,12 +2531,18 @@
                 <!-- Tela de Boas-vindas (cidade) -->
         <div id="landing-screen">
     <div class="city-bg" aria-hidden="true"></div>
+    <header class="landing-logo">
+        <h1>ENGLISH FUN</h1>
+        <p>APRENDA INGLÊS BRINCANDO!</p>
+    </header>
+    <img class="character character-arthur" src="arthur.png" alt="Arthur" loading="lazy">
     <div class="start-buttons">
-      <button class="start-btn start-btn-enter" onclick="showLoginScreen()" aria-label="Entrar">ENTRAR</button>
-      <button class="start-btn start-btn-create" onclick="showCreateScreen()" aria-label="Criar Jogador">CRIAR JOGADOR</button>
-      <button class="start-btn start-btn-about" onclick="openAbout()" aria-label="Quem Somos">QUEM SOMOS</button>
+        <button class="start-btn start-btn-enter" onclick="showLoginScreen()" aria-label="Entrar">ENTRAR</button>
+        <button class="start-btn start-btn-create" onclick="showCreateScreen()" aria-label="Criar Jogador">CRIAR JOGADOR</button>
+        <button class="start-btn start-btn-about" onclick="openAbout()" aria-label="Quem Somos">QUEM SOMOS</button>
     </div>
-  </div>
+    <img class="character character-henrique" src="henrique.png" alt="Henrique" loading="lazy">
+</div>
 
         <!-- Tela Inicial (menu de jogo) -->
         <div id="start-screen">
