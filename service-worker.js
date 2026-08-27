@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v57';
+﻿const CACHE_NAME = 'english-fun-v58';
 const urlsToCache = [
     './',
     './index.html',
@@ -36,28 +36,27 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
+        caches.keys().then(names =>
+            Promise.all(
+                names.map(name => {
+                    if (name !== CACHE_NAME) {
+                        return caches.delete(name);
                     }
                 })
-            );
-        })
+            )
+        ).then(() => self.clients.claim())
     );
-    self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
-    
-    // Network-first para arquivos crÃ­ticos (HTML, JS)
-    if (event.request.method === 'GET' && 
-        (url.pathname.endsWith('.html') || 
-         url.pathname.endsWith('.js') || 
-         url.pathname === './' || 
-         url.pathname.endsWith('/'))) {
+
+    // Network-first para HTML e service worker
+    if (event.request.method === 'GET' &&
+        (url.pathname.endsWith('.html') ||
+         url.pathname === './' ||
+         url.pathname.endsWith('/') ||
+         url.pathname.endsWith('service-worker.js'))) {
         event.respondWith(
             fetch(event.request)
                 .then(response => {
@@ -71,8 +70,8 @@ self.addEventListener('fetch', event => {
         );
         return;
     }
-    
-    // Cache-first para outros recursos (imagens, etc)
+
+    // Cache-first para outros recursos (imagens, CSS, JS do jogo)
     event.respondWith(
         caches.match(event.request)
             .then(response => {

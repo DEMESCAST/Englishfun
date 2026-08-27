@@ -1975,6 +1975,15 @@
         }
         .player-bar-logout:hover { background: rgba(248,113,113,0.25); }
 
+        .game-menu-panel-frame,
+        img[src*="english-fun-panel-clean"],
+        img[src*="english-fun-panel-transparent"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             #progress-screen,
             #progress-screen *,
@@ -3037,8 +3046,11 @@ body:has(#landing-screen:not([style*="display: none"])) {
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=15')
-                    .then(reg => console.log('Service Worker registrado:', reg.scope))
+                navigator.serviceWorker.register('./service-worker.js?v=58')
+                    .then(registration => {
+                        registration.update();
+                        console.log('Service Worker registrado:', registration.scope);
+                    })
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
         }
