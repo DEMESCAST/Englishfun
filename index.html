@@ -2259,31 +2259,39 @@
         }
     
 /* === TELA INICIAL - CAMADAS INDEPENDENTES === */
+body:has(#landing-screen:not([style*="display: none"])) {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
 #landing-screen {
-    position: relative;
-    width: 100%;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
     height: 100dvh;
     min-height: 100svh;
+    margin: 0;
+    padding: 0;
     overflow: hidden;
     isolation: isolate;
 }
-.landing-background {
+.scene-stage {
     position: absolute;
     inset: 0;
     z-index: 0;
+    overflow: hidden;
 }
-.landing-background img {
+.scene-stage-mobile {
+    display: none;
+}
+.scene-image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     display: block;
     object-fit: cover;
     object-position: center;
-}
-.location-labels {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
 }
 .location-label {
     position: absolute;
@@ -2298,16 +2306,38 @@
     text-align: center;
     text-shadow: 0 3px 2px rgba(0,0,0,0.85), 0 0 8px rgba(0,0,0,0.55);
     pointer-events: none;
+    z-index: 1;
 }
 .label-school { left: 12%; top: 31%; }
 .label-park { left: 28%; top: 42%; }
 .label-hospital { left: 70%; top: 43%; }
 .label-supermarket { left: 86%; top: 36%; }
-.label-toy-shop { left: 12%; top: 75%; }
-.label-bus-stop { left: 87%; top: 75%; }
+.custom-sign {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    padding: 8px 18px;
+    border: 4px solid rgba(255,255,255,.75);
+    border-radius: 12px;
+    box-shadow: 0 5px 12px rgba(0,0,0,.45);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    z-index: 4;
+    pointer-events: none;
+}
+.sign-toy-shop {
+    bottom: 100%;
+    left: 50%;
+    margin-bottom: 8px;
+    background: linear-gradient(180deg, #7c3aed, #5b21b6);
+}
+.sign-bus-stop {
+    bottom: 100%;
+    left: 50%;
+    margin-bottom: 8px;
+    background: linear-gradient(180deg, #1858a8, #0d3570);
+}
 .landing-logo-wrapper {
     position: absolute;
-    z-index: 4;
+    z-index: 3;
     top: 3vh;
     left: 50%;
     width: min(45vw, 720px);
@@ -2322,7 +2352,7 @@
 .character-wrapper {
     position: absolute;
     bottom: 0;
-    z-index: 3;
+    z-index: 4;
     pointer-events: none;
 }
 .character-arthur-wrapper {
@@ -2399,12 +2429,11 @@
     50% { translate: 0 -5px; }
 }
 @media (max-width: 600px) {
-    #landing-screen {
-        height: 100dvh;
-        min-height: 100svh;
+    .scene-stage-desktop {
+        display: none;
     }
-    .landing-background img {
-        object-position: center;
+    .scene-stage-mobile {
+        display: block;
     }
     .location-label {
         font-size: clamp(10px, 3.5vw, 16px);
@@ -2413,8 +2442,11 @@
     .label-park { left: 32%; top: 48%; }
     .label-hospital { left: 68%; top: 48%; }
     .label-supermarket { left: 82%; top: 42%; }
-    .label-toy-shop { left: 18%; top: 68%; }
-    .label-bus-stop { left: 82%; top: 68%; }
+    .custom-sign {
+        font-size: clamp(9px, 3vw, 13px);
+        padding: 5px 12px;
+        border-width: 3px;
+    }
     .landing-logo-wrapper {
         top: max(18px, env(safe-area-inset-top));
         width: min(88vw, 420px);
@@ -2559,18 +2591,20 @@
 
         <!-- Tela de Boas-vindas (cidade) -->
         <section id="landing-screen" aria-label="Tela inicial do English Fun">
-    <picture class="landing-background" aria-hidden="true">
-        <source media="(max-width: 600px)" srcset="assets/landing/city-background-mobile.png">
-        <img src="assets/landing/city-background-desktop.png" alt="" fetchpriority="high">
-    </picture>
-
-    <div class="location-labels" aria-hidden="true">
+    <div class="scene-stage scene-stage-desktop" aria-hidden="true">
+        <img class="scene-image" src="assets/landing/city-background-desktop.png" alt="">
         <span class="location-label label-school">ESCOLA</span>
         <span class="location-label label-park">PARQUE</span>
         <span class="location-label label-hospital">HOSPITAL</span>
         <span class="location-label label-supermarket">SUPERMERCADO</span>
-        <span class="location-label label-toy-shop">TOY SHOP</span>
-        <span class="location-label label-bus-stop">BUS STOP</span>
+    </div>
+
+    <div class="scene-stage scene-stage-mobile" aria-hidden="true">
+        <img class="scene-image" src="assets/landing/city-background-mobile.png" alt="">
+        <span class="location-label label-school">ESCOLA</span>
+        <span class="location-label label-park">PARQUE</span>
+        <span class="location-label label-hospital">HOSPITAL</span>
+        <span class="location-label label-supermarket">SUPERMERCADO</span>
     </div>
 
     <div class="landing-logo-wrapper">
@@ -2579,6 +2613,7 @@
 
     <div class="character-wrapper character-arthur-wrapper">
         <img class="landing-character character-arthur" src="assets/landing/arthur.png" alt="Arthur">
+        <span class="location-label custom-sign sign-toy-shop">TOY SHOP</span>
     </div>
 
     <nav class="start-buttons" aria-label="Opções iniciais">
@@ -2589,6 +2624,7 @@
 
     <div class="character-wrapper character-henrique-wrapper">
         <img class="landing-character character-henrique" src="assets/landing/henrique.png" alt="Henrique">
+        <span class="location-label custom-sign sign-bus-stop">BUS STOP</span>
     </div>
 </section>
 
