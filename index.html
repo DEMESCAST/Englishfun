@@ -2282,6 +2282,17 @@ body:has(#landing-screen:not([style*="display: none"])) {
     display: block;
     overflow: hidden;
 }
+.landing-background::before {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    background-image: url("assets/landing/city-background-desktop-v2.png");
+    background-size: cover;
+    background-position: center;
+    filter: blur(18px) brightness(0.55);
+    transform: scale(1.08);
+    z-index: 0;
+}
 .landing-background-image,
 .landing-background img {
     width: 100%;
@@ -2289,6 +2300,8 @@ body:has(#landing-screen:not([style*="display: none"])) {
     display: block;
     object-fit: cover;
     object-position: center;
+    position: relative;
+    z-index: 1;
 }
 .landing-logo-wrapper {
     position: absolute;
@@ -2427,6 +2440,9 @@ body:has(#landing-screen:not([style*="display: none"])) {
     }
 }
 @media (max-width: 600px) {
+    .landing-background::before {
+        background-image: url("assets/landing/city-background-mobile-v2.png");
+    }
     .landing-background-image,
     .landing-background img {
         object-position: center;
