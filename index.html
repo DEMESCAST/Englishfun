@@ -294,6 +294,11 @@
             border-color: rgba(74, 222, 128, 0.6);
             box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
+        .mode-games {
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+            border-color: rgba(74, 222, 128, 0.6);
+            box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
+        }
         .mode-review {
             background: linear-gradient(180deg, #f97316 0%, #dc2626 100%);
             border-color: rgba(251, 146, 60, 0.6);
@@ -594,6 +599,322 @@
         .difficulty-easy { background: linear-gradient(135deg, #00b09b, #96c93d); color: white; }
         .difficulty-medium { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
         .difficulty-hard { background: linear-gradient(135deg, #f45c43, #c0392b); color: white; }
+
+        /* Tela de Jogos */
+        #games-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+        }
+        #games-screen h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #ff9ff3;
+            text-shadow: 0 0 15px rgba(255,159,243,0.5);
+        }
+        #games-screen h3 {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.7);
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .game-btn {
+            padding: 22px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .game-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.12), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+        .game-btn:hover::after { left: 100%; }
+        .game-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+        .game-btn:active { transform: translateY(-3px) scale(1.02); }
+        .game-btn:focus { outline: 3px solid #fff; outline-offset: 3px; }
+        .game-btn:focus:not(:focus-visible) { outline: none; }
+        .game-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+        .game-btn-emoji { font-size: 40px; }
+        .game-btn-name { font-size: 16px; letter-spacing: 1px; }
+        .game-btn-desc { font-size: 11px; font-weight: normal; opacity: 0.9; }
+        .game-memory { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .game-hangman { background: linear-gradient(135deg, #8e2de2, #4a00e0); color: white; }
+        .game-wordsearch { background: linear-gradient(135deg, #00b09b, #96c93d); color: white; }
+        .game-truefalse { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
+        .game-lightning { background: linear-gradient(135deg, #f45c43, #f16529); color: white; }
+
+        /* Tela da Forca */
+        #hangman-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+        }
+        #hangman-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+        }
+        #hangman-header h2 {
+            color: #a78bfa;
+            text-shadow: 0 0 15px rgba(167,139,250,0.5);
+            font-size: 24px;
+        }
+        #hangman-card, #wordsearch-card, #truefalse-card, #lightning-card {
+            background: rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 24px;
+            margin-top: 16px;
+            backdrop-filter: blur(6px);
+        }
+        #hangman-progress { color: rgba(255,255,255,0.8); font-size: 14px; margin-bottom: 10px; }
+        #hangman-emoji { font-size: 70px; margin: 8px 0; }
+        #hangman-word-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 16px 0 8px;
+            min-height: 60px;
+        }
+        .hangman-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 52px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            border-bottom: 3px solid #a78bfa;
+        }
+        .hangman-letter.revealed { color: #7bed9f; }
+        #hangman-lives { font-size: 22px; letter-spacing: 3px; min-height: 30px; }
+        #hangman-wrong { color: #ff6b6b; min-height: 20px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+        #hangman-hint { color: rgba(255,255,255,0.85); font-size: 15px; margin: 12px 0; }
+        #hangman-hint button { margin-right: 8px; }
+        #hangman-keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            max-width: 620px;
+            margin: 14px auto;
+        }
+        .hangman-key {
+            width: 40px;
+            height: 42px;
+            border-radius: 9px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+        }
+        .hangman-key:hover:not(.used) { transform: translateY(-3px); }
+        .hangman-key.used { opacity: 0.35; cursor: default; }
+        #hangman-status { color: #ffd700; font-size: 15px; font-weight: bold; min-height: 24px; margin-top: 8px; }
+        .hangman-controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+        /* Tela do Caça-Palavras */
+        #wordsearch-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+        }
+        #wordsearch-header, #truefalse-header, #lightning-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+        }
+        #wordsearch-header h2 { color: #2ed573; text-shadow: 0 0 15px rgba(46,213,115,0.5); font-size: 24px; }
+        #truefalse-header h2 { color: #ffd700; text-shadow: 0 0 15px rgba(255,215,0,0.5); font-size: 24px; }
+        #lightning-header h2 { color: #ff7675; text-shadow: 0 0 15px rgba(255,118,117,0.5); font-size: 24px; }
+        #ws-instruction { color: rgba(255,255,255,0.85); font-size: 14px; margin-bottom: 14px; }
+        #ws-grid {
+            display: inline-grid;
+            gap: 4px;
+            padding: 12px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 12px;
+        }
+        .ws-cell {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            border: none;
+            background: rgba(255,255,255,0.16);
+            color: white;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .ws-cell:hover { background: rgba(255,255,255,0.35); }
+        .ws-cell.selected { background: rgba(255,215,0,0.5); box-shadow: 0 0 0 2px #ffd700; }
+        .ws-cell.found { background: #2ed573; color: white; box-shadow: 0 0 10px rgba(46,213,115,0.6); cursor: default; }
+        #ws-targets {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 16px auto;
+            max-width: 620px;
+        }
+        .ws-target {
+            background: rgba(255,255,255,0.15);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .ws-target.found { opacity: 0.35; text-decoration: line-through; }
+        #ws-status { color: #ffd700; font-size: 15px; font-weight: bold; min-height: 24px; margin-top: 8px; }
+
+        /* Tela Verdadeiro ou Falso */
+        #truefalse-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+        }
+        #tf-progress, #lt-progress { color: rgba(255,255,255,0.8); font-size: 14px; margin-bottom: 10px; }
+        #tf-question {
+            font-size: 30px;
+            font-weight: bold;
+            margin: 20px 0 24px;
+            min-height: 60px;
+            line-height: 1.4;
+        }
+        #tf-question strong { color: #7bed9f; }
+        #tf-feedback { min-height: 26px; font-size: 16px; font-weight: bold; margin-bottom: 14px; }
+        .tf-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .tf-btn {
+            padding: 18px 34px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 14px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+        }
+        .tf-btn:hover { transform: translateY(-4px) scale(1.04); }
+        .tf-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+        .tf-true { background: linear-gradient(135deg, #2ed573, #7bed9f); color: #14532d; }
+        .tf-true.flash-correct { animation: tfpulse 0.4s; }
+        .tf-false { background: linear-gradient(135deg, #ff6b6b, #c0392b); }
+        .tf-false.flash-correct { animation: tfpulse 0.4s; }
+        @keyframes tfpulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
+
+        /* Tela Desafio Relâmpago */
+        #lightning-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+        }
+        .lt-timer {
+            width: 100%;
+            height: 14px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        #lt-timer-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffd700, #2ed573);
+            border-radius: 8px;
+            transition: width 0.09s linear;
+        }
+        #lt-emoji { font-size: 60px; margin: 8px 0; }
+        #lt-word { font-size: 30px; font-weight: bold; color: white; margin-bottom: 18px; }
+        #lt-word span { display: inline-block; }
+        #lt-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; margin: 0 auto; }
+        .lt-option {
+            padding: 18px 14px;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+        }
+        .lt-option:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); }
+        .lt-option:disabled { opacity: 0.6; cursor: default; transform: none; }
 
         /* Background Animations */
         /* Blocos flutuantes */
@@ -1545,6 +1866,9 @@
             .difficulty-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
             .difficulty-btn { padding: 20px; }
             .difficulty-emoji { font-size: 36px; }
+            .games-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+            .game-btn { padding: 20px; }
+            .game-btn-emoji { font-size: 36px; }
         }
 
         /* Responsivo - Celular */
@@ -1603,6 +1927,19 @@
             .difficulty-btn { padding: 14px 16px; flex-direction: row; justify-content: flex-start; gap: 12px; text-align: left; }
             .difficulty-emoji { font-size: 30px; }
             .difficulty-name { font-size: 15px; letter-spacing: 1px; }
+            .games-grid { grid-template-columns: 1fr; gap: 10px; max-width: 360px; }
+            .game-btn { padding: 14px 16px; flex-direction: row; justify-content: flex-start; gap: 12px; text-align: left; }
+            .game-btn-emoji { font-size: 30px; }
+            .game-btn-desc { font-size: 11px; margin-left: auto; }
+            #hangman-card, #wordsearch-card, #truefalse-card, #lightning-card { padding: 16px; }
+            #hangman-emoji { font-size: 50px; }
+            .hangman-letter { width: 30px; height: 42px; font-size: 20px; }
+            .hangman-key { width: 33px; height: 38px; font-size: 14px; }
+            .ws-cell { width: 26px; height: 26px; font-size: 13px; }
+            #tf-question { font-size: 22px; }
+            .tf-btn { padding: 14px 20px; font-size: 15px; }
+            .lt-option { padding: 14px 10px; font-size: 14px; }
+            #lt-word { font-size: 24px; }
             .game-card { padding: 18px; }
             #learn-emoji { font-size: 60px; }
             #learn-english { font-size: 28px; }
@@ -2775,8 +3112,8 @@ body:has(#landing-screen:not([style*="display: none"])) {
                         <button class="game-mode-button mode-conversation" onclick="openConversation()" aria-label="Modo Conversação">
                             <span>🗣️</span> CONVERSE EM INGLÊS
                         </button>
-                        <button class="game-mode-button mode-memory" onclick="startMemoryGame()" aria-label="Jogo da Memória">
-                            <span>🧠</span> MEMÓRIA
+                        <button class="game-mode-button mode-games" onclick="openGames()" aria-label="Jogos">
+                            <span>🎮</span> JOGOS
                         </button>
                         <button class="game-mode-button mode-review" onclick="selectMode('review')" aria-label="Revisar meus erros">
                             <span>⭐</span> REVISAR MEUS ERROS
@@ -2828,6 +3165,125 @@ body:has(#landing-screen:not([style*="display: none"])) {
                     <span class="difficulty-name">DIFÍCIL</span>
                     <span class="difficulty-desc">6 opções de resposta<br>15 pontos por acerto</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- Tela de Jogos -->
+        <div id="games-screen">
+            <button class="back-mode-btn" onclick="closeGames()" aria-label="Voltar ao menu principal">← Voltar</button>
+            <h2>🎮 Escolha um Jogo</h2>
+            <h3>Cada jogo usa as palavras que você aprende!</h3>
+            <div class="games-grid">
+                <button class="game-btn game-memory" onclick="startMemoryGame()" aria-label="Jogo da Memória">
+                    <span class="game-btn-emoji">🧠</span>
+                    <span class="game-btn-name">MEMÓRIA</span>
+                    <span class="game-btn-desc">Encontre os pares</span>
+                </button>
+                <button class="game-btn game-hangman" onclick="openGame('hangman')" aria-label="Jogo da Forca">
+                    <span class="game-btn-emoji">🪓</span>
+                    <span class="game-btn-name">FORCA</span>
+                    <span class="game-btn-desc">Adivinhe a palavra em inglês</span>
+                </button>
+                <button class="game-btn game-wordsearch" onclick="openGame('wordsearch')" aria-label="Caça-Palavras">
+                    <span class="game-btn-emoji">🔍</span>
+                    <span class="game-btn-name">CAÇA-PALAVRAS</span>
+                    <span class="game-btn-desc">Encontre as palavras escondidas</span>
+                </button>
+                <button class="game-btn game-truefalse" onclick="openGame('truefalse')" aria-label="Verdadeiro ou Falso">
+                    <span class="game-btn-emoji">✅</span>
+                    <span class="game-btn-name">VERDADEIRO OU FALSO</span>
+                    <span class="game-btn-desc">Responda rápido e acumule combo</span>
+                </button>
+                <button class="game-btn game-lightning" onclick="openGame('lightning')" aria-label="Desafio Relâmpago">
+                    <span class="game-btn-emoji">⚡</span>
+                    <span class="game-btn-name">DESAFIO RELÂMPAGO</span>
+                    <span class="game-btn-desc">Responda antes do tempo acabar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela do Jogo da Forca -->
+        <div id="hangman-screen">
+            <div id="hangman-header">
+                <button class="back-mode-btn" onclick="closeHangman()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2 id="hangman-title">🪓 Forca</h2>
+                <div class="score-box">⭐ <span id="hangman-score">0</span></div>
+            </div>
+            <div id="hangman-card">
+                <div id="hangman-progress">Palavra 1 de 5</div>
+                <div id="hangman-emoji"></div>
+                <div id="hangman-word-row"></div>
+                <div id="hangman-lives"></div>
+                <div id="hangman-wrong"></div>
+                <div id="hangman-hint"></div>
+                <div id="hangman-keyboard"></div>
+                <div id="hangman-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartHangman()" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeHangman()" style="background: linear-gradient(135deg, #667eea, #764ba2);" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela do Caça-Palavras -->
+        <div id="wordsearch-screen">
+            <div id="wordsearch-header">
+                <button class="back-mode-btn" onclick="closeWordSearch()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🔍 Caça-Palavras</h2>
+                <div class="score-box">⭐ <span id="ws-score">0</span></div>
+            </div>
+            <div id="wordsearch-card">
+                <div id="ws-instruction">Clique na <strong>primeira</strong> e depois na <strong>última</strong> letra de cada palavra.</div>
+                <div id="ws-grid"></div>
+                <div id="ws-targets"></div>
+                <div id="ws-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="wsReveal()" aria-label="Revelar uma palavra">💡 Revelar uma palavra</button>
+                    <button class="learn-btn" onclick="restartWordSearch()" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela do Verdadeiro ou Falso -->
+        <div id="truefalse-screen">
+            <div id="truefalse-header">
+                <button class="back-mode-btn" onclick="closeTrueFalse()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>✅ Verdadeiro ou Falso</h2>
+                <div class="header-info">
+                    <div class="combo-box">🔥 <span id="tf-combo">0</span>x</div>
+                    <div class="score-box">⭐ <span id="tf-score">0</span></div>
+                </div>
+            </div>
+            <div id="truefalse-card">
+                <div id="tf-progress">Pergunta 1 de 15</div>
+                <div id="tf-question"></div>
+                <div id="tf-feedback"></div>
+                <div class="tf-buttons">
+                    <button id="tf-true" class="tf-btn tf-true" onclick="answerTrueFalse(true)" aria-label="Verdadeiro">✅ VERDADEIRO</button>
+                    <button id="tf-false" class="tf-btn tf-false" onclick="answerTrueFalse(false)" aria-label="Falso">❌ FALSO</button>
+                </div>
+                <div class="hangman-controls" id="tf-controls" style="display: none;">
+                    <button class="learn-btn" onclick="restartTrueFalse()" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela do Desafio Relâmpago -->
+        <div id="lightning-screen">
+            <div id="lightning-header">
+                <button class="back-mode-btn" onclick="closeLightning()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>⚡ Desafio Relâmpago</h2>
+                <div class="score-box">⭐ <span id="lt-score">0</span></div>
+            </div>
+            <div id="lightning-card">
+                <div class="lt-timer"><div id="lt-timer-fill"></div></div>
+                <div id="lt-progress">Pergunta 1 de 15</div>
+                <div id="lt-emoji"></div>
+                <div id="lt-word"></div>
+                <div id="lt-options"></div>
+                <div class="hangman-controls" id="lt-controls" style="display: none;">
+                    <button class="learn-btn" onclick="restartLightning()" style="background: linear-gradient(135deg, #f45c43, #c0392b);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                </div>
             </div>
         </div>
         

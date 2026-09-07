@@ -678,7 +678,7 @@ function hideAllScreens() {
     }
     confettiParticles = [];
     
-    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'difficulty-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen', 'about-screen', 'conversation-screen'];
+    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'difficulty-screen', 'games-screen', 'hangman-screen', 'wordsearch-screen', 'truefalse-screen', 'lightning-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen', 'about-screen', 'conversation-screen'];
     screens.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -847,7 +847,7 @@ function validateNickname(value) {
     return { valid: true, value: nick };
 }
 
-async function saveRanking() {
+async function saveRanking(overrides) {
     const correctCount = totalQuestions - wrongAnswersList.length;
     
     let generalPoints = 0;
@@ -856,7 +856,7 @@ async function saveRanking() {
         generalPoints = Math.max(0, Math.min(400, generalPoints));
     }
     
-    const entry = {
+    const entry = Object.assign({
         uid: playerUid,
         name: playerName,
         score: score,
@@ -867,7 +867,7 @@ async function saveRanking() {
         category: currentCategory,
         mode: currentMode,
         date: new Date().toISOString()
-    };
+    }, overrides || {});
     
     let firebaseSaved = false;
 
@@ -1176,6 +1176,14 @@ function goToMenu() {
     document.getElementById('answer-modal').style.display = 'none';
     document.getElementById('memory-screen').style.display = 'none';
     document.getElementById('category-screen').style.display = 'none';
+    document.getElementById('difficulty-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('hangman-screen').style.display = 'none';
+    document.getElementById('wordsearch-screen').style.display = 'none';
+    document.getElementById('truefalse-screen').style.display = 'none';
+    document.getElementById('lightning-screen').style.display = 'none';
+    if (ltTimerInterval) clearInterval(ltTimerInterval);
+    ltTimerInterval = null;
     document.getElementById('learn-complete-card').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
     displayHomeRanking();
@@ -1187,6 +1195,8 @@ function selectMode(mode) {
     playSound('click');
     initAudio();
     currentMode = mode;
+    pendingGame = null;
+    categorySource = 'start';
     
     document.getElementById('start-screen').style.display = 'none';
     
@@ -1222,7 +1232,7 @@ function selectMode(mode) {
 function goToModeSelect() {
     playSound('click');
     document.getElementById('category-screen').style.display = 'none';
-    document.getElementById('start-screen').style.display = 'block';
+    document.getElementById(categorySource === 'games' ? 'games-screen' : 'start-screen').style.display = 'block';
     resumeMenuMusic();
 }
 
@@ -1252,6 +1262,13 @@ function startModeWithCategory(category) {
     }
     
     document.getElementById('start-screen').style.display = 'none';
+    
+    if (pendingGame) {
+        const game = pendingGame;
+        pendingGame = null;
+        startGameWithCategory(game, category);
+        return;
+    }
     
     if (currentMode === 'quiz' || currentMode === 'dictation') {
         showDifficultyScreen();
@@ -1760,6 +1777,716 @@ function handleDictationKeyPress(e) {
     if (e.key === 'Enter' && !document.getElementById('dictation-input').disabled) {
         checkDictation();
     }
+}
+
+// ==================== JOGOS (MINI-GAMES) ====================
+let pendingGame = null;
+let categorySource = 'start';
+
+const GAME_META = {
+    hangman:    { title: '🪓 Forca' },
+    wordsearch: { title: '🔍 Caça-Palavras' },
+    truefalse:  { title: '✅ Verdadeiro ou Falso' },
+    lightning:  { title: '⚡ Desafio Relâmpago' }
+};
+
+function openGames() {
+    playSound('click');
+    initAudio();
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+function closeGames() {
+    playSound('click');
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+function openGame(gameKey) {
+    playSound('click');
+    if (!GAME_META[gameKey]) return;
+    pendingGame = gameKey;
+    categorySource = 'games';
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('category-title-mode').textContent = GAME_META[gameKey].title;
+    const grid = document.getElementById('category-grid-mode');
+    grid.innerHTML = '';
+    for (const [key, cat] of Object.entries(categoryData)) {
+        const btn = document.createElement('button');
+        btn.className = `category-btn cat-${key}`;
+        btn.setAttribute('aria-label', `Categoria ${cat.name}`);
+        btn.innerHTML = `<span>${cat.emoji}</span> ${cat.name}`;
+        btn.onclick = () => startModeWithCategory(key);
+        grid.appendChild(btn);
+    }
+    document.getElementById('category-screen').style.display = 'block';
+}
+
+function startGameWithCategory(game, category) {
+    currentCategory = category;
+    switch (game) {
+        case 'hangman':    startHangmanWithCategory(category); break;
+        case 'wordsearch': startWordSearchWithCategory(category); break;
+        case 'truefalse':  startTrueFalseWithCategory(category); break;
+        case 'lightning':  startLightningWithCategory(category); break;
+    }
+}
+
+function speakEnglish(text) {
+    if (!audioEnabled || !('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    speechSynthesis.speak(utterance);
+}
+
+// ---------- FORCA ----------
+let hangmanCategory = null;
+let hangmanWords = [];
+let hangmanWordIndex = 0;
+let hangmanGuessed = new Set();
+let hangmanWrong = [];
+let hangmanLives = 6;
+let hangmanScore = 0;
+let hangmanSolved = 0;
+let hangmanFinished = false;
+const HANGMAN_WORDS_PER_ROUND = 5;
+const HANGMAN_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function startHangmanWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    hangmanCategory = category;
+    currentCategory = category;
+    hangmanWords = shuffle([...vocabulary[category].words]).slice(0, HANGMAN_WORDS_PER_ROUND);
+    hangmanWordIndex = 0;
+    hangmanScore = 0;
+    hangmanSolved = 0;
+    hangmanFinished = false;
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('hangman-screen').style.display = 'block';
+    document.getElementById('hangman-title').textContent = `🪓 ${vocabulary[category].title}`;
+    updateHangmanScore();
+    resetHangmanWord();
+}
+
+function resetHangmanWord() {
+    hangmanGuessed = new Set();
+    hangmanWrong = [];
+    hangmanLives = 6;
+    renderHangman();
+}
+
+function updateHangmanScore() {
+    document.getElementById('hangman-score').textContent = hangmanScore;
+}
+
+function renderHangman() {
+    const word = hangmanWords[hangmanWordIndex];
+    if (!word) return;
+    document.getElementById('hangman-progress').textContent = `Palavra ${hangmanWordIndex + 1} de ${hangmanWords.length}`;
+    document.getElementById('hangman-emoji').textContent = word.emoji;
+    speakEnglish(word.english);
+    
+    const rowEl = document.getElementById('hangman-word-row');
+    rowEl.innerHTML = '';
+    for (const ch of word.english) {
+        const span = document.createElement('span');
+        span.className = 'hangman-letter';
+        if (ch === ' ') {
+            span.textContent = ' ';
+            span.style.background = 'transparent';
+            span.style.borderBottom = 'none';
+        } else if (hangmanGuessed.has(ch.toLowerCase())) {
+            span.textContent = ch;
+            span.classList.add('revealed');
+        } else {
+            span.textContent = '_';
+        }
+        rowEl.appendChild(span);
+    }
+    
+    document.getElementById('hangman-hint').innerHTML =
+        `<button class="learn-btn small" onclick="speakHangman()" aria-label="Ouvir pronúncia">🔊</button>` +
+        `<span>Dica: ${word.portuguese}</span>`;
+    
+    const kb = document.getElementById('hangman-keyboard');
+    kb.innerHTML = '';
+    for (const ch of HANGMAN_ALPHABET) {
+        const b = document.createElement('button');
+        b.className = 'hangman-key';
+        b.textContent = ch;
+        b.setAttribute('aria-label', `Letra ${ch}`);
+        if (hangmanGuessed.has(ch.toLowerCase()) || hangmanWrong.includes(ch.toLowerCase())) {
+            b.classList.add('used');
+        } else {
+            b.onclick = () => hangmanGuess(ch.toLowerCase());
+        }
+        kb.appendChild(b);
+    }
+    
+    let livesHtml = '❤️'.repeat(Math.max(0, hangmanLives)) + '🖤'.repeat(Math.max(0, 6 - hangmanLives));
+    document.getElementById('hangman-lives').textContent = livesHtml;
+    const wrongHtml = hangmanWrong.map(l => l.toUpperCase()).join(' ');
+    document.getElementById('hangman-wrong').textContent = wrongHtml ? `Erradas: ${wrongHtml}` : '';
+}
+
+function speakHangman() {
+    const word = hangmanWords[hangmanWordIndex];
+    if (word) speakEnglish(word.english);
+}
+
+function hangmanGuess(ch) {
+    if (hangmanFinished) return;
+    const word = hangmanWords[hangmanWordIndex];
+    const solution = word.english.toLowerCase();
+    if (solution.includes(ch)) {
+        if (hangmanGuessed.has(ch)) return;
+        hangmanGuessed.add(ch);
+        playSound('click');
+    } else {
+        if (hangmanWrong.includes(ch)) return;
+        hangmanWrong.push(ch);
+        hangmanLives--;
+        playSound('wrong');
+    }
+    renderHangman();
+    checkHangmanWord(word, solution);
+}
+
+function checkHangmanWord(word, solution) {
+    const letters = solution.replace(/[^a-z]/g, '').split('');
+    const allGuessed = letters.every(c => hangmanGuessed.has(c));
+    
+    if (allGuessed) {
+        hangmanFinished = true;
+        hangmanSolved++;
+        const pts = 30 + hangmanLives * 5;
+        hangmanScore += pts;
+        updateHangmanScore();
+        playSound('correct');
+        document.getElementById('hangman-status').textContent = `🎉 ${word.english} — +${pts} pontos!`;
+        setTimeout(() => {
+            hangmanFinished = false;
+            document.getElementById('hangman-status').textContent = '';
+            hangmanWordIndex++;
+            if (hangmanWordIndex >= hangmanWords.length) {
+                finishHangman();
+            } else {
+                resetHangmanWord();
+            }
+        }, 1500);
+    } else if (hangmanLives <= 0) {
+        hangmanFinished = true;
+        playSound('wrong');
+        document.getElementById('hangman-status').textContent = `💔 A palavra era: ${word.english}`;
+        document.getElementById('hangman-word-row').innerHTML = word.english.split('').map(c =>
+            `<span class="hangman-letter revealed">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+        setTimeout(() => {
+            hangmanFinished = false;
+            document.getElementById('hangman-status').textContent = '';
+            hangmanWordIndex++;
+            if (hangmanWordIndex >= hangmanWords.length) {
+                finishHangman();
+            } else {
+                resetHangmanWord();
+            }
+        }, 1800);
+    }
+}
+
+async function finishHangman() {
+    hangmanFinished = true;
+    document.getElementById('hangman-emoji').textContent = '🎊';
+    const gpts = Math.round((hangmanSolved / hangmanWords.length) * 300) + Math.min(100, Math.round(hangmanScore / 10));
+    document.getElementById('hangman-status').innerHTML =
+        `🏆 Você terminou! ${hangmanSolved}/${hangmanWords.length} palavras · ⭐ ${hangmanScore} pontos`;
+    if (playerUid && hangmanWords.length > 0) {
+        await saveRanking({
+            mode: 'hangman',
+            category: hangmanCategory,
+            score: hangmanScore,
+            generalPoints: Math.max(0, Math.min(400, gpts)),
+            correct: hangmanSolved,
+            total: hangmanWords.length,
+            maxCombo: hangmanSolved
+        });
+    }
+}
+
+function restartHangman() {
+    if (hangmanCategory) startHangmanWithCategory(hangmanCategory);
+}
+
+function closeHangman() {
+    playSound('click');
+    document.getElementById('hangman-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ---------- CAÇA-PALAVRAS ----------
+let wsCategory = null;
+let wsWords = [];
+let wsGrid = [];
+let wsFound = new Set();
+let wsSelectStart = null;
+let wsScore = 0;
+let wsFinished = false;
+const WS_SIZE = 10;
+const WS_MAX_WORDS = 6;
+
+function startWordSearchWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    wsCategory = category;
+    currentCategory = category;
+    wsFound = new Set();
+    wsScore = 0;
+    wsSelectStart = null;
+    wsFinished = false;
+    
+    const pool = vocabulary[category].words.filter(w => w.english.length <= 8 && !w.english.includes(' '));
+    const chosen = shuffle([...pool]).slice(0, WS_MAX_WORDS);
+    buildWordSearchGrid(chosen);
+    
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('wordsearch-screen').style.display = 'block';
+    document.getElementById('ws-status').textContent = '';
+    renderWordSearch();
+}
+
+function buildWordSearchGrid(words) {
+    wsWords = [];
+    wsGrid = Array.from({ length: WS_SIZE }, () => Array(WS_SIZE).fill(''));
+    const sorted = [...words].sort((a, b) => b.english.length - a.english.length);
+    for (const word of sorted) {
+        const clean = word.english.toUpperCase();
+        let placed = false;
+        for (let attempt = 0; attempt < 120 && !placed; attempt++) {
+            const horizontal = Math.random() < 0.5;
+            const r = Math.floor(Math.random() * WS_SIZE);
+            const c = Math.floor(Math.random() * WS_SIZE);
+            const dr = horizontal ? 0 : 1;
+            const dc = horizontal ? 1 : 0;
+            const fits = clean.split('').every((ch, i) => {
+                const rr = r + i * dr;
+                const cc = c + i * dc;
+                if (rr >= WS_SIZE || cc >= WS_SIZE) return false;
+                return wsGrid[rr][cc] === '' || wsGrid[rr][cc] === ch;
+            });
+            if (fits) {
+                clean.split('').forEach((ch, i) => { wsGrid[r + i * dr][c + i * dc] = ch; });
+                wsWords.push({ key: word.english.toLowerCase(), english: word.english, portuguese: word.portuguese, r, c, dr, dc, len: clean.length });
+                placed = true;
+            }
+        }
+        if (!placed) {
+            for (let row = 0; row < WS_SIZE && !placed; row++) {
+                for (let col = 0; col <= WS_SIZE - clean.length && !placed; col++) {
+                    const fits = clean.split('').every((ch, i) => wsGrid[row][col + i] === '' || wsGrid[row][col + i] === ch);
+                    if (fits) {
+                        clean.split('').forEach((ch, i) => { wsGrid[row][col + i] = ch; });
+                        wsWords.push({ key: word.english.toLowerCase(), english: word.english, portuguese: word.portuguese, r: row, c: col, dr: 0, dc: 1, len: clean.length });
+                        placed = true;
+                    }
+                }
+            }
+        }
+    }
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let r = 0; r < WS_SIZE; r++) {
+        for (let c = 0; c < WS_SIZE; c++) {
+            if (wsGrid[r][c] === '') wsGrid[r][c] = chars[Math.floor(Math.random() * 26)];
+        }
+    }
+}
+
+function isWsCellFound(r, c) {
+    for (const key of wsFound) {
+        const w = wsWords.find(ww => ww.key === key);
+        if (!w) continue;
+        const rEnd = w.r + (w.len - 1) * w.dr;
+        const cEnd = w.c + (w.len - 1) * w.dc;
+        const rMin = Math.min(w.r, rEnd), rMax = Math.max(w.r, rEnd);
+        const cMin = Math.min(w.c, cEnd), cMax = Math.max(w.c, cEnd);
+        if (r >= rMin && r <= rMax && c >= cMin && c <= cMax) return true;
+    }
+    return false;
+}
+
+function renderWordSearch() {
+    const gridEl = document.getElementById('ws-grid');
+    gridEl.innerHTML = '';
+    gridEl.style.gridTemplateColumns = `repeat(${WS_SIZE}, auto)`;
+    for (let r = 0; r < WS_SIZE; r++) {
+        for (let c = 0; c < WS_SIZE; c++) {
+            const cell = document.createElement('button');
+            cell.className = 'ws-cell';
+            cell.textContent = wsGrid[r][c];
+            cell.setAttribute('aria-label', `Letra ${wsGrid[r][c]}, linha ${r + 1}, coluna ${c + 1}`);
+            if (isWsCellFound(r, c)) {
+                cell.classList.add('found');
+                cell.disabled = true;
+            } else {
+                cell.onclick = () => wsCellClick(r, c);
+                if (wsSelectStart && wsSelectStart.r === r && wsSelectStart.c === c) cell.classList.add('selected');
+            }
+            gridEl.appendChild(cell);
+        }
+    }
+    const tEl = document.getElementById('ws-targets');
+    tEl.innerHTML = '';
+    for (const w of wsWords) {
+        const found = wsFound.has(w.key);
+        const d = document.createElement('div');
+        d.className = 'ws-target' + (found ? ' found' : '');
+        d.innerHTML = `<span>${w.portuguese}</span>`;
+        tEl.appendChild(d);
+    }
+    document.getElementById('ws-score').textContent = wsScore;
+}
+
+function wsCellClick(r, c) {
+    if (wsFinished) return;
+    playSound('click');
+    if (!wsSelectStart) {
+        wsSelectStart = { r, c };
+        renderWordSearch();
+        return;
+    }
+    const start = wsSelectStart;
+    wsSelectStart = null;
+    let cells = null;
+    if (start.r === r) {
+        cells = [];
+        const cMin = Math.min(start.c, c), cMax = Math.max(start.c, c);
+        for (let cc = cMin; cc <= cMax; cc++) cells.push(wsGrid[start.r][cc]);
+    } else if (start.c === c) {
+        cells = [];
+        const rMin = Math.min(start.r, r), rMax = Math.max(start.r, r);
+        for (let rr = rMin; rr <= rMax; rr++) cells.push(wsGrid[rr][start.c]);
+    }
+    if (cells) checkWordSearchSelection(cells.join(''));
+    renderWordSearch();
+}
+
+function checkWordSearchSelection(sel) {
+    const upper = sel.toUpperCase();
+    const rev = upper.split('').reverse().join('');
+    const w = wsWords.find(word => !wsFound.has(word.key) &&
+        (word.english.toUpperCase() === upper || word.english.toUpperCase() === rev));
+    if (w) {
+        wsFound.add(w.key);
+        wsScore += 20;
+        document.getElementById('ws-score').textContent = wsScore;
+        playSound('correct');
+        showFeedback(`🎉 "${w.english}" +20 pontos!`, '#38ef7d', 1200);
+        if (wsFound.size === wsWords.length) finishWordSearch();
+    } else {
+        playSound('wrong');
+    }
+}
+
+async function finishWordSearch() {
+    wsFinished = true;
+    document.getElementById('ws-status').innerHTML =
+        `🏆 Você encontrou todas as palavras! ⭐ ${wsScore} pontos`;
+    if (playerUid && wsWords.length > 0) {
+        const gpts = Math.round((wsFound.size / wsWords.length) * 400);
+        await saveRanking({
+            mode: 'wordsearch',
+            category: wsCategory,
+            score: wsScore,
+            generalPoints: Math.max(0, Math.min(400, gpts)),
+            correct: wsFound.size,
+            total: wsWords.length,
+            maxCombo: wsFound.size
+        });
+    }
+    celebratePerfect();
+}
+
+function wsReveal() {
+    if (wsFinished) return;
+    const unfound = wsWords.filter(w => !wsFound.has(w.key));
+    if (unfound.length === 0) return;
+    const w = unfound[Math.floor(Math.random() * unfound.length)];
+    wsFound.add(w.key);
+    wsScore += 5;
+    document.getElementById('ws-score').textContent = wsScore;
+    playSound('click');
+    if (wsFound.size === wsWords.length) finishWordSearch();
+    renderWordSearch();
+}
+
+function restartWordSearch() {
+    if (wsCategory) startWordSearchWithCategory(wsCategory);
+}
+
+function closeWordSearch() {
+    playSound('click');
+    document.getElementById('wordsearch-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ---------- VERDADEIRO OU FALSO ----------
+let tfCategory = null;
+let tfRound = [];
+let tfIndex = 0;
+let tfScore = 0;
+let tfCombo = 0;
+let tfMaxCombo = 0;
+let tfCorrect = 0;
+let tfAnswering = false;
+const TF_TOTAL = 15;
+
+function startTrueFalseWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    tfCategory = category;
+    currentCategory = category;
+    const words = shuffle([...vocabulary[category].words]);
+    tfRound = [];
+    for (let i = 0; i < TF_TOTAL; i++) {
+        const w = words[i % words.length];
+        const statementIsTrue = Math.random() < 0.5;
+        let shownPt = w.portuguese;
+        if (!statementIsTrue) {
+            const others = words.filter(o => o.portuguese !== w.portuguese);
+            shownPt = others[Math.floor(Math.random() * others.length)].portuguese;
+        }
+        tfRound.push({ word: w, statementIsTrue, shownPt });
+    }
+    tfIndex = 0;
+    tfScore = 0;
+    tfCombo = 0;
+    tfMaxCombo = 0;
+    tfCorrect = 0;
+    tfAnswering = false;
+    const ctrl = document.getElementById('tf-controls');
+    if (ctrl) ctrl.style.display = 'none';
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('truefalse-screen').style.display = 'block';
+    renderTrueFalseQuestion();
+}
+
+function updateTfHud() {
+    document.getElementById('tf-score').textContent = tfScore;
+    document.getElementById('tf-combo').textContent = tfCombo;
+}
+
+function renderTrueFalseQuestion() {
+    updateTfHud();
+    if (tfIndex >= tfRound.length) { finishTrueFalse(); return; }
+    const r = tfRound[tfIndex];
+    document.getElementById('tf-progress').textContent = `Pergunta ${tfIndex + 1} de ${tfRound.length}`;
+    document.getElementById('tf-question').innerHTML =
+        `"<strong>${r.word.english}</strong>" = "<strong>${r.shownPt}</strong>"?`;
+    document.getElementById('tf-feedback').textContent = '';
+    document.querySelectorAll('.tf-btn').forEach(b => {
+        b.disabled = false;
+        b.classList.remove('flash-correct');
+    });
+    speakEnglish(r.word.english);
+}
+
+function answerTrueFalse(ans) {
+    if (tfAnswering) return;
+    tfAnswering = true;
+    const r = tfRound[tfIndex];
+    const isCorrect = (ans === r.statementIsTrue);
+    const fbEl = document.getElementById('tf-feedback');
+    document.querySelectorAll('.tf-btn').forEach(b => b.disabled = true);
+    if (isCorrect) {
+        tfCorrect++;
+        tfCombo++;
+        if (tfCombo > tfMaxCombo) tfMaxCombo = tfCombo;
+        const pts = 10 + Math.min(10, tfCombo * 2);
+        tfScore += pts;
+        playSound(tfCombo >= 3 ? 'combo' : 'correct');
+        fbEl.textContent = `🎉 Correto! +${pts} pontos (${tfCombo}x)`;
+        fbEl.style.color = '#7bed9f';
+        const correctBtn = ans ? document.getElementById('tf-true') : document.getElementById('tf-false');
+        if (correctBtn) correctBtn.classList.add('flash-correct');
+    } else {
+        tfCombo = 0;
+        playSound('wrong');
+        fbEl.textContent = `❌ Errado! Era: ${r.statementIsTrue ? 'Verdadeiro' : 'Falso'}`;
+        fbEl.style.color = '#ff6b6b';
+    }
+    updateTfHud();
+    setTimeout(() => {
+        tfAnswering = false;
+        tfIndex++;
+        renderTrueFalseQuestion();
+    }, 1300);
+}
+
+async function finishTrueFalse() {
+    document.getElementById('tf-question').innerHTML =
+        `🏆 <strong>Fim!</strong> Você acertou ${tfCorrect} de ${tfRound.length}! Total: ⭐ ${tfScore} pontos`;
+    const ctrl = document.getElementById('tf-controls');
+    if (ctrl) ctrl.style.display = 'flex';
+    if (playerUid && tfRound.length > 0) {
+        const gpts = Math.round((tfCorrect / tfRound.length) * 400);
+        await saveRanking({
+            mode: 'truefalse',
+            category: tfCategory,
+            score: tfScore,
+            generalPoints: Math.max(0, Math.min(400, gpts)),
+            correct: tfCorrect,
+            total: tfRound.length,
+            maxCombo: tfMaxCombo
+        });
+    }
+    updateTfHud();
+}
+
+function restartTrueFalse() {
+    if (tfCategory) startTrueFalseWithCategory(tfCategory);
+}
+
+function closeTrueFalse() {
+    playSound('click');
+    document.getElementById('truefalse-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ---------- DESAFIO RELÂMPAGO ----------
+let ltCategory = null;
+let ltQuizWords = [];
+let ltIndex = 0;
+let ltScore = 0;
+let ltMistakes = 0;
+let ltTimeLeft = 5000;
+let ltTimerInterval = null;
+let ltAnswering = false;
+const LT_TOTAL = 15;
+const LT_TIME_MS = 5000;
+
+function startLightningWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    ltCategory = category;
+    currentCategory = category;
+    const n = Math.min(LT_TOTAL, vocabulary[category].words.length);
+    ltQuizWords = shuffle([...vocabulary[category].words]).slice(0, n);
+    ltIndex = 0;
+    ltScore = 0;
+    ltMistakes = 0;
+    ltAnswering = false;
+    if (ltTimerInterval) { clearInterval(ltTimerInterval); ltTimerInterval = null; }
+    const ctrl = document.getElementById('lt-controls');
+    if (ctrl) ctrl.style.display = 'none';
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('lightning-screen').style.display = 'block';
+    renderLightningQuestion();
+}
+
+function stopLtTimer() {
+    if (ltTimerInterval) { clearInterval(ltTimerInterval); ltTimerInterval = null; }
+}
+
+function renderLightningQuestion() {
+    document.getElementById('lt-score').textContent = ltScore;
+    if (ltIndex >= ltQuizWords.length) { finishLightning(); return; }
+    const word = ltQuizWords[ltIndex];
+    document.getElementById('lt-progress').textContent = `Pergunta ${ltIndex + 1} de ${ltQuizWords.length}`;
+    document.getElementById('lt-emoji').textContent = word.emoji;
+    document.getElementById('lt-word').textContent = word.english;
+    speakEnglish(word.english);
+    
+    const correctAnswer = word.portuguese;
+    const options = [correctAnswer];
+    const others = shuffle(ltQuizWords.map(w => w.portuguese).filter(t => t !== correctAnswer));
+    while (options.length < 4 && others.length) options.push(others.pop());
+    const opts = shuffle(options);
+    const optEl = document.getElementById('lt-options');
+    optEl.innerHTML = opts.map(opt =>
+        `<button class="lt-option" onclick="ltAnswer('${opt.replace(/'/g, "\\'")}', '${correctAnswer.replace(/'/g, "\\'")}')">${opt}</button>`
+    ).join('');
+    document.getElementById('lt-timer-fill').style.width = '100%';
+    
+    ltAnswering = false;
+    ltTimeLeft = LT_TIME_MS;
+    ltTimerInterval = setInterval(() => {
+        ltTimeLeft -= 100;
+        const pct = Math.max(0, (ltTimeLeft / LT_TIME_MS) * 100);
+        document.getElementById('lt-timer-fill').style.width = pct + '%';
+        if (ltTimeLeft <= 0) {
+            stopLtTimer();
+            ltAnswer('__timeout__', correctAnswer);
+        }
+    }, 100);
+}
+
+function ltAnswer(selected, correct) {
+    if (ltAnswering) return;
+    ltAnswering = true;
+    stopLtTimer();
+    const btns = document.querySelectorAll('.lt-option');
+    btns.forEach(b => b.disabled = true);
+    
+    if (selected === correct) {
+        const bonus = Math.round((ltTimeLeft / 1000) * 2);
+        const pts = 10 + Math.min(8, bonus);
+        ltScore += pts;
+        playSound('correct');
+        btns.forEach(b => { if (b.textContent === correct) b.style.background = 'linear-gradient(135deg, #2ed573, #7bed9f)'; });
+    } else {
+        ltMistakes++;
+        playSound('wrong');
+        btns.forEach(b => {
+            if (b.textContent === correct) b.style.background = 'linear-gradient(135deg, #2ed573, #7bed9f)';
+            if (b.textContent === selected) b.style.background = 'linear-gradient(135deg, #ff6b6b, #c0392b)';
+        });
+    }
+    setTimeout(() => {
+        ltIndex++;
+        renderLightningQuestion();
+    }, 900);
+}
+
+async function finishLightning() {
+    stopLtTimer();
+    const correct = ltQuizWords.length - ltMistakes;
+    document.getElementById('lt-options').innerHTML = '';
+    document.getElementById('lt-word').textContent = '🏆 Fim!';
+    document.getElementById('lt-emoji').textContent = '⚡';
+    document.getElementById('lt-progress').textContent = `Acertos: ${correct} de ${ltQuizWords.length} · ⭐ ${ltScore} pontos`;
+    const ctrl = document.getElementById('lt-controls');
+    if (ctrl) ctrl.style.display = 'flex';
+    if (playerUid && ltQuizWords.length > 0) {
+        const gpts = Math.round((correct / ltQuizWords.length) * 400);
+        await saveRanking({
+            mode: 'lightning',
+            category: ltCategory,
+            score: ltScore,
+            generalPoints: Math.max(0, Math.min(400, gpts)),
+            correct: correct,
+            total: ltQuizWords.length,
+            maxCombo: 0
+        });
+    }
+}
+
+function restartLightning() {
+    if (ltCategory) startLightningWithCategory(ltCategory);
+}
+
+function closeLightning() {
+    stopLtTimer();
+    playSound('click');
+    document.getElementById('lightning-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
 }
 
 // ==================== MEMORY GAME ====================
