@@ -128,12 +128,13 @@ function tone(freq, opts) {
     const vol = opts.vol || 0.08;
     const when = opts.when || 0;
     const scale = opts.scale === 'music' ? 1 : audioPrefs.sfx;
+    const dest = opts.dest || audioCtx.destination;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = type;
     osc.frequency.value = freq;
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(dest);
     const t = audioCtx.currentTime + when;
     gain.gain.setValueAtTime(0.0001, t);
     gain.gain.exponentialRampToValueAtTime(vol * scale, t + 0.008);
@@ -259,8 +260,9 @@ function genTick() {
     const note = chord[chordIdx][(seq[genStep % 8] + midi * 0) % 4];
     const oct = Math.floor(genStep / 16) % 2 === 0 ? 1 : 2;
     const freq = note * oct;
-    tone(freq, { dur: 0.55, type: 'sine', vol: 0.08, scale: 'music' });
-    tone(freq * 2, { dur: 0.45, type: 'sine', vol: 0.02, scale: 'music' });
+    const g = (tracks.game && tracks.game.gain) || audioCtx.destination;
+    tone(freq, { dur: 0.55, type: 'sine', vol: 0.08, scale: 'music', dest: g });
+    tone(freq * 2, { dur: 0.45, type: 'sine', vol: 0.02, scale: 'music', dest: g });
     genStep++;
 }
 
