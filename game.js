@@ -127,6 +127,7 @@ function tone(freq, opts) {
     const type = opts.type || 'triangle';
     const vol = opts.vol || 0.08;
     const when = opts.when || 0;
+    const scale = opts.scale === 'music' ? 1 : audioPrefs.sfx;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = type;
@@ -135,7 +136,7 @@ function tone(freq, opts) {
     gain.connect(audioCtx.destination);
     const t = audioCtx.currentTime + when;
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(vol * audioPrefs.sfx, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(vol * scale, t + 0.008);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     osc.start(t);
     osc.stop(t + dur + 0.05);
@@ -258,8 +259,8 @@ function genTick() {
     const note = chord[chordIdx][(seq[genStep % 8] + midi * 0) % 4];
     const oct = Math.floor(genStep / 16) % 2 === 0 ? 1 : 2;
     const freq = note * oct;
-    tone(freq, { dur: 0.5, type: 'sine', vol: 0.045 });
-    tone(freq * 2, { dur: 0.4, type: 'sine', vol: 0.012 });
+    tone(freq, { dur: 0.55, type: 'sine', vol: 0.08, scale: 'music' });
+    tone(freq * 2, { dur: 0.45, type: 'sine', vol: 0.02, scale: 'music' });
     genStep++;
 }
 
