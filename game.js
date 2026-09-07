@@ -17,7 +17,7 @@ let wrongAnswersList = [];
 const DEFAULT_TOTAL_QUESTIONS = 15;
 let totalQuestions = DEFAULT_TOTAL_QUESTIONS;
 let difficulty = 'medium';
-let audioPrefs = { enabled: true, music: 0.3, sfx: 0.8 };
+let audioPrefs = { enabled: true, music: 0.3, game: 0.3, sfx: 0.8 };
 let audioCtx = null;
 let prefsLoaded = false;
 let tracks = { menu: null, game: null };
@@ -270,6 +270,10 @@ function startGenTrack() {
     genTimer = setInterval(genTick, 333);
 }
 
+function trackLevel(key) {
+    return key === 'menu' ? audioPrefs.music : audioPrefs.game;
+}
+
 function fadeInTrack(key) {
     ensureTrack(key);
     const tr = tracks[key];
@@ -281,7 +285,7 @@ function fadeInTrack(key) {
     } else {
         startGenTrack();
     }
-    rampGain(tr.gain, audioPrefs.music, 0.9);
+    rampGain(tr.gain, trackLevel(key), 0.9);
 }
 
 function fadeOutTrack(key) {
@@ -314,7 +318,7 @@ function toggleAudio() {
     refreshAudioUI();
     if (audioPrefs.enabled) {
         initAudio();
-        if (activeTrack && tracks[activeTrack]) rampGain(tracks[activeTrack].gain, audioPrefs.music, 0.3);
+        if (activeTrack && tracks[activeTrack]) rampGain(tracks[activeTrack].gain, trackLevel(activeTrack), 0.3);
     } else {
         if (activeTrack && tracks[activeTrack]) rampGain(tracks[activeTrack].gain, 0, 0.3);
     }
@@ -324,7 +328,14 @@ function setMusicVolume(v) {
     loadAudioPrefs();
     audioPrefs.music = parseFloat(v) / 100;
     saveAudioPrefs();
-    if (activeTrack && tracks[activeTrack]) rampGain(tracks[activeTrack].gain, audioPrefs.music, 0.15);
+    if (tracks.menu) rampGain(tracks.menu.gain, audioPrefs.music, 0.15);
+}
+
+function setGameMusicVolume(v) {
+    loadAudioPrefs();
+    audioPrefs.game = parseFloat(v) / 100;
+    saveAudioPrefs();
+    if (tracks.game) rampGain(tracks.game.gain, audioPrefs.game, 0.15);
 }
 
 function setSfxVolume(v) {
@@ -341,8 +352,10 @@ function refreshAudioUI() {
     const muteBtn = document.getElementById('audio-mute-btn');
     if (muteBtn) muteBtn.textContent = audioPrefs.enabled ? '🔊' : '🔇';
     const mSlider = document.getElementById('music-volume');
+    const gSlider = document.getElementById('game-music-volume');
     const sSlider = document.getElementById('sfx-volume');
     if (mSlider) mSlider.value = Math.round(audioPrefs.music * 100);
+    if (gSlider) gSlider.value = Math.round(audioPrefs.game * 100);
     if (sSlider) sSlider.value = Math.round(audioPrefs.sfx * 100);
     const panel = document.getElementById('audio-panel');
     if (panel) panel.classList.toggle('muted', !audioPrefs.enabled);
