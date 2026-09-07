@@ -509,7 +509,92 @@
         .cat-actions { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #333; }
         .cat-sentences { background: linear-gradient(135deg, #fa709a, #fee140); color: #333; }
         .hidden-emoji { display: none !important; }
-        
+
+        #difficulty-badge {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 6px 0 2px;
+            text-transform: uppercase;
+        }
+
+        /* Tela de Dificuldade */
+        #difficulty-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+        }
+        #difficulty-screen h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255,215,0,0.5);
+        }
+        #difficulty-screen h3 {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.7);
+        }
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .difficulty-btn {
+            padding: 24px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .difficulty-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+        .difficulty-btn:hover::after { left: 100%; }
+        .difficulty-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+        .difficulty-btn:active { transform: translateY(-3px) scale(1.02); }
+        .difficulty-btn:focus {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
+        .difficulty-btn:focus:not(:focus-visible) { outline: none; }
+        .difficulty-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+        .difficulty-emoji { font-size: 40px; }
+        .difficulty-name { font-size: 18px; letter-spacing: 2px; }
+        .difficulty-desc { font-size: 12px; font-weight: normal; opacity: 0.92; }
+        .difficulty-easy { background: linear-gradient(135deg, #00b09b, #96c93d); color: white; }
+        .difficulty-medium { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
+        .difficulty-hard { background: linear-gradient(135deg, #f45c43, #c0392b); color: white; }
+
         /* Background Animations */
         /* Blocos flutuantes */
         .floating-blocks {
@@ -1457,6 +1542,9 @@
             .category-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
             .category-btn { padding: 20px; font-size: 15px; }
             .category-btn span { font-size: 30px; }
+            .difficulty-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+            .difficulty-btn { padding: 20px; }
+            .difficulty-emoji { font-size: 36px; }
         }
 
         /* Responsivo - Celular */
@@ -1511,6 +1599,10 @@
             .category-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .category-btn { padding: 14px 10px; font-size: 12px; }
             .category-btn span { font-size: 22px; }
+            .difficulty-grid { grid-template-columns: 1fr; gap: 10px; max-width: 340px; }
+            .difficulty-btn { padding: 14px 16px; flex-direction: row; justify-content: flex-start; gap: 12px; text-align: left; }
+            .difficulty-emoji { font-size: 30px; }
+            .difficulty-name { font-size: 15px; letter-spacing: 1px; }
             .game-card { padding: 18px; }
             #learn-emoji { font-size: 60px; }
             #learn-english { font-size: 28px; }
@@ -2715,6 +2807,30 @@ body:has(#landing-screen:not([style*="display: none"])) {
             <div class="category-grid" id="category-grid-mode"></div>
         </div>
         
+        <!-- Tela de Seleção de Dificuldade -->
+        <div id="difficulty-screen">
+            <button class="back-mode-btn" onclick="goBackFromDifficulty()" aria-label="Voltar às categorias">← Voltar</button>
+            <h2 id="difficulty-title">Escolha a Dificuldade</h2>
+            <h3>Selecione o nível e bom jogo!</h3>
+            <div class="difficulty-grid">
+                <button class="difficulty-btn difficulty-easy" onclick="selectDifficulty('easy')" aria-label="Modo fácil, 3 opções de resposta">
+                    <span class="difficulty-emoji">🌱</span>
+                    <span class="difficulty-name">FÁCIL</span>
+                    <span class="difficulty-desc">3 opções de resposta<br>8 pontos por acerto</span>
+                </button>
+                <button class="difficulty-btn difficulty-medium" onclick="selectDifficulty('medium')" aria-label="Modo médio, 4 opções de resposta">
+                    <span class="difficulty-emoji">⚡</span>
+                    <span class="difficulty-name">MÉDIO</span>
+                    <span class="difficulty-desc">4 opções de resposta<br>10 pontos por acerto</span>
+                </button>
+                <button class="difficulty-btn difficulty-hard" onclick="selectDifficulty('hard')" aria-label="Modo difícil, 6 opções de resposta">
+                    <span class="difficulty-emoji">🔥</span>
+                    <span class="difficulty-name">DIFÍCIL</span>
+                    <span class="difficulty-desc">6 opções de resposta<br>15 pontos por acerto</span>
+                </button>
+            </div>
+        </div>
+        
         <!-- Tela do Jogo -->
         <div id="game-screen">
             <div id="game-header">
@@ -2731,6 +2847,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
             <div id="progress-bar">
                 <div id="progress-fill"></div>
             </div>
+            <div id="difficulty-badge"></div>
             
             <!-- Modo Aprender -->
             <div id="learn-card" class="game-card">

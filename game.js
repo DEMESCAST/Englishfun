@@ -70,6 +70,14 @@ const difficultyConfig = {
     hard: { options: 6, time: 7, points: 15 }
 };
 
+// Restaura a dificuldade escolhida anteriormente
+try {
+    const savedDifficulty = localStorage.getItem('englishFunDifficulty');
+    if (savedDifficulty && difficultyConfig[savedDifficulty]) {
+        difficulty = savedDifficulty;
+    }
+} catch(e) {}
+
 // Conquistas disponíveis
 const achievementList = [
     { id: 'first_correct', name: 'Primeiro Acerto!', icon: '🎯', condition: (s) => s.correctAnswers >= 1 },
@@ -257,6 +265,8 @@ function startGame(category) {
     document.getElementById('combo').textContent = '0';
     document.getElementById('current-num').textContent = '1';
     document.getElementById('total-num').textContent = totalQuestions;
+    
+    updateDifficultyBadge();
     
     showLearnMode();
 }
@@ -668,7 +678,7 @@ function hideAllScreens() {
     }
     confettiParticles = [];
     
-    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen', 'about-screen', 'conversation-screen'];
+    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'difficulty-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen', 'about-screen', 'conversation-screen'];
     screens.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -1242,26 +1252,56 @@ function startModeWithCategory(category) {
     }
     
     document.getElementById('start-screen').style.display = 'none';
+    
+    if (currentMode === 'quiz' || currentMode === 'dictation') {
+        showDifficultyScreen();
+        return;
+    }
+    
+    setupGameScreen();
+    
+    if (currentMode === 'learn') {
+        showLearnMode();
+    }
+}
+
+function setupGameScreen() {
     document.getElementById('game-screen').style.display = 'block';
     document.getElementById('category-title').textContent = vocabulary[currentCategory].title;
     document.getElementById('score').textContent = '0';
     document.getElementById('combo').textContent = '0';
     document.getElementById('current-num').textContent = '1';
     document.getElementById('total-num').textContent = totalQuestions;
-    
-    switch (currentMode) {
-        case 'learn':
-            showLearnMode();
-            break;
-        case 'quiz':
-            dictationMode = false;
-            showQuizMode();
-            break;
-        case 'dictation':
-            dictationMode = true;
-            showQuizMode();
-            break;
-    }
+    updateDifficultyBadge();
+}
+
+function showDifficultyScreen() {
+    document.getElementById('difficulty-screen').style.display = 'block';
+}
+
+function goBackFromDifficulty() {
+    playSound('click');
+    document.getElementById('difficulty-screen').style.display = 'none';
+    document.getElementById('category-screen').style.display = 'block';
+}
+
+function selectDifficulty(diff) {
+    playSound('click');
+    if (!difficultyConfig[diff]) return;
+    difficulty = diff;
+    try { localStorage.setItem('englishFunDifficulty', diff); } catch(e) {}
+    document.getElementById('difficulty-screen').style.display = 'none';
+    setupGameScreen();
+    dictationMode = currentMode === 'dictation';
+    showQuizMode();
+}
+
+function updateDifficultyBadge() {
+    const badge = document.getElementById('difficulty-badge');
+    if (!badge) return;
+    const labels = { easy: '🌱 Nível Fácil', medium: '⚡ Nível Médio', hard: '🔥 Nível Difícil' };
+    badge.textContent = (labels[difficulty] || '');
+    badge.style.display = (currentMode === 'quiz' || currentMode === 'dictation') ? 'block' : 'none';
 }
 
 function confirmName() {
@@ -1441,6 +1481,8 @@ function startReviewMode() {
     document.getElementById('combo').textContent = '0';
     document.getElementById('current-num').textContent = '1';
     document.getElementById('total-num').textContent = totalQuestions;
+    
+    updateDifficultyBadge();
     
     showLearnMode();
 }
