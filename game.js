@@ -17,10 +17,14 @@ let wrongAnswersList = [];
 const DEFAULT_TOTAL_QUESTIONS = 15;
 let totalQuestions = DEFAULT_TOTAL_QUESTIONS;
 let difficulty = 'medium';
-let audioEnabled = true;
+let audioPrefs = { enabled: true, music: 0.3, sfx: 0.8 };
 let audioCtx = null;
-let bgMusic = null;
-let bgMusicReady = false;
+let prefsLoaded = false;
+let tracks = { menu: null, game: null };
+let activeTrack = null;
+let genTimer = null;
+let genStep = 0;
+const AUDIO_PREFS_KEY = 'englishFunAudio';
 let achievements = [];
 let wordStats = {};
 let isReviewSession = false;
@@ -92,18 +96,54 @@ const achievementList = [
 ];
 
 // Inicializar áudio
+function loadAudioPrefs() {
+    if (prefsLoaded) return;
+    prefsLoaded = true;
+    try {
+        const s = localStorage.getItem(AUDIO_PREFS_KEY);
+        if (s) Object.assign(audioPrefs, JSON.parse(s));
+    } catch (e) {}
+}
+
+function saveAudioPrefs() {
+    try { localStorage.setItem(AUDIO_PREFS_KEY, JSON.stringify(audioPrefs)); } catch (e) {}
+}
+
 function initAudio() {
+    loadAudioPrefs();
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
+    refreshAudioUI();
+}
+
+function tone(freq, opts) {
+    if (!audioCtx) return;
+    opts = opts || {};
+    const dur = opts.dur || 0.15;
+    const type = opts.type || 'triangle';
+    const vol = opts.vol || 0.08;
+    const when = opts.when || 0;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const t = audioCtx.currentTime + when;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol * audioPrefs.sfx, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
 }
 
 // Falar palavra
 function speakWord() {
-    if (!audioEnabled || !('speechSynthesis' in window)) return;
+    if (!audioPrefs.enabled || !('speechSynthesis' in window)) return;
     const word = dictationMode && currentDictationWord ? currentDictationWord : learnWords[currentLearnIndex];
     if (!word) return;
     
@@ -134,98 +174,204 @@ function speakWord() {
 
 // Tocar som
 function playSound(type) {
-    if (!audioEnabled || !audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    gain.gain.value = 0.08;
-    
+    if (!audioPrefs.enabled || !audioCtx) return;
     switch(type) {
         case 'correct':
-            osc.frequency.value = 523;
-            setTimeout(() => playTone(659, 0.15), 80);
-            setTimeout(() => playTone(784, 0.2), 160);
+            tone(523.25, { dur: 0.18, type: 'triangle', when: 0 });
+            tone(659.25, { dur: 0.18, type: 'triangle', when: 0.08 });
+            tone(783.99, { dur: 0.22, type: 'triangle', when: 0.16 });
+            tone(1046.5, { dur: 0.3,  type: 'triangle', when: 0.26 });
             break;
         case 'wrong':
-            osc.frequency.value = 200;
-            osc.type = 'sawtooth';
+            tone(196, { dur: 0.28, type: 'sawtooth', vol: 0.05, when: 0 });
+            tone(146.83, { dur: 0.3, type: 'sawtooth', vol: 0.05, when: 0.12 });
             break;
         case 'click':
-            osc.frequency.value = 800;
+            tone(900, { dur: 0.07, type: 'triangle', vol: 0.05, when: 0 });
             break;
         case 'combo':
-            osc.frequency.value = 880;
-            setTimeout(() => playTone(1100, 0.1), 60);
+            tone(659.25, { dur: 0.08, type: 'triangle', when: 0 });
+            tone(783.99, { dur: 0.08, type: 'triangle', when: 0.06 });
+            tone(987.77, { dur: 0.08, type: 'triangle', when: 0.12 });
+            tone(1318.5, { dur: 0.18, type: 'triangle', when: 0.18 });
             break;
         case 'achievement':
-            osc.frequency.value = 523;
-            setTimeout(() => playTone(659, 0.1), 100);
-            setTimeout(() => playTone(784, 0.1), 200);
-            setTimeout(() => playTone(1047, 0.3), 300);
+            tone(523.25, { dur: 0.16, type: 'triangle', when: 0 });
+            tone(659.25, { dur: 0.16, type: 'triangle', when: 0.14 });
+            tone(783.99, { dur: 0.16, type: 'triangle', when: 0.28 });
+            tone(1046.5, { dur: 0.4,  type: 'triangle', when: 0.42 });
+            tone(1318.5, { dur: 0.5,  type: 'sine', vol: 0.05, when: 0.42 });
             break;
         case 'timer':
-            osc.frequency.value = 440;
+            tone(960, { dur: 0.05, type: 'square', vol: 0.035, when: 0 });
+            tone(960, { dur: 0.05, type: 'square', vol: 0.035, when: 0.12 });
+            break;
+        case 'timeup':
+            tone(1046.5, { dur: 0.1, type: 'triangle', when: 0 });
+            tone(880, { dur: 0.1, type: 'triangle', when: 0.1 });
+            tone(698.46, { dur: 0.32, type: 'triangle', when: 0.2 });
             break;
         default:
-            osc.frequency.value = 440;
+            tone(440, { dur: 0.15 });
     }
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-    osc.stop(audioCtx.currentTime + 0.15);
 }
 
-function playTone(freq, dur) {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    gain.gain.value = 0.08;
-    osc.frequency.value = freq;
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-    osc.stop(audioCtx.currentTime + dur);
+function rampGain(gain, value, dur) {
+    if (!gain) return;
+    const t = audioCtx.currentTime;
+    gain.gain.cancelScheduledValues(t);
+    gain.gain.linearRampToValueAtTime(value, t + dur);
+}
+
+function ensureTrack(key) {
+    if (tracks[key]) return;
+    if (key === 'menu') {
+        const el = new Audio('bg-music.mp3');
+        el.loop = true;
+        const src = audioCtx.createMediaElementSource(el);
+        const gain = audioCtx.createGain();
+        src.connect(gain);
+        gain.connect(audioCtx.destination);
+        tracks.menu = { el, gain, kind: 'file' };
+    } else {
+        const gain = audioCtx.createGain();
+        gain.connect(audioCtx.destination);
+        tracks.game = { el: null, gain, kind: 'gen' };
+    }
+}
+
+function stopGenTrack() {
+    if (genTimer) { clearInterval(genTimer); genTimer = null; }
+}
+
+function genTick() {
+    if (!activeTrack || activeTrack !== 'game' || !tracks.game) return;
+    const chord = [
+        [261.63, 329.63, 392.00, 523.25],
+        [220.00, 261.63, 329.63, 440.00],
+        [174.61, 220.00, 261.63, 349.23],
+        [196.00, 246.94, 293.66, 392.00]
+    ];
+    const seq = [0, 1, 2, 3, 2, 1, 3, 0];
+    const chordIdx = Math.floor(genStep / 4) % chord.length;
+    const midi = Math.floor(genStep / 8) % 2;
+    const note = chord[chordIdx][(seq[genStep % 8] + midi * 0) % 4];
+    const oct = Math.floor(genStep / 16) % 2 === 0 ? 1 : 2;
+    const freq = note * oct;
+    tone(freq, { dur: 0.5, type: 'sine', vol: 0.045 });
+    tone(freq * 2, { dur: 0.4, type: 'sine', vol: 0.012 });
+    genStep++;
+}
+
+function startGenTrack() {
+    stopGenTrack();
+    genStep = 0;
+    genTimer = setInterval(genTick, 333);
+}
+
+function fadeInTrack(key) {
+    ensureTrack(key);
+    const tr = tracks[key];
+    if (!tr) return;
+    activeTrack = key;
+    if (tr.kind === 'file') {
+        tr.el.volume = 1;
+        tr.el.play().catch(() => {});
+    } else {
+        startGenTrack();
+    }
+    rampGain(tr.gain, audioPrefs.music, 0.9);
+}
+
+function fadeOutTrack(key) {
+    if (!tracks[key]) return;
+    const tr = tracks[key];
+    if (activeTrack !== key) return;
+    rampGain(tr.gain, 0, 0.7);
+    if (tr.kind === 'file') {
+        setTimeout(() => { if (activeTrack !== key) tr.el.pause(); }, 700);
+    } else {
+        stopGenTrack();
+    }
+    if (activeTrack === key) activeTrack = null;
+}
+
+function startMusicForContext(context) {
+    if (!audioCtx) return;
+    if (!audioPrefs.enabled) { fadeOutTrack(activeTrack); return; }
+    const tr = tracks[context];
+    const playing = tr && (tr.kind === 'file' ? !tr.el.paused : !!genTimer);
+    if (activeTrack === context && playing) return;
+    if (activeTrack && activeTrack !== context) fadeOutTrack(activeTrack);
+    if (context) fadeInTrack(context);
 }
 
 function toggleAudio() {
-    audioEnabled = !audioEnabled;
-    document.getElementById('audio-btn').textContent = audioEnabled ? '🔊' : '🔇';
-    if (bgMusic) {
-        bgMusic.muted = !audioEnabled;
+    loadAudioPrefs();
+    audioPrefs.enabled = !audioPrefs.enabled;
+    saveAudioPrefs();
+    refreshAudioUI();
+    if (audioPrefs.enabled) {
+        initAudio();
+        if (activeTrack && tracks[activeTrack]) rampGain(tracks[activeTrack].gain, audioPrefs.music, 0.3);
+    } else {
+        if (activeTrack && tracks[activeTrack]) rampGain(tracks[activeTrack].gain, 0, 0.3);
     }
+}
+
+function setMusicVolume(v) {
+    loadAudioPrefs();
+    audioPrefs.music = parseFloat(v) / 100;
+    saveAudioPrefs();
+    if (activeTrack && tracks[activeTrack]) rampGain(tracks[activeTrack].gain, audioPrefs.music, 0.15);
+}
+
+function setSfxVolume(v) {
+    loadAudioPrefs();
+    audioPrefs.sfx = parseFloat(v) / 100;
+    saveAudioPrefs();
+}
+
+function refreshAudioUI() {
+    const btn = document.getElementById('audio-btn');
+    if (!btn) return;
+    btn.textContent = audioPrefs.enabled ? '🔊' : '🔇';
+    btn.setAttribute('aria-expanded', document.getElementById('audio-panel') && document.getElementById('audio-panel').classList.contains('open') ? 'true' : 'false');
+    const muteBtn = document.getElementById('audio-mute-btn');
+    if (muteBtn) muteBtn.textContent = audioPrefs.enabled ? '🔊' : '🔇';
+    const mSlider = document.getElementById('music-volume');
+    const sSlider = document.getElementById('sfx-volume');
+    if (mSlider) mSlider.value = Math.round(audioPrefs.music * 100);
+    if (sSlider) sSlider.value = Math.round(audioPrefs.sfx * 100);
+    const panel = document.getElementById('audio-panel');
+    if (panel) panel.classList.toggle('muted', !audioPrefs.enabled);
+}
+
+function toggleAudioPanel() {
+    const panel = document.getElementById('audio-panel');
+    if (!panel) return;
+    initAudio();
+    panel.classList.toggle('open');
+    refreshAudioUI();
 }
 
 function playBgMusic() {
-    if (!bgMusic) {
-        bgMusic = new Audio('bg-music.mp3');
-        bgMusic.loop = true;
-        bgMusic.volume = 0.3;
-        bgMusic.muted = !audioEnabled;
-    }
-    if (!bgMusicReady) {
-        bgMusic.play().then(() => {
-            bgMusicReady = true;
-        }).catch(() => {});
-    }
+    initAudio();
+    startMusicForContext('menu');
 }
 
 function stopBgMusic() {
-    if (bgMusic) {
-        bgMusic.pause();
-        bgMusic = null;
-    }
+    fadeOutTrack(activeTrack);
+    stopGenTrack();
 }
 
 function pauseMenuMusic() {
-    if (bgMusic && !bgMusic.paused) {
-        bgMusic.pause();
-    }
+    if (!audioPrefs.enabled) return;
+    startMusicForContext('game');
 }
 
 function resumeMenuMusic() {
-    if (bgMusic && bgMusic.paused && audioEnabled) {
-        bgMusic.play().catch(() => {});
-    }
+    startMusicForContext('menu');
 }
 
 function shuffle(array) {
@@ -1836,7 +1982,7 @@ function startGameWithCategory(game, category) {
 }
 
 function speakEnglish(text) {
-    if (!audioEnabled || !('speechSynthesis' in window)) return;
+    if (!audioPrefs.enabled || !('speechSynthesis' in window)) return;
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
@@ -3357,10 +3503,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', function firstClick() {
-        if (bgMusic && !bgMusicReady) {
-            bgMusic.play().then(() => {
-                bgMusicReady = true;
-            }).catch(() => {});
+        initAudio();
+        if (audioPrefs.enabled && !activeTrack && tracks.menu && tracks.menu.el.paused) {
+            startMusicForContext('menu');
         }
         document.removeEventListener('click', firstClick);
     });

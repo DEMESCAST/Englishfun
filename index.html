@@ -997,6 +997,55 @@
             outline: 3px solid #fff;
             outline-offset: 2px;
         }
+        #audio-panel {
+            position: fixed;
+            top: 84px; right: 20px;
+            width: 230px;
+            background: linear-gradient(180deg, rgba(23, 37, 84, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%);
+            border: 2px solid rgba(96, 165, 250, 0.4);
+            border-radius: 14px;
+            padding: 12px 14px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            z-index: 200;
+            display: none;
+            box-sizing: border-box;
+        }
+        #audio-panel.open { display: block; }
+        #audio-panel.muted .audio-row { opacity: 0.45; }
+        .audio-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 15px;
+            color: #bfdbfe;
+            margin-bottom: 10px;
+        }
+        .audio-panel-header span { letter-spacing: 1px; }
+        #audio-mute-btn {
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            border: 2px solid rgba(96, 165, 250, 0.6);
+            color: white;
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .audio-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+        .audio-row input[type="range"] {
+            flex: 1;
+            accent-color: #3b82f6;
+            height: 6px;
+            cursor: pointer;
+        }
         
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
@@ -1919,6 +1968,7 @@
                 right: -6px;
             }
             #audio-btn { width: 42px; height: 42px; font-size: 18px; top: 10px; right: 10px; }
+            #audio-panel { top: 62px; right: 10px; width: 200px; }
             .neon-arcs { display: none; }
             .category-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .category-btn { padding: 14px 10px; font-size: 12px; }
@@ -2960,7 +3010,21 @@ body:has(#landing-screen:not([style*="display: none"])) {
 </style>
 </head>
 <body>
-    <button id="audio-btn" onclick="toggleAudio()" aria-label="Alternar áudio">🔊</button>
+    <button id="audio-btn" onclick="toggleAudioPanel()" aria-label="Configurações de áudio" aria-expanded="false">🔊</button>
+    <div id="audio-panel" class="audio-panel" role="group" aria-label="Configurações de áudio">
+        <div class="audio-panel-header">
+            <span>🎛️ Áudio</span>
+            <button id="audio-mute-btn" onclick="toggleAudio()" aria-label="Ligar ou desligar som">🔊</button>
+        </div>
+        <label class="audio-row">
+            <span>🎵 Música</span>
+            <input type="range" id="music-volume" min="0" max="100" value="30" oninput="setMusicVolume(this.value)" aria-label="Volume da música">
+        </label>
+        <label class="audio-row">
+            <span>🔔 Efeitos</span>
+            <input type="range" id="sfx-volume" min="0" max="100" value="80" oninput="setSfxVolume(this.value)" aria-label="Volume dos efeitos">
+        </label>
+    </div>
     
     <!-- Background Animations -->
     <div class="floating-blocks">
