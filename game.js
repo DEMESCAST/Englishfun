@@ -22,8 +22,6 @@ let audioCtx = null;
 let prefsLoaded = false;
 let tracks = { menu: null, game: null };
 let activeTrack = null;
-let genTimer = null;
-let genStep = 0;
 const AUDIO_PREFS_KEY = 'englishFunAudio';
 let achievements = [];
 let wordStats = {};
@@ -227,49 +225,14 @@ function rampGain(gain, value, dur) {
 
 function ensureTrack(key) {
     if (tracks[key]) return;
-    if (key === 'menu') {
-        const el = new Audio('bg-music.mp3');
-        el.loop = true;
-        const src = audioCtx.createMediaElementSource(el);
-        const gain = audioCtx.createGain();
-        src.connect(gain);
-        gain.connect(audioCtx.destination);
-        tracks.menu = { el, gain, kind: 'file' };
-    } else {
-        const gain = audioCtx.createGain();
-        gain.connect(audioCtx.destination);
-        tracks.game = { el: null, gain, kind: 'gen' };
-    }
-}
-
-function stopGenTrack() {
-    if (genTimer) { clearInterval(genTimer); genTimer = null; }
-}
-
-function genTick() {
-    if (!activeTrack || activeTrack !== 'game' || !tracks.game) return;
-    const chord = [
-        [261.63, 329.63, 392.00, 523.25],
-        [220.00, 261.63, 329.63, 440.00],
-        [174.61, 220.00, 261.63, 349.23],
-        [196.00, 246.94, 293.66, 392.00]
-    ];
-    const seq = [0, 1, 2, 3, 2, 1, 3, 0];
-    const chordIdx = Math.floor(genStep / 4) % chord.length;
-    const midi = Math.floor(genStep / 8) % 2;
-    const note = chord[chordIdx][(seq[genStep % 8] + midi * 0) % 4];
-    const oct = Math.floor(genStep / 16) % 2 === 0 ? 1 : 2;
-    const freq = note * oct;
-    const g = (tracks.game && tracks.game.gain) || audioCtx.destination;
-    tone(freq, { dur: 0.55, type: 'sine', vol: 0.08, scale: 'music', dest: g });
-    tone(freq * 2, { dur: 0.45, type: 'sine', vol: 0.02, scale: 'music', dest: g });
-    genStep++;
-}
-
-function startGenTrack() {
-    stopGenTrack();
-    genStep = 0;
-    genTimer = setInterval(genTick, 333);
+    const url = key === 'menu' ? 'bg-music.mp3' : 'game-music.mp3';
+    const el = new Audio(url);
+    el.loop = true;
+    const src = audioCtx.createMediaElementSource(el);
+    const gain = audioCtx.createGain();
+    src.connect(gain);
+    gain.connect(audioCtx.destination);
+    tracks[key] = { el, gain, kind: 'file' };
 }
 
 function trackLevel(key) {
@@ -281,12 +244,8 @@ function fadeInTrack(key) {
     const tr = tracks[key];
     if (!tr) return;
     activeTrack = key;
-    if (tr.kind === 'file') {
-        tr.el.volume = 1;
-        tr.el.play().catch(() => {});
-    } else {
-        startGenTrack();
-    }
+    tr.el.volume = 1;
+    tr.el.play().catch(() => {});
     rampGain(tr.gain, trackLevel(key), 0.9);
 }
 
@@ -295,11 +254,7 @@ function fadeOutTrack(key) {
     const tr = tracks[key];
     if (activeTrack !== key) return;
     rampGain(tr.gain, 0, 0.7);
-    if (tr.kind === 'file') {
-        setTimeout(() => { if (activeTrack !== key) tr.el.pause(); }, 700);
-    } else {
-        stopGenTrack();
-    }
+    setTimeout(() => { if (activeTrack !== key) tr.el.pause(); }, 700);
     if (activeTrack === key) activeTrack = null;
 }
 
@@ -307,7 +262,7 @@ function startMusicForContext(context) {
     if (!audioCtx) return;
     if (!audioPrefs.enabled) { fadeOutTrack(activeTrack); return; }
     const tr = tracks[context];
-    const playing = tr && (tr.kind === 'file' ? !tr.el.paused : !!genTimer);
+    const playing = tr && tr.el && !tr.el.paused;
     if (activeTrack === context && playing) return;
     if (activeTrack && activeTrack !== context) fadeOutTrack(activeTrack);
     if (context) fadeInTrack(context);
@@ -378,7 +333,6 @@ function playBgMusic() {
 
 function stopBgMusic() {
     fadeOutTrack(activeTrack);
-    stopGenTrack();
 }
 
 function pauseMenuMusic() {
