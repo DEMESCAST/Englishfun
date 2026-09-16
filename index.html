@@ -697,7 +697,9 @@
             text-shadow: 0 0 15px rgba(167,139,250,0.5);
             font-size: 24px;
         }
-        #hangman-card, #wordsearch-card, #truefalse-card, #lightning-card {
+        #hangman-card, #wordsearch-card, #truefalse-card, #lightning-card, #spell-card,
+        #oddoneout-card, #bingo-card, #tictactoe-card, #listening-card, #sentence-card,
+        #grammar-card, #synonyms-card, #wordladder-card, #mistake-card, #phrasal-card {
             background: rgba(255,255,255,0.12);
             border-radius: 18px;
             padding: 24px;
@@ -915,6 +917,178 @@
         }
         .lt-option:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); }
         .lt-option:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+        /* Novos Jogos */
+        #spell-screen, #oddoneout-screen, #bingo-screen, #tictactoe-screen,
+        #listening-screen, #sentence-screen, #grammar-screen, #synonyms-screen,
+        #wordladder-screen, #mistake-screen, #phrasal-screen {
+            display: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+        }
+        .screen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+        }
+        .screen-header h2 {
+            color: #ff9ff3;
+            text-shadow: 0 0 15px rgba(255,159,243,0.5);
+            font-size: 24px;
+            margin: 0;
+        }
+        .mg-opt {
+            padding: 15px 12px;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+            min-height: 54px;
+        }
+        .mg-opt:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); }
+        .mg-opt:disabled { opacity: 0.6; cursor: default; transform: none; }
+        .mg-opt.correct { background: linear-gradient(135deg, #2ed573, #7bed9f); color: #14532d; }
+        .mg-opt.wrong { background: linear-gradient(135deg, #ff6b6b, #c0392b); }
+        .mg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; margin: 0 auto; }
+        .mg-row { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+        .mg-slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 52px;
+            font-size: 26px;
+            font-weight: bold;
+            color: white;
+            background: rgba(255,255,255,0.18);
+            border-radius: 8px;
+            border-bottom: 3px solid #11998e;
+            margin: 3px;
+        }
+        .mg-key {
+            width: 44px;
+            height: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #38bdf8, #0284c7);
+            color: white;
+            cursor: pointer;
+            margin: 3px;
+            transition: all 0.15s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .mg-key:hover:not(:disabled) { transform: translateY(-2px); }
+        .mg-key:disabled { opacity: 0.4; cursor: default; }
+        .mg-chip {
+            display: inline-block;
+            padding: 10px 16px;
+            margin: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .mg-chip:hover:not(:disabled) { transform: translateY(-2px); }
+        .mg-chip.used { opacity: 0.3; cursor: default; transform: none; }
+        .mg-hint { font-size: 15px; color: rgba(255,255,255,0.85); margin: 8px 0; }
+        .mg-big { font-size: 32px; font-weight: bold; margin: 10px 0; }
+        .mg-status { min-height: 26px; font-size: 16px; font-weight: bold; margin-bottom: 10px; }
+        .mg-tokens { line-height: 2.2; padding: 14px 6px; }
+        .bingo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 480px; margin: 0 auto 14px; }
+        .bingo-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 84px;
+            padding: 8px;
+            background: rgba(255,255,255,0.16);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .bingo-cell:hover:not(:disabled) { transform: scale(1.04); background: rgba(255,255,255,0.28); }
+        .bingo-cell.marked { background: linear-gradient(135deg, #2ed573, #7bed9f); color: #14532d; border-color: #2ed573; }
+        .bingo-cell:disabled { cursor: default; }
+        #bingo-draw { font-size: 24px; font-weight: bold; min-height: 40px; margin: 8px 0; color: #ffd700; }
+        .tt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 280px; margin: 0 auto 14px; }
+        .tt-cell {
+            width: 84px;
+            height: 84px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: white;
+            background: rgba(255,255,255,0.12);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 12px;
+        }
+        .tt-cell.x { color: #38bdf8; }
+        .tt-cell.o { color: #f7971e; }
+        .mk-token {
+            display: inline-block;
+            margin: 4px 5px;
+            padding: 6px 10px;
+            font-size: 22px;
+            font-weight: bold;
+            background: rgba(255,255,255,0.14);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .mk-token:hover:not(:disabled) { transform: translateY(-2px); background: rgba(255,255,255,0.28); }
+        .mk-token:disabled { cursor: default; }
+        .mk-token.fixed { background: linear-gradient(135deg, #2ed573, #7bed9f); color: #14532d; }
+        .wl-current, .wl-target { color: #ffd700; }
+        .wl-input {
+            width: min(320px, 80%);
+            padding: 12px;
+            font-size: 22px;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.12);
+            color: white;
+            margin: 10px 0;
+        }
+        #spell-word-row { min-height: 60px; }
+        .game-spell      { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .game-oddoneout  { background: linear-gradient(135deg, #14b8a6, #0ea5e9); }
+        .game-bingo      { background: linear-gradient(135deg, #f97316, #facc15); color: #333; }
+        .game-tictactoe  { background: linear-gradient(135deg, #6366f1, #a855f7); }
+        .game-listening  { background: linear-gradient(135deg, #22c55e, #84cc16); color: #123; }
+        .game-sentence   { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+        .game-grammar    { background: linear-gradient(135deg, #ef4444, #f97316); }
+        .game-synonyms   { background: linear-gradient(135deg, #d946ef, #a21caf); }
+        .game-wordladder { background: linear-gradient(135deg, #10b981, #059669); }
+        .game-mistake    { background: linear-gradient(135deg, #f43f5e, #be123c); }
+        .game-phrasal    { background: linear-gradient(135deg, #0ea5e9, #0369a1); }
 
         /* Background Animations */
         /* Blocos flutuantes */
@@ -1981,7 +2155,10 @@
             .game-btn { padding: 14px 16px; flex-direction: row; justify-content: flex-start; gap: 12px; text-align: left; }
             .game-btn-emoji { font-size: 30px; }
             .game-btn-desc { font-size: 11px; margin-left: auto; }
-            #hangman-card, #wordsearch-card, #truefalse-card, #lightning-card { padding: 16px; }
+            #hangman-card, #wordsearch-card, #truefalse-card, #lightning-card,
+            #spell-card, #oddoneout-card, #bingo-card, #tictactoe-card, #listening-card,
+            #sentence-card, #grammar-card, #synonyms-card, #wordladder-card, #mistake-card,
+            #phrasal-card { padding: 16px; }
             #hangman-emoji { font-size: 50px; }
             .hangman-letter { width: 30px; height: 42px; font-size: 20px; }
             .hangman-key { width: 33px; height: 38px; font-size: 14px; }
@@ -3267,6 +3444,61 @@ body:has(#landing-screen:not([style*="display: none"])) {
                     <span class="game-btn-name">DESAFIO RELÂMPAGO</span>
                     <span class="game-btn-desc">Responda antes do tempo acabar</span>
                 </button>
+                <button class="game-btn game-spell" onclick="openGame('spell')" aria-label="Soletrando">
+                    <span class="game-btn-emoji">✍️</span>
+                    <span class="game-btn-name">SOLETRANDO</span>
+                    <span class="game-btn-desc">Toque as letras na ordem certa</span>
+                </button>
+                <button class="game-btn game-oddoneout" onclick="openGame('oddoneout')" aria-label="Encontre o Intruso">
+                    <span class="game-btn-emoji">🧐</span>
+                    <span class="game-btn-name">O INTRUSO</span>
+                    <span class="game-btn-desc">Qual não pertence ao grupo?</span>
+                </button>
+                <button class="game-btn game-bingo" onclick="openGame('bingo')" aria-label="Bingo de Inglês">
+                    <span class="game-btn-emoji">🎱</span>
+                    <span class="game-btn-name">BINGO</span>
+                    <span class="game-btn-desc">Marque BINGO com as palavras</span>
+                </button>
+                <button class="game-btn game-tictactoe" onclick="openGame('tictactoe')" aria-label="Jogo da Velha">
+                    <span class="game-btn-emoji">⭕</span>
+                    <span class="game-btn-name">JOGO DA VELHA</span>
+                    <span class="game-btn-desc">Acerta para marcar seu X</span>
+                </button>
+                <button class="game-btn game-listening" onclick="openGame('listening')" aria-label="Ouvir e Encontrar">
+                    <span class="game-btn-emoji">🎧</span>
+                    <span class="game-btn-name">OUVIR E ENCONTRAR</span>
+                    <span class="game-btn-desc">Ouça e toque no emoji certo</span>
+                </button>
+                <button class="game-btn game-sentence" onclick="openGame('sentence')" aria-label="Monte a Frase">
+                    <span class="game-btn-emoji">🧩</span>
+                    <span class="game-btn-name">MONTE A FRASE</span>
+                    <span class="game-btn-desc">Organize as palavras na ordem</span>
+                </button>
+                <button class="game-btn game-grammar" onclick="openGame('grammar')" aria-label="Quiz de Gramática">
+                    <span class="game-btn-emoji">📐</span>
+                    <span class="game-btn-name">GRAMÁTICA</span>
+                    <span class="game-btn-desc">a/an, plural, is/are, has/have...</span>
+                </button>
+                <button class="game-btn game-synonyms" onclick="openGame('synonyms')" aria-label="Sinônimos e Antônimos">
+                    <span class="game-btn-emoji">🤝</span>
+                    <span class="game-btn-name">SINÔNIMOS</span>
+                    <span class="game-btn-desc">Sinônimos e antônimos</span>
+                </button>
+                <button class="game-btn game-wordladder" onclick="openGame('wordladder')" aria-label="Escada de Palavras">
+                    <span class="game-btn-emoji">🪜</span>
+                    <span class="game-btn-name">ESCADA DE PALAVRAS</span>
+                    <span class="game-btn-desc">Mude uma letra por vez</span>
+                </button>
+                <button class="game-btn game-mistake" onclick="openGame('mistake')" aria-label="Descubra o Erro">
+                    <span class="game-btn-emoji">🔎</span>
+                    <span class="game-btn-name">DESCUBRA O ERRO</span>
+                    <span class="game-btn-desc">Encontre o erro na frase</span>
+                </button>
+                <button class="game-btn game-phrasal" onclick="openGame('phrasal')" aria-label="Phrasal Verbs">
+                    <span class="game-btn-emoji">💪</span>
+                    <span class="game-btn-name">PHRASAL VERBS</span>
+                    <span class="game-btn-desc">Verbos compostos com preposição</span>
+                </button>
             </div>
         </div>
 
@@ -3351,6 +3583,229 @@ body:has(#landing-screen:not([style*="display: none"])) {
                 <div id="lt-options"></div>
                 <div class="hangman-controls" id="lt-controls" style="display: none;">
                     <button class="learn-btn" onclick="restartLightning()" style="background: linear-gradient(135deg, #f45c43, #c0392b);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tela Soletrando -->
+        <div id="spell-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeSpell()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>✍️ Soletrando</h2>
+                <div class="score-box">⭐ <span id="spell-score">0</span></div>
+            </div>
+            <div id="spell-card">
+                <div id="spell-progress">Palavra 1 de 5</div>
+                <div id="spell-emoji"></div>
+                <div class="mg-hint">Ouça e toque as letras na ordem:<button class="learn-btn small" onclick="spellSpeak()" aria-label="Ouvir">🔊</button></div>
+                <div id="spell-word-row" class="mg-row"></div>
+                <div id="spell-chars" class="mg-row"></div>
+                <div class="mg-status" id="spell-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartSpell()" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeSpell()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela O Intruso -->
+        <div id="oddoneout-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeOddOneOut()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🧐 Encontre o Intruso</h2>
+                <div class="score-box">⭐ <span id="oo-score">0</span></div>
+            </div>
+            <div id="oddoneout-card">
+                <div id="oo-progress">Rodada 1 de 4</div>
+                <div class="mg-hint">Qual palavra NÃO pertence ao mesmo grupo?</div>
+                <div id="oo-options" class="mg-grid"></div>
+                <div class="mg-status" id="oo-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartOddOneOut()" style="background: linear-gradient(135deg, #14b8a6, #0ea5e9);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeOddOneOut()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Bingo -->
+        <div id="bingo-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeBingo()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🎱 Bingo de Inglês</h2>
+                <div class="score-box">⭐ <span id="bingo-score">0</span></div>
+            </div>
+            <div id="bingo-card">
+                <div id="bingo-progress">Sorteio 1 de 16</div>
+                <div id="bingo-draw"></div>
+                <button class="learn-btn small" onclick="bingoSpeak()" aria-label="Ouvir">🔊</button>
+                <div id="bingo-grid" class="bingo-grid"></div>
+                <div class="mg-status" id="bingo-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" id="bingo-skip" onclick="bingoSkip()" style="background: linear-gradient(135deg, #f97316, #facc15); color: #333;" aria-label="Passar sorteio">⏭️ Passar</button>
+                    <button class="learn-btn" id="bingo-restart" onclick="restartBingo()" style="display: none; background: linear-gradient(135deg, #f97316, #facc15); color: #333;" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeBingo()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Jogo da Velha -->
+        <div id="tictactoe-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeTicTacToe()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>⭕ Jogo da Velha</h2>
+                <div class="score-box">⭐ <span id="ttt-score">0</span></div>
+            </div>
+            <div id="tictactoe-card">
+                <div id="ttt-progress">Você é o X — responda para jogar</div>
+                <div id="ttt-board" class="tt-board"></div>
+                <div class="mg-status" id="ttt-msg"></div>
+                <div id="ttt-question"></div>
+                <div id="ttt-options" class="mg-grid"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartTicTacToe()" style="background: linear-gradient(135deg, #6366f1, #a855f7);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeTicTacToe()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Ouvir e Encontrar -->
+        <div id="listening-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeListening()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🎧 Ouvir e Encontrar</h2>
+                <div class="score-box">⭐ <span id="ls-score">0</span></div>
+            </div>
+            <div id="listening-card">
+                <div id="ls-progress">Rodada 1 de 6</div>
+                <div class="mg-hint">Ouça a palavra e toque no emoji certo:</div>
+                <button class="learn-btn small" onclick="lsSpeak()" aria-label="Repetir">🔊 Repetir</button>
+                <div id="ls-options" class="mg-grid"></div>
+                <div class="mg-status" id="ls-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartListening()" style="background: linear-gradient(135deg, #22c55e, #84cc16); color: #123;" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeListening()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Monte a Frase -->
+        <div id="sentence-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeSentence()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🧩 Monte a Frase</h2>
+                <div class="score-box">⭐ <span id="sb-score">0</span></div>
+            </div>
+            <div id="sentence-card">
+                <div id="sb-progress">Frase 1 de 5</div>
+                <div id="sb-emoji"></div>
+                <div class="mg-hint" id="sb-pt"></div>
+                <button class="learn-btn small" onclick="sbSpeak()" aria-label="Ouvir a frase">🔊 Ouvir</button>
+                <div id="sb-built" class="mg-row"></div>
+                <div id="sb-chips" class="mg-row"></div>
+                <div class="mg-status" id="sb-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" id="sb-check" onclick="checkSentence()" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);" aria-label="Verificar frase">✅ Verificar</button>
+                    <button class="learn-btn" onclick="restartSentence()" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeSentence()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Quiz de Gramática -->
+        <div id="grammar-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeGrammar()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>📐 Quiz de Gramática</h2>
+                <div class="score-box">⭐ <span id="gr-score">0</span></div>
+            </div>
+            <div id="grammar-card">
+                <div id="gr-progress">Pergunta 1 de 8</div>
+                <div id="gr-question"></div>
+                <div id="gr-options" class="mg-grid"></div>
+                <div class="mg-status" id="gr-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartGrammar()" style="background: linear-gradient(135deg, #ef4444, #f97316);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeGrammar()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Sinônimos e Antônimos -->
+        <div id="synonyms-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeSynonyms()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🤝 Sinônimos e Antônimos</h2>
+                <div class="score-box">⭐ <span id="sy-score">0</span></div>
+            </div>
+            <div id="synonyms-card">
+                <div id="sy-progress">Pergunta 1 de 8</div>
+                <div class="mg-hint" id="sy-question"></div>
+                <div id="sy-word" class="mg-big"></div>
+                <div id="sy-options" class="mg-grid"></div>
+                <div class="mg-status" id="sy-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartSynonyms()" style="background: linear-gradient(135deg, #d946ef, #a21caf);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeSynonyms()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Escada de Palavras -->
+        <div id="wordladder-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeWordLadder()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🪜 Escada de Palavras</h2>
+                <div class="score-box">⭐ <span id="wl-score">0</span></div>
+            </div>
+            <div id="wordladder-card">
+                <div id="wl-progress">Nível 1 de 3</div>
+                <div class="mg-hint">Vá de <span id="wl-current" class="wl-current"></span> até <span id="wl-target" class="wl-target"></span> mudando UMA letra por vez.</div>
+                <input id="wl-input" class="wl-input" maxlength="20" placeholder="Digite uma palavra" aria-label="Digite uma palavra">
+                <button class="learn-btn" id="wl-go" onclick="wordLadderGo()" aria-label="Confirmar palavra">✅ Confirmar</button>
+                <div class="mg-hint" id="wl-steps">Passos: 0</div>
+                <div class="mg-status" id="wl-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartWordLadder()" style="background: linear-gradient(135deg, #10b981, #059669);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeWordLadder()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Descubra o Erro -->
+        <div id="mistake-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closeMistake()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>🔎 Descubra o Erro</h2>
+                <div class="score-box">⭐ <span id="mk-score">0</span></div>
+            </div>
+            <div id="mistake-card">
+                <div id="mk-progress">Frase 1 de 5</div>
+                <div class="mg-hint" id="mk-pt"></div>
+                <div id="mk-sentence" class="mg-tokens"></div>
+                <div class="mg-hint">Toque na palavra escrita errada.</div>
+                <div class="mg-status" id="mk-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartMistake()" style="background: linear-gradient(135deg, #f43f5e, #be123c);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closeMistake()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Phrasal Verbs -->
+        <div id="phrasal-screen">
+            <div class="screen-header">
+                <button class="back-mode-btn" onclick="closePhrasal()" aria-label="Voltar aos jogos">← Voltar</button>
+                <h2>💪 Phrasal Verbs</h2>
+                <div class="score-box">⭐ <span id="ph-score">0</span></div>
+            </div>
+            <div id="phrasal-card">
+                <div id="ph-progress">Pergunta 1 de 8</div>
+                <div id="ph-question" class="mg-big"></div>
+                <div id="ph-options" class="mg-grid"></div>
+                <div class="mg-status" id="ph-status"></div>
+                <div class="hangman-controls">
+                    <button class="learn-btn" onclick="restartPhrasal()" style="background: linear-gradient(135deg, #0ea5e9, #0369a1);" aria-label="Jogar novamente">🔄 Jogar Novamente</button>
+                    <button class="learn-btn" onclick="closePhrasal()" aria-label="Voltar aos jogos">🎮 Outros Jogos</button>
                 </div>
             </div>
         </div>
@@ -3630,7 +4085,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="auth.js"></script>
     <script src="player.js"></script>
-    <script src="game.js?v=20260907-6"></script>
+    <script src="game.js?v=20260907-7"></script>
     <script src="conversation.js"></script>
     <script>
         // Service Worker

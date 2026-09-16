@@ -90,7 +90,7 @@
             ".validate": "newData.isString() && newData.val().matches(/^(animals|food|colors|numbers|body|objects|family|clothes|weather|actions|sentences|review)$/)"
           },
           "mode": {
-            ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review|memory|hangman|wordsearch|truefalse|lightning)$/)"
+            ".validate": "newData.isString() && newData.val().matches(/^(learn|quiz|dictation|review|memory|hangman|wordsearch|truefalse|lightning|spell|oddoneout|bingo|tictactoe|listening|sentence|grammar|synonyms|wordladder|mistake|phrasal)$/)"
           },
           "date": {
             ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 30"

@@ -794,7 +794,7 @@ function hideAllScreens() {
     }
     confettiParticles = [];
     
-    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'difficulty-screen', 'games-screen', 'hangman-screen', 'wordsearch-screen', 'truefalse-screen', 'lightning-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen', 'about-screen', 'conversation-screen'];
+    const screens = ['landing-screen', 'welcome-screen', 'create-screen', 'created-screen', 'login-screen', 'start-screen', 'category-screen', 'difficulty-screen', 'games-screen', 'hangman-screen', 'wordsearch-screen', 'truefalse-screen', 'lightning-screen', 'spell-screen', 'oddoneout-screen', 'bingo-screen', 'tictactoe-screen', 'listening-screen', 'sentence-screen', 'grammar-screen', 'synonyms-screen', 'wordladder-screen', 'mistake-screen', 'phrasal-screen', 'game-screen', 'memory-screen', 'result-screen', 'progress-screen', 'about-screen', 'conversation-screen'];
     screens.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -1900,10 +1900,21 @@ let pendingGame = null;
 let categorySource = 'start';
 
 const GAME_META = {
-    hangman:    { title: '🪓 Forca' },
-    wordsearch: { title: '🔍 Caça-Palavras' },
-    truefalse:  { title: '✅ Verdadeiro ou Falso' },
-    lightning:  { title: '⚡ Desafio Relâmpago' }
+    hangman:   { title: '🪓 Forca' },
+    wordsearch:{ title: '🔍 Caça-Palavras' },
+    truefalse: { title: '✅ Verdadeiro ou Falso' },
+    lightning: { title: '⚡ Desafio Relâmpago' },
+    spell:     { title: '✍️ Soletrando' },
+    oddoneout: { title: '🧐 Encontre o Intruso' },
+    bingo:     { title: '🎱 Bingo de Inglês' },
+    tictactoe: { title: '⭕ Jogo da Velha' },
+    listening: { title: '🎧 Ouvir e Encontrar' },
+    sentence:  { title: '🧩 Monte a Frase' },
+    grammar:   { title: '📐 Quiz de Gramática' },
+    synonyms:  { title: '🤝 Sinônimos e Antônimos' },
+    wordladder:{ title: '🪜 Escada de Palavras' },
+    mistake:   { title: '🔎 Descubra o Erro' },
+    phrasal:   { title: '💪 Phrasal Verbs' }
 };
 
 function openGames() {
@@ -1948,6 +1959,17 @@ function startGameWithCategory(game, category) {
         case 'wordsearch': startWordSearchWithCategory(category); break;
         case 'truefalse':  startTrueFalseWithCategory(category); break;
         case 'lightning':  startLightningWithCategory(category); break;
+        case 'spell':      startSpellWithCategory(category); break;
+        case 'oddoneout':  startOddOneOutWithCategory(category); break;
+        case 'bingo':      startBingoWithCategory(category); break;
+        case 'tictactoe':  startTicTacToeWithCategory(category); break;
+        case 'listening':  startListeningWithCategory(category); break;
+        case 'sentence':   startSentenceWithCategory(category); break;
+        case 'grammar':    startGrammarWithCategory(category); break;
+        case 'synonyms':   startSynonymsWithCategory(category); break;
+        case 'wordladder': startWordLadderWithCategory(category); break;
+        case 'mistake':    startMistakeWithCategory(category); break;
+        case 'phrasal':    startPhrasalWithCategory(category); break;
     }
 }
 
@@ -2601,6 +2623,1149 @@ function closeLightning() {
     stopLtTimer();
     playSound('click');
     document.getElementById('lightning-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== SOLETRANDO ====================
+let spellCategory = null;
+let spellWords = [];
+let spellIndex = 0;
+let spellScore = 0;
+let spellTyped = '';
+let spellSolved = 0;
+let spellLocked = false;
+
+function startSpellWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    spellCategory = category;
+    spellIndex = 0;
+    spellScore = 0;
+    spellSolved = 0;
+    spellWords = shuffle(vocabulary[category].words.map(w => w.english).filter(w => /^[a-zA-Z]{3,9}$/.test(w))).slice(0, 5);
+    if (!spellWords.length) spellWords = ['cat', 'dog', 'sun'];
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('spell-screen').style.display = 'block';
+    document.getElementById('spell-score').textContent = '0';
+    renderSpell();
+}
+
+function updateSpellScore() { document.getElementById('spell-score').textContent = spellScore; }
+
+function renderSpell() {
+    const word = spellWords[spellIndex];
+    if (!word) { finishSpell(); return; }
+    document.getElementById('spell-progress').textContent = `Palavra ${spellIndex + 1} de ${spellWords.length}`;
+    const w = vocabulary[spellCategory].words.find(x => x.english === word);
+    document.getElementById('spell-emoji').textContent = w ? w.emoji : '';
+    document.getElementById('spell-status').textContent = '';
+    spellTyped = '';
+    spellLocked = false;
+    spellSpeak();
+    renderSpellWord();
+    const pool = word.toLowerCase().split('');
+    const extra = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    for (let i = 0; pool.length < 10 && extra.length; i++) {
+        pool.push(extra.splice(Math.floor(Math.random() * extra.length), 1)[0]);
+    }
+    document.getElementById('spell-chars').innerHTML = shuffle(pool).map(ch =>
+        `<button class="mg-key" onclick="spellPick('${ch}')" aria-label="Letra ${ch}">${ch}</button>`).join('');
+}
+
+function renderSpellWord() {
+    const word = spellWords[spellIndex].toLowerCase();
+    const slots = word.split('').map((ch, i) =>
+        `<span class="mg-slot">${i < spellTyped.length ? spellTyped[i] : ''}</span>`).join('');
+    document.getElementById('spell-word-row').innerHTML = slots;
+    document.querySelectorAll('#spell-chars .mg-key').forEach(b => { b.disabled = spellLocked; });
+}
+
+function spellSpeak() {
+    const word = spellWords[spellIndex];
+    if (!word) return;
+    speakEnglish(word.toLowerCase().split('').join(' '));
+    speakEnglish(word);
+}
+
+function spellPick(ch) {
+    if (spellLocked || !spellWords.length) return;
+    const word = spellWords[spellIndex];
+    spellTyped += ch;
+    renderSpellWord();
+    if (spellTyped.length === word.length) {
+        spellLocked = true;
+        renderSpellWord();
+        if (spellTyped === word.toLowerCase()) {
+            playSound('correct');
+            spellScore += 15;
+            spellSolved++;
+            updateSpellScore();
+            document.getElementById('spell-status').textContent = '🎉 Muito bem!';
+            spellSpeak();
+            setTimeout(() => { spellIndex++; renderSpell(); }, 1000);
+        } else {
+            playSound('wrong');
+            document.getElementById('spell-status').textContent = '❌ Quase! Tente de novo.';
+            setTimeout(() => {
+                spellTyped = '';
+                spellLocked = false;
+                renderSpellWord();
+                document.getElementById('spell-status').textContent = '';
+            }, 800);
+        }
+    }
+}
+
+function finishSpell() {
+    document.getElementById('spell-status').textContent = '🏆 Parabéns! Desafio concluído!';
+    saveRanking({ mode: 'spell', category: spellCategory, score: spellScore, generalPoints: Math.round((spellSolved / spellWords.length) * 400), correct: spellSolved, total: spellWords.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+
+function restartSpell() { if (spellCategory) startSpellWithCategory(spellCategory); }
+function closeSpell() {
+    playSound('click');
+    document.getElementById('spell-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== O INTRUSO ====================
+let ooCategory = null;
+let ooRounds = [];
+let ooIndex = 0;
+let ooScore = 0;
+let ooSolved = 0;
+let ooLocked = false;
+
+function buildOddRounds(category) {
+    const others = Object.keys(vocabulary).filter(k => k !== category && vocabulary[k].words.length);
+    const rounds = [];
+    let guard = 0;
+    while (rounds.length < 4 && guard++ < 40) {
+        if (!others.length) break;
+        const oKey = others[Math.floor(Math.random() * others.length)];
+        const triple = shuffle(vocabulary[category].words).slice(0, 3).map(w => ({ e: w.emoji, p: w.portuguese }));
+        const intru = shuffle(vocabulary[oKey].words)[0];
+        const opts = shuffle([
+            ...triple.map(t => ({ e: t.e, p: t.p, intruder: false })),
+            { e: intru.emoji, p: intru.portuguese, intruder: true }
+        ]);
+        if (new Set(opts.map(o => o.p)).size < 4) continue;
+        rounds.push(opts);
+    }
+    return rounds;
+}
+
+function startOddOneOutWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    ooCategory = category;
+    ooIndex = 0;
+    ooScore = 0;
+    ooSolved = 0;
+    ooRounds = buildOddRounds(category);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('oddoneout-screen').style.display = 'block';
+    document.getElementById('oo-score').textContent = '0';
+    renderOdd();
+}
+
+function renderOdd() {
+    const opts = ooRounds[ooIndex];
+    if (!opts) { finishOdd(); return; }
+    ooLocked = false;
+    document.getElementById('oo-progress').textContent = `Rodada ${ooIndex + 1} de ${ooRounds.length}`;
+    document.getElementById('oo-options').innerHTML = opts.map((o, i) =>
+        `<button class="mg-opt" onclick="oddPick(${i})" aria-label="${o.p}">${o.e} ${o.p}</button>`).join('');
+    document.getElementById('oo-status').textContent = '';
+}
+
+function oddPick(idx) {
+    if (ooLocked) return;
+    ooLocked = true;
+    const opts = ooRounds[ooIndex];
+    const btns = document.querySelectorAll('#oo-options .mg-opt');
+    btns.forEach(b => b.disabled = true);
+    if (opts[idx].intruder) {
+        btns[idx].classList.add('correct');
+        playSound('correct');
+        ooScore += 10;
+        ooSolved++;
+        document.getElementById('oo-score').textContent = ooScore;
+        document.getElementById('oo-status').textContent = '🎉 Acertou!';
+    } else {
+        btns[idx].classList.add('wrong');
+        const ci = opts.findIndex(o => o.intruder);
+        btns[ci].classList.add('correct');
+        playSound('wrong');
+        document.getElementById('oo-status').textContent = '❌ O intruso era: ' + opts[ci].p;
+    }
+    setTimeout(() => { ooIndex++; renderOdd(); }, 1200);
+}
+
+function finishOdd() {
+    document.getElementById('oo-status').textContent = '🏆 Desafio concluído!';
+    saveRanking({ mode: 'oddoneout', category: ooCategory, score: ooScore, generalPoints: Math.round((ooSolved / ooRounds.length) * 400), correct: ooSolved, total: ooRounds.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartOddOneOut() { if (ooCategory) startOddOneOutWithCategory(ooCategory); }
+function closeOddOneOut() {
+    playSound('click');
+    document.getElementById('oddoneout-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== BINGO ====================
+let bnCategory = null;
+let bnCard = [];
+let bnDraws = [];
+let bnDrawIdx = 0;
+let bnMarked = new Set();
+let bnScore = 0;
+let bnOver = false;
+
+function hasBingo() {
+    const m = i => bnMarked.has(i);
+    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    return lines.some(l => l.every(m));
+}
+
+function startBingoWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    bnCategory = category;
+    bnScore = 0;
+    bnOver = false;
+    bnMarked = new Set();
+    if (vocabulary[category].words.length < 9) { bnCategory = null; return; }
+    const words = shuffle(vocabulary[category].words);
+    bnCard = words.slice(0, 9);
+    bnDraws = shuffle([...bnCard, ...shuffle(vocabulary[category].words).filter(w => !bnCard.includes(w))]).slice(0, 16);
+    bnDrawIdx = 0;
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('bingo-screen').style.display = 'block';
+    document.getElementById('bingo-score').textContent = '0';
+    document.getElementById('bingo-skip').style.display = 'inline-block';
+    document.getElementById('bingo-restart').style.display = 'none';
+    renderBingoCard();
+    nextBingoDraw();
+}
+
+function renderBingoCard() {
+    document.getElementById('bingo-grid').innerHTML = bnCard.map((w, i) =>
+        `<button class="bingo-cell" id="bn-cell-${i}" onclick="bingoPick(${i})" aria-label="${w.portuguese}">${w.emoji}<br>${w.portuguese}</button>`).join('');
+}
+
+function nextBingoDraw() {
+    if (bnOver) return;
+    if (bnDrawIdx >= bnDraws.length) { finishBingo(); return; }
+    const d = bnDraws[bnDrawIdx];
+    document.getElementById('bingo-draw').textContent = `${d.emoji} ${d.english}`;
+    document.getElementById('bingo-progress').textContent = `Sorteio ${bnDrawIdx + 1} de ${bnDraws.length}`;
+    document.getElementById('bingo-status').textContent = 'Toque na palavra correspondente ou passe.';
+    document.querySelectorAll('.bingo-cell').forEach(c => { c.disabled = false; });
+    speakEnglish(d.english);
+}
+
+function bingoSpeak() {
+    const d = bnDraws[bnDrawIdx];
+    if (d) speakEnglish(d.english);
+}
+
+function bingoPick(i) {
+    if (bnOver) return;
+    const d = bnDraws[bnDrawIdx];
+    const info = bnCard[i];
+    document.querySelectorAll('.bingo-cell').forEach(c => c.disabled = true);
+    if (info.english === d.english) {
+        bnMarked.add(i);
+        document.getElementById('bn-cell-' + i).classList.add('marked');
+        playSound('correct');
+        bnScore += 10;
+        document.getElementById('bingo-score').textContent = bnScore;
+        document.getElementById('bingo-status').textContent = '✅ Marquei!';
+        if (hasBingo()) {
+            bnOver = true;
+            bnScore += 50;
+            document.getElementById('bingo-score').textContent = bnScore;
+            document.getElementById('bingo-status').textContent = '🎉 BINGO! +50 de bônus!';
+            playSound('achievement');
+            showBingoControls();
+            saveRanking({ mode: 'bingo', category: bnCategory, score: bnScore, generalPoints: 400, correct: bnCard.length, total: bnCard.length, maxCombo: 0 });
+            resumeMenuMusic();
+            return;
+        }
+        bnDrawIdx++;
+        setTimeout(nextBingoDraw, 700);
+    } else {
+        playSound('wrong');
+        document.getElementById('bingo-status').textContent = '❌ Essa não é a palavra!';
+        setTimeout(() => { document.querySelectorAll('.bingo-cell').forEach(c => c.disabled = false); }, 700);
+    }
+}
+
+function bingoSkip() {
+    if (bnOver) return;
+    bnDrawIdx++;
+    nextBingoDraw();
+}
+
+function showBingoControls() {
+    document.getElementById('bingo-skip').style.display = 'none';
+    document.getElementById('bingo-restart').style.display = 'inline-block';
+}
+
+function finishBingo() {
+    if (bnOver) return;
+    bnOver = true;
+    document.getElementById('bingo-status').textContent = `🏆 Fim dos sorteios! Você marcou ${bnMarked.size} de ${bnCard.length}.`;
+    showBingoControls();
+    saveRanking({ mode: 'bingo', category: bnCategory, score: bnScore, generalPoints: Math.round((bnMarked.size / bnCard.length) * 400), correct: bnMarked.size, total: bnCard.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartBingo() { if (bnCategory) startBingoWithCategory(bnCategory); }
+function closeBingo() {
+    playSound('click');
+    document.getElementById('bingo-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== JOGO DA VELHA ====================
+let ttCategory = null;
+let ttWords = [];
+let ttBoard = [];
+let ttScore = 0;
+let ttLocked = false;
+let ttOver = false;
+let ttCurrent = '';
+let ttOpts = [];
+
+function startTicTacToeWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    ttCategory = category;
+    ttWords = shuffle(vocabulary[category].words);
+    ttScore = 0;
+    ttLocked = false;
+    ttOver = false;
+    ttBoard = Array(9).fill(null);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('tictactoe-screen').style.display = 'block';
+    document.getElementById('ttt-score').textContent = '0';
+    renderTTTBoard();
+    nextTTTQ();
+}
+
+function renderTTTBoard() {
+    document.getElementById('ttt-board').innerHTML = ttBoard.map((v, i) =>
+        `<div class="tt-cell ${v || ''}">${v === 'x' ? 'X' : v === 'o' ? 'O' : ''}</div>`).join('');
+    document.getElementById('ttt-msg').textContent = ttOver ? '' : 'Você é o X — responda certo para jogar!';
+}
+
+function ttWinner(b) {
+    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for (const l of lines) {
+        if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]];
+    }
+    return null;
+}
+
+function ttEmptyCells() {
+    return ttBoard.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
+}
+
+function nextTTTQ() {
+    if (ttOver) return;
+    if (ttWords.length < 1) { finishTTT('🤝 Fim de jogo!'); return; }
+    const w = ttWords.shift();
+    ttCurrent = w.english;
+    ttOpts = shuffle([w, ...shuffle(vocabulary[ttCategory].words).filter(x => x.english !== w.english).slice(0, 3)]);
+    document.getElementById('ttt-question').innerHTML = `<span style="font-size:44px;">${w.emoji}</span> ${w.english}`;
+    document.getElementById('ttt-options').innerHTML = ttOpts.map((o, i) =>
+        `<button class="mg-opt" onclick="tttPick(${i})">${o.portuguese}</button>`).join('');
+    document.getElementById('ttt-options').setAttribute('aria-label', 'Escolha a tradução correta');
+    ttLocked = false;
+}
+
+function tttPick(i) {
+    if (ttLocked || ttOver) return;
+    ttLocked = true;
+    document.querySelectorAll('#ttt-options .mg-opt').forEach(b => b.disabled = true);
+    if (ttOpts[i].english === ttCurrent) {
+        playSound('correct');
+        ttScore += 10;
+        document.getElementById('ttt-score').textContent = ttScore;
+        const e1 = ttEmptyCells();
+        if (e1.length) ttBoard[e1[0]] = 'x';
+        if (ttWinner(ttBoard)) { finishTTT('🎉 Você venceu! +50 de bônus!', true); return; }
+        const e2 = ttEmptyCells();
+        if (e2.length) ttBoard[e2[Math.floor(Math.random() * e2.length)]] = 'o';
+        if (ttWinner(ttBoard)) { finishTTT('😢 O computador venceu!'); return; }
+        renderTTTBoard();
+        if (!ttEmptyCells().length) { finishTTT('🤝 Empate!'); return; }
+        setTimeout(nextTTTQ, 800);
+    } else {
+        playSound('wrong');
+        const e = ttEmptyCells();
+        if (e.length) ttBoard[e[Math.floor(Math.random() * e.length)]] = 'o';
+        if (ttWinner(ttBoard)) { finishTTT('😢 O computador venceu!'); return; }
+        renderTTTBoard();
+        if (!ttEmptyCells().length) { finishTTT('🤝 Empate!'); return; }
+        setTimeout(nextTTTQ, 800);
+    }
+}
+
+function finishTTT(msg, userWon) {
+    if (ttOver) return;
+    ttOver = true;
+    document.getElementById('ttt-msg').textContent = msg;
+    if (userWon) {
+        ttScore += 50;
+        document.getElementById('ttt-score').textContent = ttScore;
+        playSound('achievement');
+    }
+    saveRanking({ mode: 'tictactoe', category: ttCategory, score: ttScore, generalPoints: 400, correct: 1, total: 1, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartTicTacToe() { if (ttCategory) startTicTacToeWithCategory(ttCategory); }
+function closeTicTacToe() {
+    playSound('click');
+    document.getElementById('tictactoe-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== OUVIR E ENCONTRAR ====================
+let lsCategory = null;
+let lsRounds = [];
+let lsIndex = 0;
+let lsScore = 0;
+let lsSolved = 0;
+let lsLocked = false;
+
+function startListeningWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    lsCategory = category;
+    lsIndex = 0;
+    lsScore = 0;
+    lsSolved = 0;
+    lsRounds = shuffle(vocabulary[category].words.map(w => ({ emoji: w.emoji, english: w.english })).filter(x => x.emoji)).slice(0, 6);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('listening-screen').style.display = 'block';
+    document.getElementById('ls-score').textContent = '0';
+    renderListening();
+}
+
+function renderListening() {
+    const w = lsRounds[lsIndex];
+    if (!w) { finishListening(); return; }
+    lsLocked = false;
+    document.getElementById('ls-progress').textContent = `Rodada ${lsIndex + 1} de ${Math.min(6, lsRounds.length)}`;
+    const distract = shuffle(vocabulary[lsCategory].words.filter(x => x.english !== w.english && x.emoji !== w.emoji)).slice(0, 3);
+    const opts = shuffle([{ emoji: w.emoji, correct: true }, ...distract.map(x => ({ emoji: x.emoji, correct: false }))]);
+    document.getElementById('ls-options').innerHTML = opts.map((o, i) =>
+        `<button class="mg-opt" style="font-size:46px; padding:20px;" onclick="lsPick(${i})" aria-label="Escolher esta figura">${o.emoji}</button>`).join('');
+    document.getElementById('ls-status').textContent = '';
+    lsSpeak();
+}
+
+function lsSpeak() {
+    const w = lsRounds[lsIndex];
+    if (w) speakEnglish(w.english);
+}
+
+function lsPick(i) {
+    if (lsLocked) return;
+    lsLocked = true;
+    const btns = document.querySelectorAll('#ls-options .mg-opt');
+    btns.forEach(b => b.disabled = true);
+    const w = lsRounds[lsIndex];
+    const correctIdx = [...btns].findIndex(b => b.textContent === w.emoji);
+    if (btns[i].textContent === w.emoji) {
+        btns[i].classList.add('correct');
+        playSound('correct');
+        lsScore += 10;
+        lsSolved++;
+        document.getElementById('ls-score').textContent = lsScore;
+        document.getElementById('ls-status').textContent = '🎉 Muito bem!';
+        speakEnglish(w.english);
+    } else {
+        btns[i].classList.add('wrong');
+        if (correctIdx >= 0) btns[correctIdx].classList.add('correct');
+        playSound('wrong');
+        document.getElementById('ls-status').textContent = `❌ Era: ${w.emoji} ${w.english}`;
+        speakEnglish(w.english);
+    }
+    setTimeout(() => { lsIndex++; renderListening(); }, 1300);
+}
+
+function finishListening() {
+    document.getElementById('ls-status').textContent = '🏆 Ótima audição! Desafio concluído!';
+    saveRanking({ mode: 'listening', category: lsCategory, score: lsScore, generalPoints: Math.round((lsSolved / lsRounds.length) * 400), correct: lsSolved, total: lsRounds.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartListening() { if (lsCategory) startListeningWithCategory(lsCategory); }
+function closeListening() {
+    playSound('click');
+    document.getElementById('listening-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== MONTE A FRASE ====================
+let sbCategory = null;
+let sbRounds = [];
+let sbIndex = 0;
+let sbScore = 0;
+let sbSolved = 0;
+let sbBank = [];
+let sbBuilt = [];
+let sbLocked = false;
+
+function sbTokens(sentence) {
+    return sentence.replace(/[.,!?;:/]/g, '').split(/\s+/).filter(Boolean);
+}
+
+function startSentenceWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    sbCategory = category;
+    sbIndex = 0;
+    sbScore = 0;
+    sbSolved = 0;
+    sbRounds = shuffle(vocabulary[category].words.filter(w => w.sentence && sbTokens(w.sentence).length >= 3)).slice(0, 5);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('sentence-screen').style.display = 'block';
+    document.getElementById('sb-score').textContent = '0';
+    renderSentence();
+}
+
+function renderSentence() {
+    const w = sbRounds[sbIndex];
+    if (!w) { finishSentence(); return; }
+    sbLocked = false;
+    document.getElementById('sb-progress').textContent = `Frase ${sbIndex + 1} de ${sbRounds.length}`;
+    document.getElementById('sb-emoji').textContent = w.emoji;
+    document.getElementById('sb-pt').textContent = 'Em português: ' + (w.sentenceTranslation || w.portuguese) + '.';
+    const tokens = sbTokens(w.sentence);
+    sbBuilt = [];
+    sbBank = shuffle(tokens.map((t, i) => ({ t: t.toLowerCase(), i })));
+    renderSentenceUI();
+    sbSpeak();
+}
+
+function renderSentenceUI() {
+    document.getElementById('sb-built').innerHTML = sbBuilt.length
+        ? sbBuilt.map((b, i) => `<button class="mg-chip picked" onclick="sbUnpick(${i})" aria-label="Remover ${b.t}">${b.t}</button>`).join('')
+        : '<span class="mg-hint">Toque nas palavras abaixo para montar a frase.</span>';
+    document.getElementById('sb-chips').innerHTML = sbBank.filter(x => !x.used).map(x =>
+        `<button class="mg-chip" onclick="sbPick(${x.i})" aria-label="Adicionar ${x.t}">${x.t}</button>`).join('');
+    document.getElementById('sb-status').textContent = '';
+    document.getElementById('sb-check').style.display = sbBuilt.length ? 'inline-block' : 'none';
+}
+
+function sbPick(i) {
+    if (sbLocked) return;
+    const b = sbBank.find(x => x.i === i);
+    if (!b || b.used) return;
+    b.used = true;
+    sbBuilt.push(b);
+    renderSentenceUI();
+}
+function sbUnpick(k) {
+    if (sbLocked) return;
+    const b = sbBuilt[k];
+    if (!b) return;
+    b.used = false;
+    sbBuilt.splice(k, 1);
+    renderSentenceUI();
+}
+function sbSpeak() {
+    const w = sbRounds[sbIndex];
+    if (w) speakEnglish(w.sentence);
+}
+
+function checkSentence() {
+    if (sbLocked || !sbBuilt.length) return;
+    const w = sbRounds[sbIndex];
+    const target = sbTokens(w.sentence).map(t => t.toLowerCase());
+    const got = sbBuilt.map(x => x.t.toLowerCase());
+    if (got.length === target.length && target.every((t, i) => t === got[i])) {
+        playSound('correct');
+        sbScore += 15;
+        sbSolved++;
+        document.getElementById('sb-score').textContent = sbScore;
+        document.getElementById('sb-status').textContent = '🎉 Frase correta!';
+        sbLocked = true;
+        speakEnglish(w.sentence);
+        setTimeout(() => { sbIndex++; renderSentence(); }, 1100);
+    } else {
+        playSound('wrong');
+        document.getElementById('sb-status').textContent = '❌ Ainda não. Observe a dica em português e ajuste a ordem.';
+    }
+}
+
+function finishSentence() {
+    document.getElementById('sb-status').textContent = '🏆 Frases montadas com sucesso!';
+    saveRanking({ mode: 'sentence', category: sbCategory, score: sbScore, generalPoints: Math.round((sbSolved / sbRounds.length) * 400), correct: sbSolved, total: sbRounds.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartSentence() { if (sbCategory) startSentenceWithCategory(sbCategory); }
+function closeSentence() {
+    playSound('click');
+    document.getElementById('sentence-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== QUIZ DE GRAMÁTICA ====================
+const GRAMMAR_FIXED = [
+    { q: 'I ___ a student.',            o: ['am', 'is', 'are'],     a: 0 },
+    { q: 'She ___ my sister.',          o: ['am', 'is', 'are'],     a: 1 },
+    { q: 'They ___ happy.',             o: ['am', 'is', 'are'],     a: 2 },
+    { q: 'We ___ friends.',             o: ['am', 'is', 'are'],     a: 2 },
+    { q: 'He ___ a doctor.',            o: ['am', 'is', 'are'],     a: 1 },
+    { q: 'You ___ my friend.',          o: ['am', 'is', 'are'],     a: 2 },
+    { q: 'It ___ hot today.',           o: ['am', 'is', 'are'],     a: 1 },
+    { q: 'I ___ hungry.',               o: ['am', 'is', 'are'],     a: 0 },
+    { q: 'He ___ a car.',               o: ['has', 'have', 'haves'], a: 0 },
+    { q: 'They ___ a house.',           o: ['has', 'have', 'haves'], a: 1 },
+    { q: 'We ___ homework.',            o: ['has', 'have', 'haves'], a: 1 },
+    { q: 'I ___ a bike.',               o: ['has', 'have', 'haf'],   a: 1 },
+    { q: 'She ___ music.',              o: ['like', 'likes', 'liking'], a: 1 },
+    { q: 'He ___ soccer.',              o: ['play', 'plays', 'playing'], a: 1 },
+    { q: 'My mom ___ dinner.',          o: ['cook', 'cooks', 'cooking'], a: 1 },
+    { q: 'The dog ___ fast.',           o: ['run', 'runs', 'running'], a: 1 }
+];
+
+function pluralEnglish(w) {
+    const lw = w.toLowerCase();
+    if (/(s|x|z|ch|sh)$/.test(lw)) return lw + 'es';
+    if (/[^aeiou]y$/.test(lw)) return lw.slice(0, -1) + 'ies';
+    if (/[^aeiou]o$/.test(lw)) return lw + 'es';
+    return lw + 's';
+}
+
+function grammarQuestions(category) {
+    const words = shuffle(vocabulary[category].words.filter(w => /^[a-zA-Z]+$/.test(w.english)));
+    const qs = [];
+    for (const w of words.slice(0, 3)) {
+        const art = /^[aeiou]/i.test(w.english) ? 'an' : 'a';
+        const optsA = shuffle([art, art === 'a' ? 'an' : 'a', 'the']);
+        qs.push({ q: `Escolha o artigo correto: ___ ${w.english}.`, opts: optsA, a: optsA.indexOf(art) });
+        const pl = pluralEnglish(w.english);
+        const wrongs = shuffle([w.english + 's', w.english + 'es', w.english.slice(0, -1) + 's'].filter(x => x !== pl)).slice(0, 2);
+        const optsP = shuffle([pl, ...wrongs]);
+        qs.push({ q: `Qual é o plural de "${w.english}"?`, opts: optsP, a: optsP.indexOf(pl) });
+    }
+    const fixed = shuffle(GRAMMAR_FIXED);
+    for (const f of fixed.slice(0, 4)) {
+        const idxMap = shuffle(f.o.map((x, i) => ({ x, i })));
+        qs.push({ q: f.q, opts: idxMap.map(x => x.x), a: idxMap.findIndex(x => x.i === f.a) });
+    }
+    return shuffle(qs).slice(0, 8);
+}
+
+let grCategory = null;
+let grQs = [];
+let grIndex = 0;
+let grScore = 0;
+let grSolved = 0;
+let grLocked = false;
+
+function startGrammarWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    grCategory = category;
+    grIndex = 0;
+    grScore = 0;
+    grSolved = 0;
+    grQs = grammarQuestions(category);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('grammar-screen').style.display = 'block';
+    document.getElementById('gr-score').textContent = '0';
+    renderGrammar();
+}
+
+function renderGrammar() {
+    const q = grQs[grIndex];
+    if (!q) { finishGrammar(); return; }
+    grLocked = false;
+    document.getElementById('gr-progress').textContent = `Pergunta ${grIndex + 1} de ${grQs.length}`;
+    document.getElementById('gr-question').textContent = q.q;
+    document.getElementById('gr-options').innerHTML = q.opts.map((o, i) =>
+        `<button class="mg-opt" onclick="grPick(${i})">${o}</button>`).join('');
+    document.getElementById('gr-status').textContent = '';
+}
+
+function grPick(i) {
+    if (grLocked) return;
+    grLocked = true;
+    const q = grQs[grIndex];
+    const btns = document.querySelectorAll('#gr-options .mg-opt');
+    btns.forEach(b => b.disabled = true);
+    if (i === q.a) {
+        btns[i].classList.add('correct');
+        playSound('correct');
+        grScore += 10;
+        grSolved++;
+        document.getElementById('gr-score').textContent = grScore;
+        document.getElementById('gr-status').textContent = '🎉 Correto!';
+    } else {
+        btns[i].classList.add('wrong');
+        btns[q.a].classList.add('correct');
+        playSound('wrong');
+        document.getElementById('gr-status').textContent = '❌ A resposta é: ' + q.opts[q.a];
+    }
+    setTimeout(() => { grIndex++; renderGrammar(); }, 1200);
+}
+
+function finishGrammar() {
+    document.getElementById('gr-status').textContent = '🏆 Gramática em dia!';
+    saveRanking({ mode: 'grammar', category: grCategory, score: grScore, generalPoints: Math.round((grSolved / grQs.length) * 400), correct: grSolved, total: grQs.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartGrammar() { if (grCategory) startGrammarWithCategory(grCategory); }
+function closeGrammar() {
+    playSound('click');
+    document.getElementById('grammar-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== SINÔNIMOS E ANTÔNIMOS ====================
+const SYNONYM_BANK = [
+    { w: 'happy',    t: 'SYN', o: ['sad', 'glad', 'mad', 'tired'],     a: 1 },
+    { w: 'big',      t: 'SYN', o: ['small', 'tiny', 'large', 'little'], a: 2 },
+    { w: 'fast',     t: 'SYN', o: ['slow', 'quick', 'lazy', 'sleepy'], a: 1 },
+    { w: 'beautiful',t: 'SYN', o: ['ugly', 'pretty', 'plain', 'big'],  a: 1 },
+    { w: 'hot',      t: 'SYN', o: ['warm', 'cold', 'cool', 'ice'],     a: 0 },
+    { w: 'bad',      t: 'SYN', o: ['good', 'nice', 'terrible', 'great'], a: 2 },
+    { w: 'smart',    t: 'SYN', o: ['dumb', 'clever', 'lazy', 'slow'],  a: 1 },
+    { w: 'small',    t: 'SYN', o: ['tiny', 'huge', 'tall', 'wide'],    a: 0 },
+    { w: 'sad',      t: 'SYN', o: ['happy', 'joyful', 'unhappy', 'glad'], a: 2 },
+    { w: 'easy',     t: 'SYN', o: ['hard', 'simple', 'tough', 'long'], a: 1 },
+    { w: 'start',    t: 'SYN', o: ['stop', 'begin', 'end', 'finish'],  a: 1 },
+    { w: 'story',    t: 'SYN', o: ['song', 'tale', 'game', 'film'],    a: 1 },
+    { w: 'hot',      t: 'ANT', o: ['warm', 'cold', 'boiling', 'fire'], a: 1 },
+    { w: 'big',      t: 'ANT', o: ['large', 'huge', 'small', 'fat'],   a: 2 },
+    { w: 'fast',     t: 'ANT', o: ['quick', 'rapid', 'slow', 'speedy'],a: 2 },
+    { w: 'happy',    t: 'ANT', o: ['glad', 'sad', 'cheerful', 'nice'], a: 1 },
+    { w: 'day',      t: 'ANT', o: ['morning', 'sun', 'night', 'noon'], a: 2 },
+    { w: 'good',     t: 'ANT', o: ['great', 'bad', 'wonderful', 'kind'], a: 1 },
+    { w: 'dark',     t: 'ANT', o: ['light', 'night', 'black', 'shade'], a: 0 },
+    { w: 'up',       t: 'ANT', o: ['top', 'high', 'down', 'over'],     a: 2 },
+    { w: 'old',      t: 'ANT', o: ['ancient', 'young', 'age', 'wise'], a: 1 },
+    { w: 'loud',     t: 'ANT', o: ['noisy', 'quiet', 'sound', 'mouth'],a: 1 },
+    { w: 'strong',   t: 'ANT', o: ['powerful', 'weak', 'tough', 'brave'], a: 1 },
+    { w: 'rich',     t: 'ANT', o: ['wealthy', 'poor', 'money', 'king'],a: 1 }
+];
+
+let syCategory = null;
+let syQs = [];
+let syIndex = 0;
+let syScore = 0;
+let sySolved = 0;
+let syLocked = false;
+let syOpts = [];
+let syAnswerIdx = -1;
+
+function startSynonymsWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    syCategory = category;
+    syIndex = 0;
+    syScore = 0;
+    sySolved = 0;
+    syQs = shuffle(SYNONYM_BANK).slice(0, 8);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('synonyms-screen').style.display = 'block';
+    document.getElementById('sy-score').textContent = '0';
+    renderSynonyms();
+}
+
+function renderSynonyms() {
+    const q = syQs[syIndex];
+    if (!q) { finishSynonyms(); return; }
+    syLocked = false;
+    document.getElementById('sy-progress').textContent = `Pergunta ${syIndex + 1} de ${syQs.length}`;
+    document.getElementById('sy-question').textContent = q.t === 'SYN' ? '🔗 SINÔNIMO DE' : '🚫 OPOSTO DE';
+    document.getElementById('sy-word').textContent = q.w;
+    syOpts = shuffle(q.o.map((x, i) => ({ x, i })));
+    syAnswerIdx = syOpts.findIndex(o => o.i === q.a);
+    document.getElementById('sy-options').innerHTML = syOpts.map((o, i) =>
+        `<button class="mg-opt" onclick="syPick(${i})">${o.x}</button>`).join('');
+    document.getElementById('sy-status').textContent = '';
+}
+
+function syPick(i) {
+    if (syLocked) return;
+    syLocked = true;
+    const btns = document.querySelectorAll('#sy-options .mg-opt');
+    btns.forEach(b => b.disabled = true);
+    if (i === syAnswerIdx) {
+        btns[i].classList.add('correct');
+        playSound('correct');
+        syScore += 10;
+        sySolved++;
+        document.getElementById('sy-score').textContent = syScore;
+        document.getElementById('sy-status').textContent = '🎉 Correto!';
+    } else {
+        btns[i].classList.add('wrong');
+        btns[syAnswerIdx].classList.add('correct');
+        playSound('wrong');
+        document.getElementById('sy-status').textContent = '❌ A resposta é: ' + syOpts[syAnswerIdx].x;
+    }
+    setTimeout(() => { syIndex++; renderSynonyms(); }, 1100);
+}
+
+function finishSynonyms() {
+    document.getElementById('sy-status').textContent = '🏆 Vocabulário poderoso!';
+    saveRanking({ mode: 'synonyms', category: syCategory, score: syScore, generalPoints: Math.round((sySolved / syQs.length) * 400), correct: sySolved, total: syQs.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartSynonyms() { if (syCategory) startSynonymsWithCategory(syCategory); }
+function closeSynonyms() {
+    playSound('click');
+    document.getElementById('synonyms-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== ESCADA DE PALAVRAS ====================
+const DEFAULT_LADDER = [['cat', 'bat'], ['big', 'bag'], ['sun', 'run']];
+let wlCategory = null;
+let wlPairs = [];
+let wlIdx = 0;
+let wlCurrent = '';
+let wlTarget = '';
+let wlSteps = 0;
+let wlScore = 0;
+let wlFinished = false;
+
+function wordLadderPairs(category) {
+    const byLen = {};
+    for (const w of vocabulary[category].words) {
+        const l = w.english.toLowerCase().replace(/\s+/g, '');
+        if (l.length >= 3 && l.length <= 8) (byLen[l.length] = byLen[l.length] || []).push(l);
+    }
+    const pairs = [];
+    const keys = Object.keys(byLen).sort((a, b) => byLen[b].length - byLen[a].length);
+    for (const k of keys) {
+        const pool = shuffle(byLen[k]);
+        while (pool.length >= 2 && pairs.length < 3) pairs.push([pool.shift(), pool.shift()]);
+        if (pairs.length >= 3) break;
+    }
+    while (pairs.length < 3) pairs.push(DEFAULT_LADDER[pairs.length]);
+    return pairs.slice(0, 3);
+}
+
+function startWordLadderWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    wlCategory = category;
+    wlIdx = 0;
+    wlScore = 0;
+    wlPairs = wordLadderPairs(category);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('wordladder-screen').style.display = 'block';
+    document.getElementById('wl-score').textContent = '0';
+    renderLadder();
+}
+
+function renderLadder() {
+    const p = wlPairs[wlIdx];
+    if (!p) { finishWordLadder(); return; }
+    wlCurrent = p[0];
+    wlTarget = p[1];
+    wlSteps = 0;
+    wlFinished = false;
+    document.getElementById('wl-progress').textContent = `Nível ${wlIdx + 1} de ${wlPairs.length}`;
+    document.getElementById('wl-current').textContent = wlCurrent;
+    document.getElementById('wl-target').textContent = wlTarget;
+    document.getElementById('wl-steps').textContent = 'Passos: 0';
+    document.getElementById('wl-input').value = '';
+    document.getElementById('wl-status').textContent = '';
+    document.getElementById('wl-input').disabled = false;
+}
+
+function wordLadderGo() {
+    if (wlFinished) return;
+    const input = document.getElementById('wl-input').value.trim().toLowerCase().replace(/\s+/g, '');
+    if (!input) { document.getElementById('wl-status').textContent = 'Digite uma palavra!'; return; }
+    if (input.length !== wlCurrent.length) {
+        document.getElementById('wl-status').textContent = `A palavra deve ter ${wlCurrent.length} letras.`;
+        playSound('wrong');
+        return;
+    }
+    let diff = 0;
+    for (let i = 0; i < input.length; i++) if (input[i] !== wlCurrent[i]) diff++;
+    if (diff !== 1) {
+        document.getElementById('wl-status').textContent = 'Mude apenas UMA letra para formar uma palavra.';
+        playSound('wrong');
+        return;
+    }
+    wlSteps++;
+    wlCurrent = input;
+    document.getElementById('wl-current').textContent = wlCurrent;
+    document.getElementById('wl-steps').textContent = 'Passos: ' + wlSteps;
+    if (wlCurrent === wlTarget) {
+        const pts = Math.max(30, 60 - wlSteps * 5);
+        wlScore += pts;
+        document.getElementById('wl-score').textContent = wlScore;
+        playSound('correct');
+        speakEnglish(wlTarget);
+        wlFinished = true;
+        document.getElementById('wl-input').disabled = true;
+        document.getElementById('wl-status').textContent = `🏆 Chegou! +${pts} em ${wlSteps} passos!`;
+        setTimeout(() => { wlIdx++; renderLadder(); }, 1400);
+    } else {
+        playSound('click');
+        speakEnglish(wlCurrent);
+        document.getElementById('wl-status').textContent = progWordLadder(input);
+        document.getElementById('wl-input').value = '';
+        document.getElementById('wl-input').focus();
+    }
+}
+
+function progWordLadder(word) {
+    let match = 0;
+    for (let i = 0; i < word.length; i++) if (word[i] === wlTarget[i]) match++;
+    return `Boa! ${match} de ${wlTarget.length} letras já estão no lugar certo.`;
+}
+
+function finishWordLadder() {
+    document.getElementById('wl-status').textContent = '🏆 Escalou a escada toda!';
+    saveRanking({ mode: 'wordladder', category: wlCategory, score: wlScore, generalPoints: 400, correct: wlPairs.length, total: wlPairs.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartWordLadder() { if (wlCategory) startWordLadderWithCategory(wlCategory); }
+function closeWordLadder() {
+    playSound('click');
+    document.getElementById('wordladder-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== DESCUBRA O ERRO ====================
+let mkCategory = null;
+let mkRounds = [];
+let mkIndex = 0;
+let mkScore = 0;
+let mkSolved = 0;
+let mkLocked = false;
+
+function makeTypo(clean) {
+    for (let p = 1; p < clean.length - 1; p++) {
+        if (clean[p] !== clean[p + 1]) {
+            const arr = clean.split('');
+            const tmp = arr[p]; arr[p] = arr[p + 1]; arr[p + 1] = tmp;
+            return arr.join('');
+        }
+    }
+    return null;
+}
+
+function mistakeRound(category) {
+    const candidates = shuffle(vocabulary[category].words.filter(w => w.sentence && w.sentence.split(' ').length >= 3));
+    for (const w of candidates) {
+        const tokens = w.sentence.split(' ');
+        for (let t = 0; t < tokens.length; t++) {
+            const clean = tokens[t].replace(/[^a-z]/gi, '');
+            if (clean.length < 5) continue;
+            const typo = makeTypo(clean);
+            if (!typo) continue;
+            return {
+                emoji: w.emoji,
+                pt: w.sentenceTranslation || '',
+                tokens: tokens.map(tok => tok.replace(/[^a-z]/gi, '')),
+                punct: tokens.map(tok => tok.replace(/[a-zA-Z]/gi, '')),
+                typoIdx: t,
+                correct: clean,
+                typo: typo,
+                words: w.sentence
+            };
+        }
+    }
+    return null;
+}
+
+function getMistakeRounds(category) {
+    const rounds = [];
+    const seen = {};
+    const keys = [category, ...Object.keys(vocabulary).filter(k => k !== category)];
+    for (const c of keys) {
+        const r = mistakeRound(c);
+        if (r && !seen[r.words]) {
+            seen[r.words] = 1;
+            rounds.push(r);
+        }
+        if (rounds.length >= 5) break;
+    }
+    return rounds;
+}
+
+function startMistakeWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    mkCategory = category;
+    mkIndex = 0;
+    mkScore = 0;
+    mkSolved = 0;
+    mkRounds = getMistakeRounds(category);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('mistake-screen').style.display = 'block';
+    document.getElementById('mk-score').textContent = '0';
+    renderMistake();
+}
+
+function renderMistake() {
+    const r = mkRounds[mkIndex];
+    if (!r) { finishMistake(); return; }
+    mkLocked = false;
+    document.getElementById('mk-progress').textContent = `Frase ${mkIndex + 1} de ${mkRounds.length}`;
+    document.getElementById('mk-pt').textContent = r.emoji + ' → ' + (r.pt || '');
+    let html = '';
+    r.tokens.forEach((tok, i) => {
+        const disp = i === r.typoIdx ? r.typo : tok;
+        const punct = (r.punct[i] || '');
+        html += `<button class="mk-token" id="mk-tok-${i}" onclick="mkPick(${i})">${disp}${punct}</button>`;
+    });
+    document.getElementById('mk-sentence').innerHTML = html;
+    document.getElementById('mk-status').textContent = '';
+}
+
+function mkPick(i) {
+    if (mkLocked) return;
+    const r = mkRounds[mkIndex];
+    if (!r) return;
+    if (i === r.typoIdx) {
+        mkLocked = true;
+        const btn = document.getElementById('mk-tok-' + i);
+        btn.textContent = r.correct + (r.punct[i] || '');
+        btn.classList.add('fixed');
+        btn.disabled = true;
+        document.querySelectorAll('.mk-token').forEach(b => b.disabled = true);
+        playSound('correct');
+        mkScore += 15;
+        mkSolved++;
+        document.getElementById('mk-score').textContent = mkScore;
+        document.getElementById('mk-status').textContent = '🎉 Encontrou o erro!';
+        speakEnglish(r.words);
+        setTimeout(() => { mkIndex++; renderMistake(); }, 1100);
+    } else {
+        playSound('wrong');
+        document.getElementById('mk-tok-' + i).disabled = true;
+        document.getElementById('mk-status').textContent = '❌ Não é essa palavra. ' + (r.punct[i] ? '' : '');
+    }
+}
+
+function finishMistake() {
+    document.getElementById('mk-status').textContent = '🏆 Detetive de primeira!';
+    saveRanking({ mode: 'mistake', category: mkCategory, score: mkScore, generalPoints: Math.round((mkSolved / mkRounds.length) * 400), correct: mkSolved, total: mkRounds.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartMistake() { if (mkCategory) startMistakeWithCategory(mkCategory); }
+function closeMistake() {
+    playSound('click');
+    document.getElementById('mistake-screen').style.display = 'none';
+    document.getElementById('games-screen').style.display = 'block';
+    resumeMenuMusic();
+}
+
+// ==================== PHRASAL VERBS ====================
+const PHRASAL_BANK = [
+    { v: 'give up',    pt: 'desistir',            w: ['desistir', 'entregar', 'esquecer', 'começar'] },
+    { v: 'look for',   pt: 'procurar',            w: ['procurar', 'olhar para', 'encontrar', 'perder'] },
+    { v: 'turn on',    pt: 'ligar',               w: ['ligar', 'desligar', 'virar', 'abrir'] },
+    { v: 'turn off',   pt: 'desligar',            w: ['desligar', 'ligar', 'apagar', 'parar'] },
+    { v: 'get up',     pt: 'levantar',            w: ['levantar', 'sentar', 'subir', 'descer'] },
+    { v: 'put on',     pt: 'vestir',              w: ['vestir', 'colocar dentro', 'pegar', 'arrumar'] },
+    { v: 'take off',   pt: 'tirar',               w: ['tirar', 'pegar', 'voar', 'correr'] },
+    { v: 'wake up',    pt: 'acordar',             w: ['acordar', 'dormir', 'sonhar', 'descansar'] },
+    { v: 'go out',     pt: 'sair',                w: ['sair', 'entrar', 'voltar', 'passar'] },
+    { v: 'come in',    pt: 'entrar',              w: ['entrar', 'sair', 'chegar', 'vir'] },
+    { v: 'run out of', pt: 'ficar sem',           w: ['ficar sem', 'acabar rápido', 'procurar', 'gastar'] },
+    { v: 'pick up',    pt: 'pegar algo do chão',  w: ['pegar algo do chão', 'deixar cair', 'abrir', 'esconder'] },
+    { v: 'throw away', pt: 'jogar fora',          w: ['jogar fora', 'pegar', 'guardar', 'limpar'] },
+    { v: 'sit down',   pt: 'sentar',              w: ['sentar', 'levantar', 'deitar', 'andar'] },
+    { v: 'show up',    pt: 'aparecer',            w: ['aparecer', 'sumir', 'mostrar', 'entregar'] },
+    { v: 'find out',   pt: 'descobrir',           w: ['descobrir', 'perder', 'procurar', 'esconder'] },
+    { v: 'call back',  pt: 'ligar de volta',      w: ['ligar de volta', 'telefonar antes', 'desligar', 'atender'] },
+    { v: 'try on',     pt: 'experimentar roupa',  w: ['experimentar roupa', 'comprar', 'vestir', 'usar'] }
+];
+
+let phCategory = null;
+let phQs = [];
+let phIndex = 0;
+let phScore = 0;
+let phSolved = 0;
+let phLocked = false;
+let phOpts = [];
+let phAnswerIdx = -1;
+
+function startPhrasalWithCategory(category) {
+    playSound('click');
+    pauseMenuMusic();
+    phCategory = category;
+    phIndex = 0;
+    phScore = 0;
+    phSolved = 0;
+    phQs = shuffle(PHRASAL_BANK).slice(0, 8);
+    document.getElementById('games-screen').style.display = 'none';
+    document.getElementById('phrasal-screen').style.display = 'block';
+    document.getElementById('ph-score').textContent = '0';
+    renderPhrasal();
+}
+
+function renderPhrasal() {
+    const q = phQs[phIndex];
+    if (!q) { finishPhrasal(); return; }
+    phLocked = false;
+    document.getElementById('ph-progress').textContent = `Pergunta ${phIndex + 1} de ${phQs.length}`;
+    document.getElementById('ph-question').textContent = `O que significa "${q.v}"?`;
+    phOpts = shuffle(q.w.map((x, i) => ({ x, i })));
+    phAnswerIdx = phOpts.findIndex(o => o.i === 0);
+    document.getElementById('ph-options').innerHTML = phOpts.map((o, i) =>
+        `<button class="mg-opt" onclick="phPick(${i})">${o.x}</button>`).join('');
+    document.getElementById('ph-status').textContent = '';
+}
+
+function phPick(i) {
+    if (phLocked) return;
+    phLocked = true;
+    const btns = document.querySelectorAll('#ph-options .mg-opt');
+    btns.forEach(b => b.disabled = true);
+    if (i === phAnswerIdx) {
+        btns[i].classList.add('correct');
+        playSound('correct');
+        phScore += 10;
+        phSolved++;
+        document.getElementById('ph-score').textContent = phScore;
+        document.getElementById('ph-status').textContent = '🎉 Correto!';
+    } else {
+        btns[i].classList.add('wrong');
+        btns[phAnswerIdx].classList.add('correct');
+        playSound('wrong');
+        document.getElementById('ph-status').textContent = '❌ Significa: ' + phOpts[phAnswerIdx].x;
+    }
+    setTimeout(() => { phIndex++; renderPhrasal(); }, 1100);
+}
+
+function finishPhrasal() {
+    document.getElementById('ph-status').textContent = '🏆 Mestre dos phrasal verbs!';
+    saveRanking({ mode: 'phrasal', category: phCategory, score: phScore, generalPoints: Math.round((phSolved / phQs.length) * 400), correct: phSolved, total: phQs.length, maxCombo: 0 });
+    resumeMenuMusic();
+}
+function restartPhrasal() { if (phCategory) startPhrasalWithCategory(phCategory); }
+function closePhrasal() {
+    playSound('click');
+    document.getElementById('phrasal-screen').style.display = 'none';
     document.getElementById('games-screen').style.display = 'block';
     resumeMenuMusic();
 }
