@@ -2837,18 +2837,19 @@ body:has(#landing-screen:not([style*="display: none"])) {
 }
 .character-arthur-wrapper {
     left: clamp(20px, 5vw, 100px);
-    animation: characterIdle 3.4s ease-in-out infinite;
+    animation: characterWalkA 18s linear infinite;
 }
 .character-henrique-wrapper {
     right: clamp(20px, 5vw, 100px);
-    animation: characterIdle 3.7s ease-in-out infinite;
-    animation-delay: -1.2s;
+    animation: characterWalkB 21s linear infinite;
+    animation-delay: -9.5s;
 }
 .landing-character {
     display: block;
     width: auto;
     max-height: min(48vh, 570px);
     object-fit: contain;
+    animation: characterWalkStep 0.72s ease-in-out infinite;
 }
 .start-buttons {
     position: absolute;
@@ -2900,9 +2901,29 @@ body:has(#landing-screen:not([style*="display: none"])) {
 .start-btn-enter { background: linear-gradient(135deg, #38bdf8, #0ea5e9, #0284c7); }
 .start-btn-create { background: linear-gradient(135deg, #a78bfa, #8b5cf6, #7c3aed); }
 .start-btn-about { background: linear-gradient(135deg, #3b82f6, #2563eb, #1d4ed8); }
-@keyframes characterIdle {
-    0%, 100% { translate: 0 0; rotate: -0.5deg; }
-    50% { translate: 0 -7px; rotate: 0.5deg; }
+@keyframes characterWalkA {
+    0%, 100% { translate: 0 0; rotate: -0.5deg; scale: 1 1; }
+    18% { rotate: 0.4deg; }
+    32% { translate: 5.5vw -8px; rotate: -0.3deg; }
+    45% { translate: 8vw -12px; rotate: 0.3deg; }
+    50% { translate: 8.5vw -10px; rotate: -0.3deg; scale: -1 1; }
+    68% { translate: 4vw -9px; rotate: 0.4deg; }
+    82% { translate: 0 -5px; rotate: -0.3deg; }
+}
+@keyframes characterWalkB {
+    0%, 100% { translate: 0 0; rotate: -0.5deg; scale: -1 1; }
+    18% { rotate: 0.4deg; }
+    32% { translate: -5.5vw -8px; rotate: -0.3deg; }
+    45% { translate: -8vw -12px; rotate: 0.3deg; }
+    50% { translate: -8.5vw -10px; rotate: -0.3deg; scale: 1 1; }
+    68% { translate: -4vw -9px; rotate: 0.4deg; }
+    82% { translate: 0 -5px; rotate: -0.3deg; }
+}
+@keyframes characterWalkStep {
+    0%, 100% { translate: 0 0; }
+    25% { translate: 0 -6px; }
+    50% { translate: 0 0; }
+    75% { translate: 0 -6px; }
 }
 @keyframes logoFloat {
     0%, 100% { translate: 0 0; }
@@ -3000,6 +3021,7 @@ body:has(#landing-screen:not([style*="display: none"])) {
 }
 @media (prefers-reduced-motion: reduce) {
     .character-wrapper,
+    .landing-character,
     .landing-logo-wrapper {
         animation: none !important;
     }
