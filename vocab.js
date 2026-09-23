@@ -145,9 +145,9 @@ const vocabulary = {
             { emoji: '🩸', english: 'Blood', phonetic: '/blâd/', portuguese: 'Sangue', sentence: 'Blood is red.', sentenceTranslation: 'O sangue é vermelho.' },
             { emoji: '💅', english: 'Nail', phonetic: '/néil/', portuguese: 'Unha', sentence: 'Cut your nails.', sentenceTranslation: 'Corte suas unhas.' },
             { emoji: '🦷', english: 'Teeth', phonetic: '/títh/', portuguese: 'Dentes', sentence: 'Brush your teeth.', sentenceTranslation: 'Escove seus dentes.' },
-            { emoji: '💍', english: 'Earlobe', phonetic: '/ír-lôub/', portuguese: 'Lóbulo', sentence: 'The earring is on the earlobe.', sentenceTranslation: 'O brinco fica no lóbulo da orelha.' },
+            { emoji: '👂', english: 'Earlobe', phonetic: '/ír-lôub/', portuguese: 'Lóbulo', sentence: 'The earring is on the earlobe.', sentenceTranslation: 'O brinco fica no lóbulo da orelha.' },
             { emoji: '👁️', english: 'Eyebrow', phonetic: '/ái-brau/', portuguese: 'Sobrancelha', sentence: 'Raise your eyebrow.', sentenceTranslation: 'Levante sua sobrancelha.' },
-            { emoji: '🫀', english: 'Vein', phonetic: '/véin/', portuguese: 'Veia', sentence: 'Veins carry blood.', sentenceTranslation: 'As veias carregam sangue.' },
+            { emoji: '🩸', english: 'Vein', phonetic: '/véin/', portuguese: 'Veia', sentence: 'Veins carry blood.', sentenceTranslation: 'As veias carregam sangue.' },
             { emoji: '💀', english: 'Skull', phonetic: '/skâl/', portuguese: 'Crânio', sentence: 'Protect your skull.', sentenceTranslation: 'Proteja seu crânio.' }
         ]
     },
@@ -208,7 +208,7 @@ const vocabulary = {
             { emoji: '👨‍👩‍👧', english: 'In-laws', phonetic: '/ín-lóz/', portuguese: 'Sogros', sentence: 'Visit the in-laws.', sentenceTranslation: 'Visite os sogros.' },
             { emoji: '💑', english: 'Stepfather', phonetic: '/stép-fá-dher/', portuguese: 'Padrasto', sentence: 'My stepfather is nice.', sentenceTranslation: 'Meu padrasto é legal.' },
             { emoji: '👩‍👧', english: 'Stepmother', phonetic: '/stép-mâ-dher/', portuguese: 'Madrasta', sentence: 'My stepmother bakes.', sentenceTranslation: 'Minha madrasta assa.' },
-            { emoji: '👶', english: 'Stepsibling', phonetic: '/stép-sib-ling/', portuguese: 'Irmão/a de outro pai', sentence: 'My stepsibling plays.', sentenceTranslation: 'Meu/meia irmão/ã brinca.' }
+            { emoji: '👶', english: 'Stepsibling', phonetic: '/stép-sib-ling/', portuguese: 'Irmão/a de outro pai', sentence: 'My stepsibling plays.', sentenceTranslation: 'Meu/minha irmão/irmã de outro pai brinca.' }
         ]
     },
     clothes: {
@@ -254,7 +254,7 @@ const vocabulary = {
             { emoji: '🌊', english: 'Wave', phonetic: '/uéiv/', portuguese: 'Onda', sentence: 'The wave is big.', sentenceTranslation: 'A onda é grande.' },
             { emoji: '🌡️', english: 'Hot', phonetic: '/hót/', portuguese: 'Quente', sentence: 'It is hot today.', sentenceTranslation: 'Está quente hoje.' },
             { emoji: '🥶', english: 'Cold', phonetic: '/kôuld/', portuguese: 'Frio', sentence: 'It is cold outside.', sentenceTranslation: 'Está frio lá fora.' },
-            { emoji: '🌤️', english: 'Warm', phonetic: '/uórm/', portuguese: 'Agradável', sentence: 'The weather is warm.', sentenceTranslation: 'O tempo está agradável.' },
+            { emoji: '🌤️', english: 'Warm', phonetic: '/uórm/', portuguese: 'Morno', sentence: 'The weather is warm.', sentenceTranslation: 'O tempo está morno.' },
             { emoji: '⛈️', english: 'Lightning', phonetic: '/láit-ning/', portuguese: 'Raio', sentence: 'Lightning is bright.', sentenceTranslation: 'O raio é brilhante.' },
             { emoji: '🌫️', english: 'Fog', phonetic: '/fág/', portuguese: 'Nevoeiro', sentence: 'The fog is thick.', sentenceTranslation: 'O nevoeiro é denso.' },
             { emoji: '🌪️', english: 'Tornado', phonetic: '/tór-nêi-dou/', portuguese: 'Tornado', sentence: 'The tornado is scary.', sentenceTranslation: 'O tornado é assustador.' },
@@ -266,7 +266,7 @@ const vocabulary = {
             { emoji: '🌧️', english: 'Drizzle', phonetic: '/drí-zol/', portuguese: 'Chuvisco', sentence: 'It is drizzling.', sentenceTranslation: 'Está chuviscando.' },
             { emoji: '❄️', english: 'Ice', phonetic: '/áis/', portuguese: 'Gelo', sentence: 'Ice is slippery.', sentenceTranslation: 'O gelo é escorregadio.' },
             { emoji: '💨', english: 'Breeze', phonetic: '/bríz/', portuguese: 'Brisa', sentence: 'The breeze is cool.', sentenceTranslation: 'A brisa é fresca.' },
-            { emoji: '🌈', english: 'Frost', phonetic: '/fróst/', portuguese: 'Geada', sentence: 'Frost covers the grass.', sentenceTranslation: 'A geada cobre a grama.' },
+            { emoji: '🌨️', english: 'Frost', phonetic: '/fróst/', portuguese: 'Geada', sentence: 'Frost covers the grass.', sentenceTranslation: 'A geada cobre a grama.' },
             { emoji: '⛈️', english: 'Thunder', phonetic: '/thân-der/', portuguese: 'Trovão', sentence: 'Thunder is loud.', sentenceTranslation: 'O trovão é barulhento.' },
             { emoji: '🌊', english: 'Tide', phonetic: '/táid/', portuguese: 'Maré', sentence: 'The tide is high.', sentenceTranslation: 'A maré está alta.' }
         ]
@@ -292,7 +292,7 @@ const vocabulary = {
             { emoji: '🎤', english: 'Shout', phonetic: '/sháut/', portuguese: 'Gritar', sentence: 'Do not shout!', sentenceTranslation: 'Não grite!' },
             { emoji: '🤫', english: 'Whisper', phonetic: '/uís-per/', portuguese: 'Sussurrar', sentence: 'Whisper quietly.', sentenceTranslation: 'Sussurre baixinho.' },
             { emoji: '🎨', english: 'Draw', phonetic: '/dró/', portuguese: 'Desenhar', sentence: 'I draw a picture.', sentenceTranslation: 'Eu faço um desenho.' },
-            { emoji: '🚶', english: 'Jog', phonetic: '/djóg/', portuguese: 'Correr', sentence: 'I jog every morning.', sentenceTranslation: 'Eu corro toda manhã.' },
+            { emoji: '🏃‍♂️', english: 'Jog', phonetic: '/djóg/', portuguese: 'Trotar', sentence: 'I jog every morning.', sentenceTranslation: 'Eu troto toda manhã.' },
             { emoji: '🧘', english: 'Stretch', phonetic: '/strétch/', portuguese: 'Alongar', sentence: 'Stretch your body.', sentenceTranslation: 'Alongue seu corpo.' },
             { emoji: '🤸', english: 'Flip', phonetic: '/flíp/', portuguese: 'Dar um mortal', sentence: 'I can flip!', sentenceTranslation: 'Eu posso dar um mortal!' },
             { emoji: '🏄', english: 'Surf', phonetic: '/sârf/', portuguese: 'Surfar', sentence: 'I surf the waves.', sentenceTranslation: 'Eu surfo nas ondas.' },

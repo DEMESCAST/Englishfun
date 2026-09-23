@@ -4,7 +4,7 @@ Aprenda Inglês brincando! Jogo educativo para crianças.
 
 ## Funcionalidades
 
-- 🐾 11 categorias com 25 palavras cada
+- 🐾 11 categorias temáticas (15 a 25 palavras cada)
 - 🎯 Quiz interativo com pronúncia
 - 🔊 Áudio com pronúncia em inglês
 - 🏆 Sistema de conquistas

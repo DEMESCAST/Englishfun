@@ -1906,7 +1906,7 @@ const GAME_META = {
     lightning: { title: '⚡ Desafio Relâmpago' },
     spell:     { title: '✍️ Soletrando' },
     oddoneout: { title: '🧐 Encontre o Intruso' },
-    bingo:     { title: '🎱 Bingo de Inglês' },
+    bingo:     { title: '🅱️ Bingo de Inglês' },
     tictactoe: { title: '⭕ Jogo da Velha' },
     listening: { title: '🎧 Ouvir e Encontrar' },
     sentence:  { title: '🧩 Monte a Frase' },
@@ -2049,7 +2049,7 @@ function renderHangman() {
     }
     
     document.getElementById('hangman-hint').innerHTML =
-        `<button class="learn-btn small" onclick="speakHangman()" aria-label="Ouvir pronúncia">🔊</button>` +
+        `<button class="learn-btn small" onclick="speakHangman()" aria-label="Ouvir pronúncia">🔊</button> ` +
         `<span>Dica: ${word.portuguese}</span>`;
     
     const kb = document.getElementById('hangman-keyboard');
@@ -3151,7 +3151,7 @@ function renderSentence() {
     sbLocked = false;
     document.getElementById('sb-progress').textContent = `Frase ${sbIndex + 1} de ${sbRounds.length}`;
     document.getElementById('sb-emoji').textContent = w.emoji;
-    document.getElementById('sb-pt').textContent = 'Em português: ' + (w.sentenceTranslation || w.portuguese) + '.';
+    document.getElementById('sb-pt').textContent = 'Em português: ' + (w.sentenceTranslation || w.portuguese).replace(/[.!?…]+\s*$/, '') + '.';
     const tokens = sbTokens(w.sentence);
     sbBuilt = [];
     sbBank = shuffle(tokens.map((t, i) => ({ t: t.toLowerCase(), i })));
