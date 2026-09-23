@@ -1,0 +1,13 @@
+# Dependências e artefatos de desenvolvimento
+node_modules/
+playwright-report/
+test-results/
+test-screenshots/
+.firebase/
+
+# Downloads / rastros não usados pelo site
+ChatGPT Image*.png
+English-Fun-OpenCode.zip
+english-fun-tela-inicial-web.webp
+index-old-backup.html
+*.mp3
