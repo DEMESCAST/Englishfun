@@ -299,6 +299,11 @@
             border-color: rgba(74, 222, 128, 0.6);
             box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
         }
+        .mode-stories {
+            background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+            border-color: rgba(251, 191, 36, 0.6);
+            box-shadow: 0 4px 20px rgba(217, 119, 6, 0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
+        }
         .mode-review {
             background: linear-gradient(180deg, #f97316 0%, #dc2626 100%);
             border-color: rgba(251, 146, 60, 0.6);
@@ -921,7 +926,7 @@
         /* Novos Jogos */
         #spell-screen, #oddoneout-screen, #bingo-screen, #tictactoe-screen,
         #listening-screen, #sentence-screen, #grammar-screen, #synonyms-screen,
-        #wordladder-screen, #mistake-screen, #phrasal-screen {
+        #wordladder-screen, #mistake-screen, #phrasal-screen, #reading-screen {
             display: none;
             text-align: center;
             color: white;
@@ -930,6 +935,123 @@
             position: relative;
             z-index: 2;
             margin: 0 auto;
+        }
+        #reading-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        #reading-header h2 {
+            color: #ffd166;
+            text-shadow: 0 0 15px rgba(255,209,102,0.5);
+            font-size: 24px;
+            margin: 0;
+        }
+        .reading-hint { color: #cfe3ff; font-size: 15px; margin: 0 auto 14px; max-width: 520px; }
+        /* Livro de historinhas (virada de pagina) */
+        .book-viewer {
+            perspective: 1600px;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            overflow: hidden;
+            padding: 6px 4px;
+        }
+        .book {
+            width: 100%;
+            transform-style: preserve-3d;
+        }
+        .book.turn-next { animation: bookTurnNext 0.44s ease; }
+        .book.turn-prev { animation: bookTurnPrev 0.44s ease; }
+        @keyframes bookTurnNext {
+            0% { transform: rotateY(0deg); opacity: 1; }
+            50% { transform: rotateY(-92deg); opacity: 0.35; }
+            100% { transform: rotateY(0deg); opacity: 1; }
+        }
+        @keyframes bookTurnPrev {
+            0% { transform: rotateY(0deg); opacity: 1; }
+            50% { transform: rotateY(92deg); opacity: 0.35; }
+            100% { transform: rotateY(0deg); opacity: 1; }
+        }
+        .book-page {
+            position: relative;
+            background: linear-gradient(180deg, #fffdf6 0%, #fbf3df 100%);
+            border-radius: 14px;
+            border-left: 12px solid #e6dcc4;
+            box-shadow: 0 18px 42px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(0,0,0,0.05);
+            padding: 16px 16px 18px;
+            color: #2b2b2b;
+            text-align: left;
+        }
+        .book-page::before {
+            content: '';
+            position: absolute;
+            top: 8px; bottom: 8px; left: -8px;
+            width: 6px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.04));
+        }
+        .book-illus {
+            background: #eef3f7;
+            border-radius: 10px;
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+        .book-illus img {
+            display: block;
+            max-width: 100%;
+            max-height: 320px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        .book-line { margin-bottom: 10px; }
+        .book-en { font-size: 19px; font-weight: 700; line-height: 1.45; margin: 0; color: #222; }
+        .book-pt { font-size: 15px; line-height: 1.4; margin: 3px 0 0; color: #5a6b7a; font-style: italic; }
+        .book-moral {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255,209,102,0.22);
+            text-align: center;
+        }
+        .book-moral-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; color: #b8860b; }
+        .book-moral-en { font-size: 18px; font-weight: 700; margin: 4px 0 2px; color: #222; }
+        .book-moral-pt { font-size: 14px; margin: 0; color: #5a6b7a; }
+        .book-pagenum { text-align: center; margin-top: 14px; font-size: 13px; color: #9aa7b5; }
+        .book-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .book-btn {
+            padding: 12px 22px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .book-btn:hover:not(:disabled) { transform: translateY(-2px); }
+        .book-btn:disabled { opacity: 0.4; cursor: default; }
+        .book-indicator { color: #fff; font-weight: 700; min-width: 130px; text-align: center; }
+        @media (max-width: 420px) {
+            .book-en { font-size: 17px; }
+            .book-illus img { max-height: 240px; }
+            .book-btn { padding: 11px 16px; font-size: 15px; }
+            .book-indicator { min-width: 100px; font-size: 14px; }
         }
         .screen-header {
             display: flex;
@@ -3360,6 +3482,9 @@ body:has(#landing-screen:not([style*="display: none"])) {
                         <button class="game-mode-button mode-games" onclick="openGames()" aria-label="Jogos">
                             <span>🎮</span> JOGOS
                         </button>
+                        <button class="game-mode-button mode-stories" onclick="openReading()" aria-label="Historinhas">
+                            <span>📖</span> HISTORINHAS
+                        </button>
                         <button class="game-mode-button mode-review" onclick="selectMode('review')" aria-label="Revisar meus erros">
                             <span>⭐</span> REVISAR MEUS ERROS
                         </button>
@@ -3499,6 +3624,23 @@ body:has(#landing-screen:not([style*="display: none"])) {
                     <span class="game-btn-name">PHRASAL VERBS</span>
                     <span class="game-btn-desc">Verbos compostos com preposição</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- Tela de Historinhas (livro em inglês) -->
+        <div id="reading-screen">
+            <div id="reading-header">
+                <button class="back-mode-btn" onclick="closeReading()" aria-label="Voltar ao menu principal">← Voltar</button>
+                <h2 id="reading-title">📖 The Lion and the Mouse</h2>
+            </div>
+            <p class="reading-hint">Vire as páginas para ler a história. Toque em <strong>Próxima</strong> ou arraste para o lado. 🦁🐭</p>
+            <div class="book-viewer">
+                <div class="book" id="book" role="group" aria-roledescription="livro" aria-label="The Lion and the Mouse" aria-live="polite"></div>
+            </div>
+            <div class="book-nav">
+                <button class="book-btn" id="book-prev" onclick="bookPrev()" aria-label="Página anterior">‹ Anterior</button>
+                <span class="book-indicator" id="book-indicator">Página 1 de 3</span>
+                <button class="book-btn" id="book-next" onclick="bookNext()" aria-label="Próxima página">Próxima ›</button>
             </div>
         </div>
 
@@ -4086,11 +4228,12 @@ body:has(#landing-screen:not([style*="display: none"])) {
     <script src="player.js"></script>
     <script src="game.js?v=20260923-1"></script>
     <script src="conversation.js"></script>
+    <script src="reading.js?v=20261016-3"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=58')
+                navigator.serviceWorker.register('./service-worker.js?v=62')
                     .then(registration => {
                         registration.update();
                         console.log('Service Worker registrado:', registration.scope);
