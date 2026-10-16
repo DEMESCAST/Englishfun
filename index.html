@@ -4228,12 +4228,12 @@ body:has(#landing-screen:not([style*="display: none"])) {
     <script src="player.js"></script>
     <script src="game.js?v=20260923-1"></script>
     <script src="conversation.js"></script>
-    <script src="reading.js?v=20261016-3"></script>
+    <script src="reading.js?v=20261016-4"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=62')
+                navigator.serviceWorker.register('./service-worker.js?v=63')
                     .then(registration => {
                         registration.update();
                         console.log('Service Worker registrado:', registration.scope);

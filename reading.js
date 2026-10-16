@@ -10,7 +10,7 @@ const READING_PAGES = [
             { en: 'One day, a lion was sleeping in the forest.',
               pt: 'Um dia, um le\u00E3o estava dormindo na floresta.' },
             { en: 'A little mouse ran over his paw.',
-              pt: 'Um ratinho passou correndo sobre sua pata.' },
+              pt: 'Um ratinho correu sobre a pata dele.' },
             { en: 'The lion woke up and caught the mouse.',
               pt: 'O le\u00E3o acordou e capturou o ratinho.' },
             { en: '\u201CPlease let me go,\u201D said the mouse. \u201CI may help you one day.\u201D',
@@ -33,7 +33,7 @@ const READING_PAGES = [
         img: 'assets/reading/page-3.png?v=20261016-3',
         alt: 'Ilustra\u00E7\u00E3o da hist\u00F3ria: o ratinho roendo as cordas para libertar o le\u00E3o',
         lines: [
-            { en: 'The mouse heard him and chewed the ropes with her little teeth.',
+            { en: 'The mouse heard him and chewed the ropes with his little teeth.',
               pt: 'O ratinho o ouviu e roeu as cordas com seus dentinhos.' },
             { en: 'The lion was free.',
               pt: 'O le\u00E3o ficou livre.' },
