@@ -951,6 +951,37 @@
             margin: 0;
         }
         .reading-hint { color: #cfe3ff; font-size: 15px; margin: 0 auto 14px; max-width: 520px; }
+        /* Lista de historinhas (biblioteca) */
+        .reading-story-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 520px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .reading-story-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            padding: 16px 18px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ff9a3c, #ff5e8a);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 8px 22px rgba(255,94,138,0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .reading-story-card:hover, .reading-story-card:focus {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(255,94,138,0.5);
+            outline: none;
+        }
+        .reading-story-emoji { font-size: 40px; line-height: 1; }
+        .reading-story-name { flex: 1; font-size: 19px; font-weight: 800; }
+        .reading-story-arrow { font-size: 30px; font-weight: 700; line-height: 1; }
         /* Livro de historinhas (virada de pagina) */
         .book-viewer {
             perspective: 1600px;
@@ -3627,20 +3658,28 @@ body:has(#landing-screen:not([style*="display: none"])) {
             </div>
         </div>
 
-        <!-- Tela de Historinhas (livro em inglês) -->
+        <!-- Tela de Historinhas (livros em inglês) -->
         <div id="reading-screen">
             <div id="reading-header">
-                <button class="back-mode-btn" onclick="closeReading()" aria-label="Voltar ao menu principal">← Voltar</button>
-                <h2 id="reading-title">📖 The Lion and the Mouse</h2>
+                <button class="back-mode-btn" id="reading-back" onclick="readingBack()" aria-label="Voltar ao menu principal">← Voltar</button>
+                <h2 id="reading-title">📖 Historinhas</h2>
             </div>
-            <p class="reading-hint">Vire as páginas para ler a história. Toque em <strong>Próxima</strong> ou arraste para o lado. 🦁🐭</p>
-            <div class="book-viewer">
-                <div class="book" id="book" role="group" aria-roledescription="livro" aria-label="The Lion and the Mouse" aria-live="polite"></div>
+
+            <div id="reading-library">
+                <p class="reading-hint">Escolha uma historinha para ler. 🦁🐢</p>
+                <div id="reading-story-list" class="reading-story-list"></div>
             </div>
-            <div class="book-nav">
-                <button class="book-btn" id="book-prev" onclick="bookPrev()" aria-label="Página anterior">‹ Anterior</button>
-                <span class="book-indicator" id="book-indicator">Página 1 de 3</span>
-                <button class="book-btn" id="book-next" onclick="bookNext()" aria-label="Próxima página">Próxima ›</button>
+
+            <div id="reading-book-view" style="display: none;">
+                <p class="reading-hint">Vire as páginas para ler a história. Toque em <strong>Próxima</strong> ou arraste para o lado. 🦁🐭</p>
+                <div class="book-viewer">
+                    <div class="book" id="book" role="group" aria-roledescription="livro" aria-live="polite"></div>
+                </div>
+                <div class="book-nav">
+                    <button class="book-btn" id="book-prev" onclick="bookPrev()" aria-label="Página anterior">‹ Anterior</button>
+                    <span class="book-indicator" id="book-indicator">Página 1 de 3</span>
+                    <button class="book-btn" id="book-next" onclick="bookNext()" aria-label="Próxima página">Próxima ›</button>
+                </div>
             </div>
         </div>
 
@@ -4228,12 +4267,12 @@ body:has(#landing-screen:not([style*="display: none"])) {
     <script src="player.js"></script>
     <script src="game.js?v=20260923-1"></script>
     <script src="conversation.js"></script>
-    <script src="reading.js?v=20261016-4"></script>
+    <script src="reading.js?v=20261016-5"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=63')
+                navigator.serviceWorker.register('./service-worker.js?v=64')
                     .then(registration => {
                         registration.update();
                         console.log('Service Worker registrado:', registration.scope);

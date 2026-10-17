@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'english-fun-v70';
+﻿const CACHE_NAME = 'english-fun-v71';
 const urlsToCache = [
     './',
     './index.html',
@@ -6,7 +6,7 @@ const urlsToCache = [
     './player.js',
     './game.js?v=20260923-1',
     './conversation.js',
-    './reading.js?v=20261016-4',
+    './reading.js?v=20261016-5',
     './vocab.js?v=20260923-1',
     './manifest.json',
     './assets/icons/icon-192.png',
@@ -16,6 +16,9 @@ const urlsToCache = [
     './assets/reading/page-1.png?v=20261016-3',
     './assets/reading/page-2.png?v=20261016-3',
     './assets/reading/page-3.png?v=20261016-3',
+    './assets/reading/tortoise-1.png',
+    './assets/reading/tortoise-2.png',
+    './assets/reading/tortoise-3.png',
     './assets/landing/arthur-v2.png',
     './henrique.png',
     './bg-music.mp3',
