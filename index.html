@@ -1084,6 +1084,30 @@
             .book-btn { padding: 11px 16px; font-size: 15px; }
             .book-indicator { min-width: 100px; font-size: 14px; }
         }
+        /* Responsividade do livro: garante que a moral e os botoes fiquem
+           visiveis/acessiveis em telas menores (celular) */
+        #reading-screen { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
+        @media (max-width: 600px) {
+            #reading-header { margin-bottom: 10px; }
+            #reading-header h2 { font-size: 20px; }
+            .reading-hint { font-size: 13px; margin: 0 auto 10px; }
+            .book-viewer { padding: 4px 2px; }
+            .book-page { padding: 12px 12px 14px; }
+            .book-illus { margin-bottom: 10px; padding: 6px; }
+            .book-illus img { max-height: min(240px, 30vh); }
+            .book-line { margin-bottom: 7px; }
+            .book-en { font-size: 16px; line-height: 1.35; }
+            .book-pt { font-size: 13px; line-height: 1.35; }
+            .book-moral { margin-top: 10px; padding: 9px; }
+            .book-moral-en { font-size: 16px; }
+            .book-moral-pt { font-size: 13px; }
+            .book-pagenum { margin-top: 10px; }
+            .book-nav { margin-top: 10px; }
+        }
+        @media (max-height: 700px) {
+            .reading-hint { display: none; }
+            .book-illus img { max-height: min(220px, 26vh); }
+        }
         .screen-header {
             display: flex;
             align-items: center;
@@ -4267,12 +4291,12 @@ body:has(#landing-screen:not([style*="display: none"])) {
     <script src="player.js"></script>
     <script src="game.js?v=20260923-1"></script>
     <script src="conversation.js"></script>
-    <script src="reading.js?v=20261016-5"></script>
+    <script src="reading.js?v=20261016-6"></script>
     <script>
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=64')
+                navigator.serviceWorker.register('./service-worker.js?v=65')
                     .then(registration => {
                         registration.update();
                         console.log('Service Worker registrado:', registration.scope);

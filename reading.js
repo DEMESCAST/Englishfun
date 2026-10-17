@@ -97,7 +97,7 @@ const READING_STORIES = [
                     { en: 'Tortoise won the race.',
                       pt: 'A Tartaruga ganhou a corrida.' },
                     { en: '\u201CI kept going,\u201D said Tortoise.',
-                      pt: '\u201CEu continuei indo\u201D, disse a Tartaruga.' },
+                      pt: '\u201CEu continuei caminhando\u201D, disse a Tartaruga.' },
                     { en: 'Hare smiled. \u201CWell done, my friend!\u201D',
                       pt: 'A Lebre sorriu. \u201CMuito bem, meu amigo!\u201D' }
                 ],
